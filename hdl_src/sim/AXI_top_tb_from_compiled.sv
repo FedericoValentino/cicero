@@ -449,21 +449,22 @@ module AXI_top_tb_from_compiled();
         $display("cc taken: %d", cc_taken);
         for(int i = 0; i < 2**CC_ID_BITS; i++) begin
             get_fifo_sizing_report(i, fifoSize);
-            $display("fifo %d reached size: %d", i, fifoSize);
-        end
-
-        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
             get_hit_miss_report(i, cache_hits, cache_miss);
-            $display("cache %d had hits: %d miss: %d", i, cache_hits, cache_miss);
-        end
-
-        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
             get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
-            $display("core %d:", i);
+
+            $display("---------------------------------------------");
+            $display("core         %d:", i);
+            $display("fifo statistics:");
+            $display("max size:     %d", fifoSize);
+            $display("cache statistics:");
+            $display("hits:         %d", cache_hits);
+            $display("miss:         %d", cache_miss);
+            $display("clock cycles per stage:");
             $display("fetch cycles: %d", fetch_ccs);
-            $display("exe1 cycles: %d", exe1_ccs);
-            $display("exe2 cycles: %d", exe2_ccs);
+            $display("exe1  cycles: %d", exe1_ccs);
+            $display("exe2  cycles: %d", exe2_ccs);
         end
+        $display("---------------------------------------------");
 
 
         if( res == 1)
