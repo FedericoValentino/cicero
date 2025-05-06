@@ -12,6 +12,9 @@ parameter  CMD_RESTART              = 'h0000_0006 ;
 parameter  CMD_READ_FIFO_COUNT      = 'h0000_0007 ;
 parameter  CMD_READ_CACHE_HITS      = 'h0000_0008 ;
 parameter  CMD_READ_CACHE_MISS      = 'h0000_0009 ;
+parameter  CMD_READ_FETCH_CLOCK     = 'h0000_000A ;
+parameter  CMD_READ_EXE1_CLOCK      = 'h0000_000B ;
+parameter  CMD_READ_EXE2_CLOCK      = 'h0000_000C ;
 
 
 parameter  STATUS_IDLE              = 'h0000_0000 ;

@@ -78,6 +78,9 @@ logic     [REG_WIDTH-1:0]               elapsed_cc, elapsed_cc_next;
 logic     [FIFO_COUNT_WIDTH-1:0]        max_fifo_data[(2**CC_ID_BITS)-1:0];
 logic     [31:0]                        cache_hits[(2**CC_ID_BITS)-1:0];   
 logic     [31:0]                        cache_miss[(2**CC_ID_BITS)-1:0];   
+logic     [31: 0]                       fetch_ccs[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe1_ccs[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe2_ccs[(2 ** CC_ID_BITS) -1:0];  
 
 
 assign rst_master = rst || (cmd_register==CMD_RESET);
@@ -201,6 +204,27 @@ begin
                 data_o_register     = cache_miss[data_in_register];
             end
         end
+        CMD_READ_FETCH_CLOCK:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = fetch_ccs[data_in_register];
+            end
+        end
+        CMD_READ_EXE1_CLOCK:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe1_ccs[data_in_register];
+            end
+        end
+        CMD_READ_EXE2_CLOCK:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe2_ccs[data_in_register];
+            end
+        end
         endcase
     end
     STATUS_RUNNING:
@@ -281,7 +305,10 @@ coprocessor_top#(
     .end_cc_pointer         (end_cc_pointer_register                ),
     .max_fifo_data          (max_fifo_data                          ),
     .cache_hits             (cache_hits                             ),
-    .cache_miss             (cache_miss                             )
+    .cache_miss             (cache_miss                             ),
+    .fetch_ccs              (fetch_ccs),
+    .exe1_ccs               (exe1_ccs),
+    .exe2_ccs               (exe2_ccs)
 );
 
 endmodule

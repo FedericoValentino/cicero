@@ -48,7 +48,10 @@ module vectorial_engine #(
     //Fede 24/04/25: Performance Counter Region
     output logic [FIFO_COUNT_WIDTH-1:0] max_fifo_data[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0] cache_hits[(2 ** CC_ID_BITS) -1:0],
-    output logic [31: 0] cache_miss[(2 ** CC_ID_BITS) -1:0]
+    output logic [31: 0] cache_miss[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] fetch_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] exe1_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] exe2_ccs[(2 ** CC_ID_BITS) -1:0]
 );
 
   // Number of FIFO (and cores) in this engine
@@ -91,6 +94,12 @@ module vectorial_engine #(
 
   logic [FIFO_COUNT-1:0] cpu_out_is_accepting;
   logic [FIFO_COUNT-1:0] cpu_out_is_running;
+
+  //Fede 06/05/2025 Perf counters for CPU
+
+  logic [31:0] fetch_cycles_reg [FIFO_COUNT-1:0];
+  logic [31:0] exe1_cycles_reg [FIFO_COUNT-1:0];
+  logic [31:0] exe2_cycles_reg [FIFO_COUNT-1:0];
 
   // The input of each arbiter
   logic [FIFO_COUNT-1:0] arbiter_in0_valid;
@@ -306,6 +315,9 @@ module vectorial_engine #(
     assign max_fifo_data[i] = fifos_out_max_data_count[i];
     assign cache_hits[i] =  cache_hits_reg[i];
     assign cache_miss[i] = cache_miss_reg[i];
+    assign fetch_ccs[i] = fetch_cycles_reg[i];
+    assign exe1_ccs[i] = exe1_cycles_reg[i];
+    assign exe2_ccs[i] = exe2_cycles_reg[i];
   end
 
   assign elaborating_chars = fifos_out_valid | cpu_out_is_running;
@@ -409,7 +421,10 @@ module vectorial_engine #(
         .running          (cpu_out_is_running[i]),        // ok
         // In our case this information is not needed, since if it is running
         // then only the bit corresponding to this CPU will be set
-        .elaborating_chars(cpu_out_elaborating_chars[i])  // ok
+        .elaborating_chars(cpu_out_elaborating_chars[i]),  // ok
+        .fetch_ccs(fetch_cycles_reg[i]),
+        .exe1_ccs(exe1_cycles_reg[i]),
+        .exe2_ccs(exe2_cycles_reg[i])
     );
   end
 

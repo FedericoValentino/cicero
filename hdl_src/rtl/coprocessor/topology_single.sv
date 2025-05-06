@@ -28,7 +28,10 @@ module topology_single #(
     //Fede 24/04/25: Performance Counter
     output logic [FIFO_COUNT_WIDTH-1:0]                     max_fifo_data[(2**CC_ID_BITS)-1:0],   
     output logic [31:0]                                     cache_hits[(2**CC_ID_BITS)-1:0],   
-    output logic [31:0]                                     cache_miss[(2**CC_ID_BITS)-1:0]   
+    output logic [31:0]                                     cache_miss[(2**CC_ID_BITS)-1:0],
+    output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe1_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0]   
     );
     //2. provide memory access for BB (note that to create a tree of arbiters  are required 2*#BB -1 arbiters)
     memory_read_iface               #(.MEMORY_ADDR_WIDTH(MEMORY_ADDR_WIDTH), .MEMORY_WIDTH(MEMORY_WIDTH)) memory_bb[0:0]();
@@ -65,7 +68,10 @@ module topology_single #(
         .out                        (channel_i[1].out           ),
         .max_fifo_data              (max_fifo_data              ),
         .cache_hits                 (cache_hits                 ),
-        .cache_miss                 (cache_miss                 )
+        .cache_miss                 (cache_miss                 ),
+        .fetch_ccs                  (fetch_ccs),
+        .exe1_ccs                   (exe1_ccs),
+        .exe2_ccs                   (exe2_ccs)
     );
 
 

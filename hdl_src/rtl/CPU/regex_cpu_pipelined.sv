@@ -34,7 +34,10 @@ module regex_cpu_pipelined #(
 
     output  logic[(2**CC_ID_BITS)-1:0]      elaborating_chars,
     output  logic                           accepts,
-    output  logic                           running
+    output  logic                           running,
+    output  logic[31:0]                     fetch_ccs,
+    output  logic[31:0]                     exe1_ccs,
+    output  logic[31:0]                     exe2_ccs
 );
     localparam C_WINDOW_SIZE_IN_CHAR = 2**CC_ID_BITS ;
     //stage status
@@ -59,6 +62,15 @@ module regex_cpu_pipelined #(
     logic                             EXE1_output_pc_valid                          , EXE2_output_pc_valid                 	;
     // output arbiter  
     logic [PC_WIDTH+CC_ID_BITS-1:0]   output_pc_and_cc_id;
+
+    //Fede 06/05/25 Pipeline stage perf counters
+    logic [31:0] fetch_cc = 0;
+    logic [31:0] exe1_cc = 0;
+    logic [31:0] exe2_cc = 0;
+
+    assign fetch_ccs = fetch_cc;
+    assign exe1_ccs = exe2_cc;
+    assign exe2_ccs = exe2_cc;
 
      always_comb
     begin //ASSERTION CONCERNING INSTRUCTION SIZE WIDTH
@@ -329,6 +341,13 @@ module regex_cpu_pipelined #(
 			elaborating_chars[EXE2_Cc_id] 		= 1'b1;
 		end
 	end
+
+    //Counter block for clock cycles per pipeline stage
+    always_ff @(posedge clk) begin
+        if (FETCH_REC_Instr_valid) fetch_cc         <= fetch_cc + 1;
+        if (EXE1_Instr_valid)       exe1_cc         <= exe1_cc + 1;
+        if (EXE2_Instr_valid)       exe2_cc         <= exe2_cc + 1;
+    end
 
 
     assign EXE1_output_pc_and_cc_id   = {EXE1_output_pc, EXE1_output_cc_id				 };

@@ -343,6 +343,29 @@ module AXI_top_tb_from_compiled();
     end
     endtask
 
+    task get_cycles_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                            output logic[REG_WIDTH-1: 0] fetch_ccs,
+                            output logic[REG_WIDTH-1: 0] exe1_ccs,
+                            output logic[REG_WIDTH-1: 0] exe2_ccs);
+    begin
+        data_in_register          <= coreSelector;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_FETCH_CLOCK;
+        @(posedge clk)
+        fetch_ccs                 <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_EXE1_CLOCK;
+        @(posedge clk)
+        exe1_ccs                  <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_EXE2_CLOCK;
+        @(posedge clk)
+        exe2_ccs                  <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_NOP;
+    end
+    endtask
+
     initial
     begin
         int fp_code , fp_string;
@@ -354,6 +377,10 @@ module AXI_top_tb_from_compiled();
 
         reg [REG_WIDTH-1:0] cache_miss;
         reg [REG_WIDTH-1:0] cache_hits;
+
+        reg [REG_WIDTH-1:0] fetch_ccs;
+        reg [REG_WIDTH-1:0] exe1_ccs;
+        reg [REG_WIDTH-1:0] exe2_ccs;
 
         reg                 res;
 
@@ -429,6 +456,16 @@ module AXI_top_tb_from_compiled();
             get_hit_miss_report(i, cache_hits, cache_miss);
             $display("cache %d had hits: %d miss: %d", i, cache_hits, cache_miss);
         end
+
+        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+            $display("core %d:", i);
+            $display("fetch cycles: %d", fetch_ccs);
+            $display("exe1 cycles: %d", exe1_ccs);
+            $display("exe2 cycles: %d", exe2_ccs);
+        end
+
+
         if( res == 1)
         begin
             $display("string accepted");

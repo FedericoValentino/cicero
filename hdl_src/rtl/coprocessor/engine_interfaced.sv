@@ -25,6 +25,9 @@ module engine_interfaced #(
     output logic [FIFO_COUNT_WIDTH-1:0]                 max_fifo_data[(2**CC_ID_BITS)-1:0],
     output logic [31:0]                                 cache_hits[(2**CC_ID_BITS)-1:0],
     output logic [31:0]                                 cache_miss[(2**CC_ID_BITS)-1:0],
+    output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe1_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0],
     memory_read_iface.out                               memory                          ,
     channel_iface.in                                    in                              ,
     channel_iface.out                                   out                             
@@ -69,7 +72,10 @@ module engine_interfaced #(
         //.output_pc_latency        (out.latency                ),
         .max_fifo_data              (max_fifo_data              ),
         .cache_hits                 (cache_hits),
-        .cache_miss                 (cache_miss)
+        .cache_miss                 (cache_miss),
+        .fetch_ccs                  (fetch_ccs),
+        .exe1_ccs                   (exe1_ccs),
+        .exe2_ccs                   (exe2_ccs)
         
     );
     //Unused input
