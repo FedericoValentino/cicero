@@ -22,7 +22,9 @@ module engine_interfaced #(
     input  wire [(2**CC_ID_BITS)*CHARACTER_WIDTH-1  :0] cur_window                      ,
     input  wire                                         new_char                        ,
     //Fede 24/04/25: Performance Counter
-    output logic [FIFO_COUNT_WIDTH-1:0]                 max_fifo_data[(2**CC_ID_BITS)-1:0]   ,
+    output logic [FIFO_COUNT_WIDTH-1:0]                 max_fifo_data[(2**CC_ID_BITS)-1:0],
+    output logic [31:0]                                 cache_hits[(2**CC_ID_BITS)-1:0],
+    output logic [31:0]                                 cache_miss[(2**CC_ID_BITS)-1:0],
     memory_read_iface.out                               memory                          ,
     channel_iface.in                                    in                              ,
     channel_iface.out                                   out                             
@@ -65,7 +67,9 @@ module engine_interfaced #(
         .output_pc_and_cc_id        (out.data                   ),
         .output_pc_ready            (out.ready                  ),
         //.output_pc_latency        (out.latency                ),
-        .max_fifo_data              (max_fifo_data              )
+        .max_fifo_data              (max_fifo_data              ),
+        .cache_hits                 (cache_hits),
+        .cache_miss                 (cache_miss)
         
     );
     //Unused input

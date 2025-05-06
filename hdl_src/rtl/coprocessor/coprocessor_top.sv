@@ -80,7 +80,9 @@ module coprocessor_top #(
     output  logic                           accept,
     output  logic                           error,
     //Fede 24/04/25: Performance Counters
-    output logic [FIFO_COUNT_WIDTH-1:0]     max_fifo_data[(2**CC_ID_BITS)-1:0]  
+    output logic [FIFO_COUNT_WIDTH-1:0]     max_fifo_data[(2**CC_ID_BITS)-1:0],
+    output logic [31:0]                     cache_hits[(2**CC_ID_BITS)-1:0],   
+    output logic [31:0]                     cache_miss[(2**CC_ID_BITS)-1:0]    
 );
     localparam                       CHAR_ADDR_OFFSET = $clog2(MEMORY_WIDTH/CHARACTER_WIDTH);
     localparam                       WINDOW_SIZE_IN_CHARS= 2**CC_ID_BITS; 
@@ -397,7 +399,9 @@ module coprocessor_top #(
             .memory                     (memory_muxed.out           ),
             .override                   (override_pc                ),
             .memory_cc                  (memory_for_cc              ),
-            .max_fifo_data              (max_fifo_data              )
+            .max_fifo_data              (max_fifo_data              ),
+            .cache_hits                 (cache_hits                 ),
+            .cache_miss                 (cache_miss                 )
         );
     end
     else 

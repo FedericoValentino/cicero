@@ -46,7 +46,9 @@ module vectorial_engine #(
 
 
     //Fede 24/04/25: Performance Counter Region
-    output logic [FIFO_COUNT_WIDTH-1:0] max_fifo_data[(2 ** CC_ID_BITS) -1:0]
+    output logic [FIFO_COUNT_WIDTH-1:0] max_fifo_data[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] cache_hits[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] cache_miss[(2 ** CC_ID_BITS) -1:0]
 );
 
   // Number of FIFO (and cores) in this engine
@@ -146,6 +148,9 @@ module vectorial_engine #(
   logic cache_out_addr_valid[FIFO_COUNT-1:0];
   logic [MEMORY_ADDR_WIDTH-1:0] cache_out_addr[FIFO_COUNT-1:0];
   logic cache_in_ready[FIFO_COUNT-1:0];
+  //Fede 06/05/2024: cache perf counters
+  logic [31:0] cache_miss_reg[FIFO_COUNT-1:0] = '{default: '0};
+  logic [31:0] cache_hits_reg[FIFO_COUNT-1:0] = '{default: '0};
 
 
   // For each CPU, we have a cache block. We the caches "miss", they need to be arbitrated
@@ -172,7 +177,10 @@ module vectorial_engine #(
         .addr_out_ready      (cache_in_ready[i]),
         .data_in             (memory_data),
         .addr_broadcast_valid(memory_broadcast_valid),
-        .addr_broadcast      (memory_broadcast_addr)
+        .addr_broadcast      (memory_broadcast_addr),
+
+        .cache_hits (cache_hits_reg[i]),
+        .cache_miss (cache_miss_reg[i])
     );
   end
 
@@ -296,6 +304,8 @@ module vectorial_engine #(
   genvar i;
   for (i = 0; i < FIFO_COUNT; i++) begin
     assign max_fifo_data[i] = fifos_out_max_data_count[i];
+    assign cache_hits[i] =  cache_hits_reg[i];
+    assign cache_miss[i] = cache_miss_reg[i];
   end
 
   assign elaborating_chars = fifos_out_valid | cpu_out_is_running;

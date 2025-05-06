@@ -26,7 +26,13 @@ module cache_block_directly_mapped_broadcast #(
   input  logic                                       addr_out_ready,
   input  logic [ADDR_IN_WIDTH-BLOCK_WIDTH_BITS-1:0]  addr_broadcast,
   input  logic                                       addr_broadcast_valid,
-  input  logic [DWIDTH*(2**BLOCK_WIDTH_BITS)-1:0]    data_in
+  input  logic [DWIDTH*(2**BLOCK_WIDTH_BITS)-1:0]    data_in,
+
+
+  //Fede 06/05/2025 PerfCounters Region
+  output logic [31:0] cache_hits,
+  output logic [31:0] cache_miss
+
   );
 
 localparam  CACHE_WIDTH    = 2**CACHE_WIDTH_BITS;
@@ -59,6 +65,14 @@ assign broadcast_tag_in        = addr_broadcast[ADDR_IN_WIDTH-BLOCK_WIDTH_BITS-1
 logic                                   hit;
 assign hit           = (tag[cache_line_in] == tag_in && is_present[cache_line_in]) ;
 
+
+//Fede 06/05/2025 Cache PerfCounters
+logic [31:0] total_hits = 0;
+logic [31:0] total_miss = 0; 
+
+assign cache_hits = total_hits;
+assign cache_miss = total_miss;
+
 always_ff @( posedge clk ) begin 
     if(rst == 1'b1)
     begin
@@ -83,6 +97,19 @@ always_ff @( posedge clk ) begin
             tag         [cache_line_saved] <= tag_saved;
             is_present  [cache_line_saved] <= 1'b1     ;
             content     [cache_line_saved] <= data_in  ;
+        end
+
+        if(addr_in_valid) begin
+            if(hit) begin
+                total_hits <= total_hits + 1;
+            //Counting every !hit leads to no good. With this condition we check
+            //If addr_out_valid we are making a request to outer memory &&
+            //If add_out_ready that means that the request was successful, we update the miss count ||
+            //If someone else is broadcasting the address we are requesting we update the count
+            end else if(addr_out_valid && (addr_out_ready || (addr_broadcast_valid && addr_out == addr_broadcast))) begin
+                total_miss <= total_miss + 1;
+            end
+
         end
        
     end

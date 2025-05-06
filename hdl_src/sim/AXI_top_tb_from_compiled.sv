@@ -325,6 +325,24 @@ module AXI_top_tb_from_compiled();
     end
     endtask
 
+    task get_hit_miss_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                             output logic[REG_WIDTH-1: 0] cacheHits,
+                             output logic[REG_WIDTH-1: 0] cacheMiss);
+    begin
+        data_in_register          <= coreSelector;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_CACHE_HITS;
+        @(posedge clk)
+        cacheHits                 <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_CACHE_MISS;
+        @(posedge clk)
+        cacheMiss                 <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_NOP;
+    end
+    endtask
+
     initial
     begin
         int fp_code , fp_string;
@@ -333,6 +351,10 @@ module AXI_top_tb_from_compiled();
         reg [REG_WIDTH-1:0] start_string,   end_string;
         reg [REG_WIDTH-1:0] cc_taken;
         reg [REG_WIDTH-1:0] fifoSize;
+
+        reg [REG_WIDTH-1:0] cache_miss;
+        reg [REG_WIDTH-1:0] cache_hits;
+
         reg                 res;
 
         clk          = 1'b0;
@@ -401,6 +423,11 @@ module AXI_top_tb_from_compiled();
         for(int i = 0; i < 2**CC_ID_BITS; i++) begin
             get_fifo_sizing_report(i, fifoSize);
             $display("fifo %d reached size: %d", i, fifoSize);
+        end
+
+        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+            get_hit_miss_report(i, cache_hits, cache_miss);
+            $display("cache %d had hits: %d miss: %d", i, cache_hits, cache_miss);
         end
         if( res == 1)
         begin

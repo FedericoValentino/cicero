@@ -1,4 +1,4 @@
-//`include "AXI_package.sv"
+//include "AXI_package.sv"
 import AXI_package::*;
 
 //component intended to decouple the regex_coprocessor and the AXI interface.
@@ -76,6 +76,8 @@ logic                                   start_valid,start_ready, done, accept, e
 /////performance counters
 logic     [REG_WIDTH-1:0]               elapsed_cc, elapsed_cc_next;
 logic     [FIFO_COUNT_WIDTH-1:0]        max_fifo_data[(2**CC_ID_BITS)-1:0];
+logic     [31:0]                        cache_hits[(2**CC_ID_BITS)-1:0];   
+logic     [31:0]                        cache_miss[(2**CC_ID_BITS)-1:0];   
 
 
 assign rst_master = rst || (cmd_register==CMD_RESET);
@@ -185,6 +187,20 @@ begin
                 data_o_register     = max_fifo_data[data_in_register];
             end
         end
+        CMD_READ_CACHE_HITS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = cache_hits[data_in_register];
+            end
+        end
+        CMD_READ_CACHE_MISS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = cache_miss[data_in_register];
+            end
+        end
         endcase
     end
     STATUS_RUNNING:
@@ -263,7 +279,9 @@ coprocessor_top#(
     .error                  (error                                  ),
     .start_cc_pointer       (start_cc_pointer_register              ),
     .end_cc_pointer         (end_cc_pointer_register                ),
-    .max_fifo_data          (max_fifo_data)
+    .max_fifo_data          (max_fifo_data                          ),
+    .cache_hits             (cache_hits                             ),
+    .cache_miss             (cache_miss                             )
 );
 
 endmodule
