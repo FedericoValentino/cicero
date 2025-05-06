@@ -42,7 +42,11 @@ module vectorial_engine #(
 
     output logic output_pc_valid,   // ok
     output logic [PC_WIDTH+CC_ID_BITS-1:0] output_pc_and_cc_id, // ok
-    input logic output_pc_ready     // ok
+    input logic output_pc_ready,    // ok
+
+
+    //Fede 24/04/25: Performance Counter Region
+    output logic [FIFO_COUNT_WIDTH-1:0] max_fifo_data[(2 ** CC_ID_BITS) -1:0]
 );
 
   // Number of FIFO (and cores) in this engine
@@ -64,6 +68,7 @@ module vectorial_engine #(
   logic [FIFO_COUNT-1:0] fifos_out_ready_to_recv;
   assign fifos_out_ready_to_recv = ~fifos_out_is_full;
   logic [FIFO_COUNT_WIDTH-1:0] fifos_out_data_count[FIFO_COUNT-1:0]; // How many items are in the FIFO
+  logic [FIFO_COUNT_WIDTH-1:0] fifos_out_max_data_count[FIFO_COUNT-1:0] = '{default: '0}; //Fede 24/04/25: max amount of items registered in FIFO
 
   // The input of each regex_cpu
   logic [PC_WIDTH-1:0] cpu_in_pc[FIFO_COUNT-1:0];
@@ -286,9 +291,15 @@ module vectorial_engine #(
     input_pc_ready = fifos_out_ready_to_recv[0];
   end
 
+
+  //Fede 24/04/25: Sending performance counters outside
+  genvar i;
+  for (i = 0; i < FIFO_COUNT; i++) begin
+    assign max_fifo_data[i] = fifos_out_max_data_count[i];
+  end
+
   assign elaborating_chars = fifos_out_valid | cpu_out_is_running;
 
-  genvar i;
   for (i = 0; i < FIFO_COUNT; i++) begin
     // Instantiate a regex_cpu with its own FIFO, and interconnect them:
     // The first FIFO takes the input from the outside
@@ -351,7 +362,8 @@ module vectorial_engine #(
         .rd_en     (fifos_in_read_enable[i]),   // ok
         .dout      (fifos_out_data[i]),         // ok
         .empty     (fifos_out_is_empty[i]),     // ok
-        .data_count(fifos_out_data_count[i])
+        .data_count(fifos_out_data_count[i]),
+        .max_data_count(fifos_out_max_data_count[i])
     );
 
     // Regex CPU

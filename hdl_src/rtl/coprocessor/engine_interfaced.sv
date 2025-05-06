@@ -11,19 +11,21 @@ module engine_interfaced #(
     parameter  CONSIDER_PIPELINE_FIFO   = 0,
     parameter  CC_ID_BITS               = 1
 ) (
-    input  wire                                         clk                    ,
-    input  wire                                         rst                    , 
-    output wire                                         accepts                ,
-    output wire                                         running                ,
-    output wire                                         full                   ,
-    output wire [(2**CC_ID_BITS)-1:0]                   elaborating_chars      ,
-    input  wire [(2**CC_ID_BITS)-1:0]                   cur_window_end_of_s    ,
-    input  wire [(2**CC_ID_BITS)-1:0]                   cur_window_enable      ,
-    input  wire [(2**CC_ID_BITS)*CHARACTER_WIDTH-1  :0] cur_window             ,
-    input  wire                                         new_char               ,      
-    memory_read_iface.out                               memory                 ,
-    channel_iface.in                                    in                     ,
-    channel_iface.out                                   out                    
+    input  wire                                         clk                             ,
+    input  wire                                         rst                             , 
+    output wire                                         accepts                         ,
+    output wire                                         running                         ,
+    output wire                                         full                            ,
+    output wire [(2**CC_ID_BITS)-1:0]                   elaborating_chars               ,
+    input  wire [(2**CC_ID_BITS)-1:0]                   cur_window_end_of_s             ,
+    input  wire [(2**CC_ID_BITS)-1:0]                   cur_window_enable               ,
+    input  wire [(2**CC_ID_BITS)*CHARACTER_WIDTH-1  :0] cur_window                      ,
+    input  wire                                         new_char                        ,
+    //Fede 24/04/25: Performance Counter
+    output logic [FIFO_COUNT_WIDTH-1:0]                 max_fifo_data[(2**CC_ID_BITS)-1:0]   ,
+    memory_read_iface.out                               memory                          ,
+    channel_iface.in                                    in                              ,
+    channel_iface.out                                   out                             
 );
 
     vectorial_engine #(
@@ -61,8 +63,9 @@ module engine_interfaced #(
         .input_pc_latency           (in.latency                 ),
         .output_pc_valid            (out.valid                  ),
         .output_pc_and_cc_id        (out.data                   ),
-        .output_pc_ready            (out.ready                  )
-        //.output_pc_latency      (out.latency ),
+        .output_pc_ready            (out.ready                  ),
+        //.output_pc_latency        (out.latency                ),
+        .max_fifo_data              (max_fifo_data              )
         
     );
     //Unused input

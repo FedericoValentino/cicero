@@ -312,6 +312,19 @@ module AXI_top_tb_from_compiled();
     end
     endtask
 
+    task get_fifo_sizing_report(input logic[REG_WIDTH-1: 0] fifoSelector, 
+                                output logic[REG_WIDTH-1: 0] fifoSize);
+    begin
+        data_in_register          <= fifoSelector;
+        @(posedge clk);
+        cmd_register              <= CMD_READ_FIFO_COUNT;
+        @(posedge clk);
+        fifoSize                  = data_o_register;
+        @(posedge clk);
+        cmd_register              <= CMD_NOP;
+    end
+    endtask
+
     initial
     begin
         int fp_code , fp_string;
@@ -319,6 +332,7 @@ module AXI_top_tb_from_compiled();
         reg [REG_WIDTH-1:0] start_code  ,   end_code;
         reg [REG_WIDTH-1:0] start_string,   end_string;
         reg [REG_WIDTH-1:0] cc_taken;
+        reg [REG_WIDTH-1:0] fifoSize;
         reg                 res;
 
         clk          = 1'b0;
@@ -334,10 +348,10 @@ module AXI_top_tb_from_compiled();
             @(posedge clk);
         
         //1.write code
-        fp_code= $fopen("/home/users/andrea.somaini/src/cicero/scripts/generate_single/regex.txt","r");
+        fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
         if (fp_code==0)
         begin
-            $display("Could not open file '%s' for reading","code.csv");
+            $display("Could not open file '%s' for reading","regex.txt");
             $stop;     
         end
         start_code = 32'h0000_0000;
@@ -346,10 +360,10 @@ module AXI_top_tb_from_compiled();
         write_file(fp_code, start_code , end_code );
         
         //2, write string
-        fp_string= $fopen("/home/users/andrea.somaini/src/cicero/scripts/generate_single/input.csv","r");
+        fp_string= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/input.csv","r");
         if (fp_string==0)
         begin
-            $display("Could not open file '%s' for reading","string_ok.csv");
+            $display("Could not open file '%s' for reading","input.csv");
             $stop;     
         end
         
@@ -384,6 +398,10 @@ module AXI_top_tb_from_compiled();
         wait_result(res);
         get_cc_elapsed(cc_taken);
         $display("cc taken: %d", cc_taken);
+        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+            get_fifo_sizing_report(i, fifoSize);
+            $display("fifo %d reached size: %d", i, fifoSize);
+        end
         if( res == 1)
         begin
             $display("string accepted");

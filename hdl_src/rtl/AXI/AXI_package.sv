@@ -9,6 +9,7 @@ parameter  CMD_START                = 'h0000_0003 ;
 parameter  CMD_RESET                = 'h0000_0004 ;
 parameter  CMD_READ_ELAPSED_CLOCK   = 'h0000_0005 ;
 parameter  CMD_RESTART              = 'h0000_0006 ;
+parameter  CMD_READ_FIFO_COUNT      = 'h0000_0007 ;
 
 
 parameter  STATUS_IDLE              = 'h0000_0000 ;

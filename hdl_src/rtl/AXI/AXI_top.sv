@@ -74,7 +74,8 @@ logic                                   start_valid,start_ready, done, accept, e
 
 
 /////performance counters
-logic     [REG_WIDTH-1:0]               elapsed_cc, elapsed_cc_next;        
+logic     [REG_WIDTH-1:0]               elapsed_cc, elapsed_cc_next;
+logic     [FIFO_COUNT_WIDTH-1:0]        max_fifo_data[(2**CC_ID_BITS)-1:0];
 
 
 assign rst_master = rst || (cmd_register==CMD_RESET);
@@ -177,6 +178,13 @@ begin
         begin
             data_o_register     = elapsed_cc;
         end
+        CMD_READ_FIFO_COUNT:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = max_fifo_data[data_in_register];
+            end
+        end
         endcase
     end
     STATUS_RUNNING:
@@ -254,7 +262,8 @@ coprocessor_top#(
     .accept                 (accept                                 ),
     .error                  (error                                  ),
     .start_cc_pointer       (start_cc_pointer_register              ),
-    .end_cc_pointer         (end_cc_pointer_register                )
+    .end_cc_pointer         (end_cc_pointer_register                ),
+    .max_fifo_data          (max_fifo_data)
 );
 
 endmodule

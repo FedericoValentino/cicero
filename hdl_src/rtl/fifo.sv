@@ -24,7 +24,8 @@ module fifo #(
   output logic [DWIDTH-1:0]     dout,
   output logic                  full,
   output logic                  empty,
-  output logic [COUNT_WIDTH-1:0]data_count
+  output logic [COUNT_WIDTH-1:0]data_count,
+  output logic [COUNT_WIDTH-1:0]max_data_count
 );
 
 logic [2:0]             state_cur, state_next;
@@ -37,6 +38,8 @@ logic [COUNT_WIDTH-1:0] where_to_read;
 (* ram_style = "block" *) logic [DWIDTH-1:0]      content [(2**COUNT_WIDTH)-1:0];
 logic write_enable, read_enable;
 logic [DWIDTH-1:0] from_memory, from_din, middle, middle_next;
+//Fede 24/04/25: performance counter for keeping track of the max value reached by this FIFO
+logic [COUNT_WIDTH-1:0] max_data_count_reg;
 
 
 always_ff @( posedge clk ) begin 
@@ -45,6 +48,7 @@ always_ff @( posedge clk ) begin
         state_cur <= 3'b000;
         head      <= {(COUNT_WIDTH) {1'b0} };
         tail      <= {(COUNT_WIDTH) {1'b0} };
+        max_data_count_reg <= {(COUNT_WIDTH) {1'b0}};
     end
     else
     begin
@@ -89,7 +93,8 @@ assign from_din = din;
 //                                                   | |                             
 //                                                   | |                             
 //                                                   v |                             
-//                                                  W,R&W,_                 
+//                                                  W,R&W,_
+
 always_comb begin //create full empty signals
     data_count            = tail - head; //todo data count can be implemented with +1/-1 depending on read_en/wr_en
     head_incremented      = head + 1 ;
@@ -119,6 +124,12 @@ always_comb begin //create full empty signals
     begin
         read_enable = 1'b1;
         head_next   = head_incremented;
+    end
+
+    if(data_count > max_data_count_reg)
+    begin
+        max_data_count_reg = data_count;
+        max_data_count = data_count;
     end
     
     //little FSM to track validity of 
