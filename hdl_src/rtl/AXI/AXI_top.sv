@@ -80,7 +80,10 @@ logic     [31:0]                        cache_hits[(2**CC_ID_BITS)-1:0];
 logic     [31:0]                        cache_miss[(2**CC_ID_BITS)-1:0];   
 logic     [31: 0]                       fetch_ccs[(2 ** CC_ID_BITS) -1:0];
 logic     [31: 0]                       exe1_ccs[(2 ** CC_ID_BITS) -1:0];
-logic     [31: 0]                       exe2_ccs[(2 ** CC_ID_BITS) -1:0];  
+logic     [31: 0]                       exe2_ccs[(2 ** CC_ID_BITS) -1:0]; 
+logic     [31: 0]                       fetch_stalls[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe1_stalls[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe2_stalls[(2 ** CC_ID_BITS) -1:0]; 
 
 
 assign rst_master = rst || (cmd_register==CMD_RESET);
@@ -225,6 +228,27 @@ begin
                 data_o_register     = exe2_ccs[data_in_register];
             end
         end
+        CMD_READ_FETCH_STALLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = fetch_stalls[data_in_register];
+            end
+        end
+        CMD_READ_EXE1_STALLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe1_stalls[data_in_register];
+            end
+        end
+        CMD_READ_EXE2_STALLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe2_stalls[data_in_register];
+            end
+        end
         endcase
     end
     STATUS_RUNNING:
@@ -308,7 +332,10 @@ coprocessor_top#(
     .cache_miss             (cache_miss                             ),
     .fetch_ccs              (fetch_ccs),
     .exe1_ccs               (exe1_ccs),
-    .exe2_ccs               (exe2_ccs)
+    .exe2_ccs               (exe2_ccs),
+    .fetch_stalls           (fetch_stalls),
+    .exe1_stalls            (exe1_stalls),
+    .exe2_stalls            (exe2_stalls)
 );
 
 endmodule

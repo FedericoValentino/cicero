@@ -286,6 +286,15 @@ module AXI_top_tb_from_compiled();
     end
     endtask;
 
+    task reset();
+    begin
+        @(posedge clk)
+        cmd_register <= CMD_RESET;
+        @(posedge clk)
+        cmd_register <= CMD_NOP;
+    end
+    endtask;
+
     task wait_result(output logic accept);
     begin
         while( status_register == STATUS_RUNNING)
@@ -366,6 +375,29 @@ module AXI_top_tb_from_compiled();
     end
     endtask
 
+    task get_stalls_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                            output logic[REG_WIDTH-1: 0] fetch_stalls,
+                            output logic[REG_WIDTH-1: 0] exe1_stalls,
+                            output logic[REG_WIDTH-1: 0] exe2_stalls);
+    begin
+        data_in_register          <= coreSelector;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_FETCH_STALLS;
+        @(posedge clk)
+        fetch_stalls                 <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_EXE1_STALLS;
+        @(posedge clk)
+        exe1_stalls                  <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_READ_EXE2_STALLS;
+        @(posedge clk)
+        exe2_stalls                  <= data_o_register;
+        @(posedge clk)
+        cmd_register              <= CMD_NOP;
+    end
+    endtask
+
     initial
     begin
         int fp_code , fp_string;
@@ -381,6 +413,10 @@ module AXI_top_tb_from_compiled();
         reg [REG_WIDTH-1:0] fetch_ccs;
         reg [REG_WIDTH-1:0] exe1_ccs;
         reg [REG_WIDTH-1:0] exe2_ccs;
+
+        reg [REG_WIDTH-1:0] fetch_stalls;
+        reg [REG_WIDTH-1:0] exe1_stalls;
+        reg [REG_WIDTH-1:0] exe2_stalls;
 
         reg                 res;
 
@@ -445,12 +481,14 @@ module AXI_top_tb_from_compiled();
         start(/*start_code,*/ start_string, end_string-1);
         
         wait_result(res);
+        
         get_cc_elapsed(cc_taken);
         $display("cc taken: %d", cc_taken);
         for(int i = 0; i < 2**CC_ID_BITS; i++) begin
             get_fifo_sizing_report(i, fifoSize);
             get_hit_miss_report(i, cache_hits, cache_miss);
             get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
 
             $display("---------------------------------------------");
             $display("core         %d:", i);
@@ -461,12 +499,15 @@ module AXI_top_tb_from_compiled();
             $display("miss:         %d", cache_miss);
             $display("clock cycles per stage:");
             $display("fetch cycles: %d", fetch_ccs);
+            $display("fetch stalls: %d", fetch_stalls);
             $display("exe1  cycles: %d", exe1_ccs);
+            $display("exe1  stalls: %d", exe1_stalls);
             $display("exe2  cycles: %d", exe2_ccs);
+            $display("exe2  stalls: %d", exe2_stalls);
         end
         $display("---------------------------------------------");
 
-
+        reset();
         if( res == 1)
         begin
             $display("string accepted");

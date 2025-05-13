@@ -15,6 +15,9 @@ parameter  CMD_READ_CACHE_MISS      = 'h0000_0009 ;
 parameter  CMD_READ_FETCH_CLOCK     = 'h0000_000A ;
 parameter  CMD_READ_EXE1_CLOCK      = 'h0000_000B ;
 parameter  CMD_READ_EXE2_CLOCK      = 'h0000_000C ;
+parameter  CMD_READ_FETCH_STALLS    = 'h0000_000D ;
+parameter  CMD_READ_EXE1_STALLS     = 'h0000_000E ;
+parameter  CMD_READ_EXE2_STALLS     = 'h0000_000F ;
 
 
 parameter  STATUS_IDLE              = 'h0000_0000 ;

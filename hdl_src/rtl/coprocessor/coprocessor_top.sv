@@ -85,7 +85,10 @@ module coprocessor_top #(
     output logic [31:0]                     cache_miss[(2**CC_ID_BITS)-1:0],
     output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0]                                exe1_ccs[(2 ** CC_ID_BITS) -1:0],
-    output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0]    
+    output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                fetch_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe1_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe2_stalls[(2 ** CC_ID_BITS) -1:0]     
 );
     localparam                       CHAR_ADDR_OFFSET = $clog2(MEMORY_WIDTH/CHARACTER_WIDTH);
     localparam                       WINDOW_SIZE_IN_CHARS= 2**CC_ID_BITS; 
@@ -324,7 +327,8 @@ module coprocessor_top #(
             accept      = 1'b1;
             next_state  = CICERO_IDLE;
             //flush subcomponents (e.g. fifos inside bb)
-            subcomponent_rst = 1'b1;
+            //Removed since rst has to be issued by top level to not reset perf counters
+            //subcomponent_rst = 1'b1;
         end
         CICERO_COMPLETED_WITHOUT_ACCEPTING:
         begin
@@ -332,7 +336,8 @@ module coprocessor_top #(
             accept      = 1'b0;
             next_state  = CICERO_IDLE;
             //flush subcomponents (e.g. fifos inside bb)
-            subcomponent_rst = 1'b1;
+            //Removed since rst has to be issued by top level to not reset perf counters
+            //subcomponent_rst = 1'b1;
         end
         CICERO_ERROR:
         begin
@@ -407,7 +412,10 @@ module coprocessor_top #(
             .cache_miss                 (cache_miss                 ),
             .fetch_ccs                  (fetch_ccs),
             .exe1_ccs                   (exe1_ccs),
-            .exe2_ccs                   (exe2_ccs)
+            .exe2_ccs                   (exe2_ccs),
+            .fetch_stalls               (fetch_stalls),
+            .exe1_stalls                (exe1_stalls),
+            .exe2_stalls                (exe2_stalls)
         );
     end
     else 

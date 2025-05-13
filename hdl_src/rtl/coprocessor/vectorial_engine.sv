@@ -51,7 +51,10 @@ module vectorial_engine #(
     output logic [31: 0] cache_miss[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0] fetch_ccs[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0] exe1_ccs[(2 ** CC_ID_BITS) -1:0],
-    output logic [31: 0] exe2_ccs[(2 ** CC_ID_BITS) -1:0]
+    output logic [31: 0] exe2_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] fetch_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] exe1_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0] exe2_stalls[(2 ** CC_ID_BITS) -1:0]
 );
 
   // Number of FIFO (and cores) in this engine
@@ -100,6 +103,10 @@ module vectorial_engine #(
   logic [31:0] fetch_cycles_reg [FIFO_COUNT-1:0];
   logic [31:0] exe1_cycles_reg [FIFO_COUNT-1:0];
   logic [31:0] exe2_cycles_reg [FIFO_COUNT-1:0];
+
+  logic [31:0] fetch_stalls_reg [FIFO_COUNT-1:0];
+  logic [31:0] exe1_stalls_reg [FIFO_COUNT-1:0];
+  logic [31:0] exe2_stalls_reg [FIFO_COUNT-1:0];
 
   // The input of each arbiter
   logic [FIFO_COUNT-1:0] arbiter_in0_valid;
@@ -318,6 +325,9 @@ module vectorial_engine #(
     assign fetch_ccs[i] = fetch_cycles_reg[i];
     assign exe1_ccs[i] = exe1_cycles_reg[i];
     assign exe2_ccs[i] = exe2_cycles_reg[i];
+    assign fetch_stalls[i] = fetch_stalls_reg[i];
+    assign exe1_stalls[i] = exe1_stalls_reg[i];
+    assign exe2_stalls[i] = exe2_stalls_reg[i];
   end
 
   assign elaborating_chars = fifos_out_valid | cpu_out_is_running;
@@ -424,7 +434,11 @@ module vectorial_engine #(
         .elaborating_chars(cpu_out_elaborating_chars[i]),  // ok
         .fetch_ccs(fetch_cycles_reg[i]),
         .exe1_ccs(exe1_cycles_reg[i]),
-        .exe2_ccs(exe2_cycles_reg[i])
+        .exe2_ccs(exe2_cycles_reg[i]),
+        .fetch_stalls_cnt(fetch_stalls_reg[i]),
+        .exe1_stalls_cnt(exe1_stalls_reg[i]),
+        .exe2_stalls_cnt(exe2_stalls_reg[i])
+
     );
   end
 

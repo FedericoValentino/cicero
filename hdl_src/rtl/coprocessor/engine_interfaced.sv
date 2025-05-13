@@ -28,6 +28,9 @@ module engine_interfaced #(
     output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0]                                exe1_ccs[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                fetch_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe1_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe2_stalls[(2 ** CC_ID_BITS) -1:0],
     memory_read_iface.out                               memory                          ,
     channel_iface.in                                    in                              ,
     channel_iface.out                                   out                             
@@ -75,7 +78,10 @@ module engine_interfaced #(
         .cache_miss                 (cache_miss),
         .fetch_ccs                  (fetch_ccs),
         .exe1_ccs                   (exe1_ccs),
-        .exe2_ccs                   (exe2_ccs)
+        .exe2_ccs                   (exe2_ccs),
+        .fetch_stalls               (fetch_stalls),
+        .exe1_stalls                (exe1_stalls),
+        .exe2_stalls                (exe2_stalls)
         
     );
     //Unused input

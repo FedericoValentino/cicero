@@ -31,7 +31,10 @@ module topology_single #(
     output logic [31:0]                                     cache_miss[(2**CC_ID_BITS)-1:0],
     output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0]                                exe1_ccs[(2 ** CC_ID_BITS) -1:0],
-    output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0]   
+    output logic [31: 0]                                exe2_ccs[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                fetch_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe1_stalls[(2 ** CC_ID_BITS) -1:0],
+    output logic [31: 0]                                exe2_stalls[(2 ** CC_ID_BITS) -1:0]   
     );
     //2. provide memory access for BB (note that to create a tree of arbiters  are required 2*#BB -1 arbiters)
     memory_read_iface               #(.MEMORY_ADDR_WIDTH(MEMORY_ADDR_WIDTH), .MEMORY_WIDTH(MEMORY_WIDTH)) memory_bb[0:0]();
@@ -71,7 +74,10 @@ module topology_single #(
         .cache_miss                 (cache_miss                 ),
         .fetch_ccs                  (fetch_ccs),
         .exe1_ccs                   (exe1_ccs),
-        .exe2_ccs                   (exe2_ccs)
+        .exe2_ccs                   (exe2_ccs),
+        .fetch_stalls               (fetch_stalls),
+        .exe1_stalls                (exe1_stalls),
+        .exe2_stalls                (exe2_stalls)
     );
 
 

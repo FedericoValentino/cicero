@@ -67,8 +67,8 @@ assign hit           = (tag[cache_line_in] == tag_in && is_present[cache_line_in
 
 
 //Fede 06/05/2025 Cache PerfCounters
-logic [31:0] total_hits = 0;
-logic [31:0] total_miss = 0; 
+logic [31:0] total_hits;
+logic [31:0] total_miss; 
 
 assign cache_hits = total_hits;
 assign cache_miss = total_miss;
@@ -82,6 +82,9 @@ always_ff @( posedge clk ) begin
         begin
             is_present[i]           <= 1'b0;
         end 
+
+        total_hits = 0;
+        total_miss = 0;
 
     end
     else 

@@ -35,9 +35,14 @@ module regex_cpu_pipelined #(
     output  logic[(2**CC_ID_BITS)-1:0]      elaborating_chars,
     output  logic                           accepts,
     output  logic                           running,
+
+    //Performance counters
     output  logic[31:0]                     fetch_ccs,
     output  logic[31:0]                     exe1_ccs,
-    output  logic[31:0]                     exe2_ccs
+    output  logic[31:0]                     exe2_ccs,
+    output  logic[31:0]                     fetch_stalls_cnt,
+    output  logic[31:0]                     exe1_stalls_cnt,
+    output  logic[31:0]                     exe2_stalls_cnt
 );
     localparam C_WINDOW_SIZE_IN_CHAR = 2**CC_ID_BITS ;
     //stage status
@@ -64,13 +69,21 @@ module regex_cpu_pipelined #(
     logic [PC_WIDTH+CC_ID_BITS-1:0]   output_pc_and_cc_id;
 
     //Fede 06/05/25 Pipeline stage perf counters
-    logic [31:0] fetch_cc = 0;
-    logic [31:0] exe1_cc = 0;
-    logic [31:0] exe2_cc = 0;
+    logic [31:0] fetch_cc;
+    logic [31:0] exe1_cc;
+    logic [31:0] exe2_cc;
+
+    logic [31:0] fetch_stalls; 
+    logic [31:0] exe1_stalls; 
+    logic [31:0] exe2_stalls;
 
     assign fetch_ccs = fetch_cc;
-    assign exe1_ccs = exe2_cc;
+    assign exe1_ccs = exe1_cc;
     assign exe2_ccs = exe2_cc;
+
+    assign fetch_stalls_cnt = fetch_stalls;
+    assign exe1_stalls_cnt = exe1_stalls;
+    assign exe2_stalls_cnt = exe2_stalls;
 
      always_comb
     begin //ASSERTION CONCERNING INSTRUCTION SIZE WIDTH
@@ -95,8 +108,7 @@ module regex_cpu_pipelined #(
                  EXE2_Instr       <= {END_WITHOUT_ACCEPTING, { (INSTRUCTION_DATA_WIDTH) {1'b0}}}; 
 			FETCH_REC_Cc_id       <= {(CC_ID_BITS){1'b0}};
                  EXE1_Cc_id       <= {(CC_ID_BITS){1'b0}};          
-                 EXE2_Cc_id       <= {(CC_ID_BITS){1'b0}};                             
-            
+                 EXE2_Cc_id       <= {(CC_ID_BITS){1'b0}};
         end
         else
         begin
@@ -344,9 +356,28 @@ module regex_cpu_pipelined #(
 
     //Counter block for clock cycles per pipeline stage
     always_ff @(posedge clk) begin
-        if (FETCH_REC_Instr_valid) fetch_cc         <= fetch_cc + 1;
-        if (EXE1_Instr_valid)       exe1_cc         <= exe1_cc + 1;
-        if (EXE2_Instr_valid)       exe2_cc         <= exe2_cc + 1;
+        if(rst) begin
+            fetch_cc = 0;
+            exe1_cc = 0;
+            exe2_cc = 0;
+        end else begin
+            if (FETCH_REC_Instr_valid && FETCH_REC_not_stall) fetch_cc <= fetch_cc + 1;
+            if (EXE1_Instr_valid      && EXE1_not_stall)      exe1_cc  <= exe1_cc + 1;
+            if (EXE2_Instr_valid      && EXE2_not_stall)      exe2_cc  <= exe2_cc + 1;
+        end
+    end
+
+    //Counter block for stall cycles per pipeline stage
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            fetch_stalls <= 0;
+            exe1_stalls  <= 0;
+            exe2_stalls  <= 0;
+        end else begin
+            if (FETCH_REC_Instr_valid && !FETCH_REC_not_stall) fetch_stalls <= fetch_stalls + 1;
+            if (EXE1_Instr_valid      && !EXE1_not_stall)      exe1_stalls  <= exe1_stalls + 1;
+            if (EXE2_Instr_valid      && !EXE2_not_stall)      exe2_stalls  <= exe2_stalls + 1;
+        end
     end
 
 
