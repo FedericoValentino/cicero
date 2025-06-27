@@ -14,6 +14,7 @@ module topology_single #(
 ) (
     input   wire                                            clk,
     input   wire                                            rst,
+    input  wire                                             rst_cntrs,
     output  logic                                           any_bb_accept,
     output  logic                                           any_bb_running,
     output  logic                                           all_bb_full,     
@@ -26,7 +27,8 @@ module topology_single #(
     channel_iface.in                                        override,
     memory_read_iface.in                                    memory_cc,
     //Fede 24/04/25: Performance Counter
-    output logic [FIFO_COUNT_WIDTH-1:0]                     max_fifo_data[(2**CC_ID_BITS)-1:0],   
+    output logic [FIFO_COUNT_WIDTH-1:0]                     max_fifo_data[(2**CC_ID_BITS)-1:0],
+    output logic [FIFO_COUNT_WIDTH-1:0]                 fifo_full_events[(2**CC_ID_BITS)-1:0],   
     output logic [31:0]                                     cache_hits[(2**CC_ID_BITS)-1:0],   
     output logic [31:0]                                     cache_miss[(2**CC_ID_BITS)-1:0],
     output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
@@ -58,6 +60,7 @@ module topology_single #(
     ) anEngine(
         .clk                        (clk                        ),
         .rst                        (rst                        ),
+        .rst_cntrs                  (rst_cntrs                  ),
         .accepts                    (any_bb_accept              ),      
         .running                    (any_bb_running             ),      
         .full                       (all_bb_full                ),
@@ -70,6 +73,7 @@ module topology_single #(
         .in                         (channel_i[0].in            ),
         .out                        (channel_i[1].out           ),
         .max_fifo_data              (max_fifo_data              ),
+        .fifo_full_events           (fifo_full_events           ),
         .cache_hits                 (cache_hits                 ),
         .cache_miss                 (cache_miss                 ),
         .fetch_ccs                  (fetch_ccs),

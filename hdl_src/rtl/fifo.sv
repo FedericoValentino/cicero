@@ -18,6 +18,7 @@ module fifo #(
 )(
   input  logic                  clk,
   input  logic                  rst,
+  input  logic                  rst_cntrs,
   input  logic [DWIDTH-1:0]     din,
   input  logic                  wr_en,
   input  logic                  rd_en,
@@ -25,7 +26,8 @@ module fifo #(
   output logic                  full,
   output logic                  empty,
   output logic [COUNT_WIDTH-1:0]data_count,
-  output logic [COUNT_WIDTH-1:0]max_data_count
+  output logic [COUNT_WIDTH-1:0]max_data_count,
+  output logic [COUNT_WIDTH-1:0]fill_events
 );
 
 logic [2:0]             state_cur, state_next;
@@ -40,15 +42,20 @@ logic write_enable, read_enable;
 logic [DWIDTH-1:0] from_memory, from_din, middle, middle_next;
 //Fede 24/04/25: performance counter for keeping track of the max value reached by this FIFO
 logic [COUNT_WIDTH-1:0] max_data_count_reg;
+logic [COUNT_WIDTH-1:0] fill_events_reg;
 
 
 always_ff @( posedge clk ) begin 
     if(rst)
     begin
-        state_cur <= 3'b000;
-        head      <= {(COUNT_WIDTH) {1'b0} };
-        tail      <= {(COUNT_WIDTH) {1'b0} };
-        max_data_count_reg <= {(COUNT_WIDTH) {1'b0}};
+        state_cur           <= 3'b000;
+        head                <= {(COUNT_WIDTH) {1'b0} };
+        tail                <= {(COUNT_WIDTH) {1'b0} };
+    end
+    else if(rst_cntrs)
+    begin
+        max_data_count_reg  <= {(COUNT_WIDTH) {1'b0}};
+        fill_events_reg     <= {(COUNT_WIDTH) {1'b0}};
     end
     else
     begin
@@ -130,6 +137,11 @@ always_comb begin //create full empty signals
     begin
         max_data_count_reg = data_count;
         max_data_count = data_count;
+    end
+
+    if(full)
+    begin
+        fill_events_reg = fill_events_reg + 1;
     end
     
     //little FSM to track validity of 

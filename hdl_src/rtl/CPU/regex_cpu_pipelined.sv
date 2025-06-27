@@ -13,6 +13,7 @@ module regex_cpu_pipelined #(
 )(
     input   wire                            clk,
     input   wire                            rst, 
+    input   wire                            rst_cntrs,
     input   logic[CHARACTER_WIDTH*(2**CC_ID_BITS)-1:0]      current_characters,
     input   logic[(2**CC_ID_BITS)-1:0                ]      end_of_string,
 
@@ -356,7 +357,7 @@ module regex_cpu_pipelined #(
 
     //Counter block for clock cycles per pipeline stage
     always_ff @(posedge clk) begin
-        if(rst) begin
+        if(rst_cntrs) begin
             fetch_cc = 0;
             exe1_cc = 0;
             exe2_cc = 0;
@@ -369,7 +370,7 @@ module regex_cpu_pipelined #(
 
     //Counter block for stall cycles per pipeline stage
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (rst_cntrs) begin
             fetch_stalls <= 0;
             exe1_stalls  <= 0;
             exe2_stalls  <= 0;

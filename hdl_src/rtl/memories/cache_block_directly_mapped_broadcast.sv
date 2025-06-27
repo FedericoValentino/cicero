@@ -15,6 +15,7 @@ module cache_block_directly_mapped_broadcast #(
 )(
   input  logic                          clk,
   input  logic                          rst,
+  input  logic                          rst_cntrs,
 
   input  logic                          addr_in_valid,
   input  logic [ADDR_IN_WIDTH-1:0]      addr_in,
@@ -83,11 +84,15 @@ always_ff @( posedge clk ) begin
             is_present[i]           <= 1'b0;
         end 
 
-        total_hits = 0;
-        total_miss = 0;
+        
 
     end
-    else 
+    else if(rst_cntrs == 1'b1)
+    begin
+        total_hits = 0;
+        total_miss = 0;
+    end 
+    else
     begin
 
         cache_line_saved            <= cache_line_saved_next;

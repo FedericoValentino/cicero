@@ -18,6 +18,8 @@ parameter  CMD_READ_EXE2_CLOCK      = 'h0000_000C ;
 parameter  CMD_READ_FETCH_STALLS    = 'h0000_000D ;
 parameter  CMD_READ_EXE1_STALLS     = 'h0000_000E ;
 parameter  CMD_READ_EXE2_STALLS     = 'h0000_000F ;
+parameter  CMD_READ_FIFO_FULLS      = 'h0000_0010 ;
+parameter  CMD_RESET_PERF_CNTRS     = 'h0000_0011 ;
 
 
 parameter  STATUS_IDLE              = 'h0000_0000 ;

@@ -65,6 +65,7 @@ module coprocessor_top #(
 (
     input   logic                           clk,
     input   logic                           rst,
+    input   logic                           rst_cntrs,
 
     input   logic                           memory_ready,
     output  logic[MEMORY_ADDR_WIDTH-1:0]    memory_addr,
@@ -81,6 +82,7 @@ module coprocessor_top #(
     output  logic                           error,
     //Fede 24/04/25: Performance Counters
     output logic [FIFO_COUNT_WIDTH-1:0]     max_fifo_data[(2**CC_ID_BITS)-1:0],
+    output logic [FIFO_COUNT_WIDTH-1:0]     fifo_full_events[(2**CC_ID_BITS)-1:0],
     output logic [31:0]                     cache_hits[(2**CC_ID_BITS)-1:0],   
     output logic [31:0]                     cache_miss[(2**CC_ID_BITS)-1:0],
     output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
@@ -327,8 +329,7 @@ module coprocessor_top #(
             accept      = 1'b1;
             next_state  = CICERO_IDLE;
             //flush subcomponents (e.g. fifos inside bb)
-            //Removed since rst has to be issued by top level to not reset perf counters
-            //subcomponent_rst = 1'b1;
+            subcomponent_rst = 1'b1;
         end
         CICERO_COMPLETED_WITHOUT_ACCEPTING:
         begin
@@ -336,8 +337,7 @@ module coprocessor_top #(
             accept      = 1'b0;
             next_state  = CICERO_IDLE;
             //flush subcomponents (e.g. fifos inside bb)
-            //Removed since rst has to be issued by top level to not reset perf counters
-            //subcomponent_rst = 1'b1;
+            subcomponent_rst = 1'b1;
         end
         CICERO_ERROR:
         begin
@@ -396,6 +396,7 @@ module coprocessor_top #(
         )a_topology(
             .clk                        (clk                        ),
             .rst                        (subcomponent_rst           ),
+            .rst_cntrs                  (rst_cntrs                  ),
             .any_bb_accept              (any_bb_accept              ),
             .any_bb_running             (any_bb_running             ),
             .all_bb_full                (all_bb_full                ),
@@ -408,6 +409,7 @@ module coprocessor_top #(
             .override                   (override_pc                ),
             .memory_cc                  (memory_for_cc              ),
             .max_fifo_data              (max_fifo_data              ),
+            .fifo_full_events           (fifo_full_events           ),
             .cache_hits                 (cache_hits                 ),
             .cache_miss                 (cache_miss                 ),
             .fetch_ccs                  (fetch_ccs),

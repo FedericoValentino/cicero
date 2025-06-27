@@ -73,9 +73,12 @@ logic                                   start_valid,start_ready, done, accept, e
 //logic             [PC_WIDTH-1:0] start_pc; 
 
 
+/////Rest for performance counters
+logic                                   rst_cntrs;
 /////performance counters
 logic     [REG_WIDTH-1:0]               elapsed_cc, elapsed_cc_next;
 logic     [FIFO_COUNT_WIDTH-1:0]        max_fifo_data[(2**CC_ID_BITS)-1:0];
+logic     [FIFO_COUNT_WIDTH-1:0]        fifo_full_events[(2**CC_ID_BITS)-1:0];
 logic     [31:0]                        cache_hits[(2**CC_ID_BITS)-1:0];   
 logic     [31:0]                        cache_miss[(2**CC_ID_BITS)-1:0];   
 logic     [31: 0]                       fetch_ccs[(2 ** CC_ID_BITS) -1:0];
@@ -87,6 +90,7 @@ logic     [31: 0]                       exe2_stalls[(2 ** CC_ID_BITS) -1:0];
 
 
 assign rst_master = rst || (cmd_register==CMD_RESET);
+assign rst_cntrs = cmd_register==CMD_RESET_PERF_CNTRS;
 
 ///// Sequential logic 
 always_ff @(posedge clk) 
@@ -191,6 +195,13 @@ begin
             if(data_in_register < 2**CC_ID_BITS)
             begin
                 data_o_register     = max_fifo_data[data_in_register];
+            end
+        end
+        CMD_READ_FIFO_FULLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = fifo_full_events[data_in_register];
             end
         end
         CMD_READ_CACHE_HITS:
@@ -316,6 +327,7 @@ coprocessor_top#(
 )a_regex_coprocessor (
     .clk                    (clk                                    ),
     .rst                    (rst_master                             ),
+    .rst_cntrs              (rst_cntrs                              ),
     .memory_ready           (memory_addr_from_coprocessor_ready     ),
     .memory_addr            (memory_addr_from_coprocessor           ),
     .memory_data            (bram_r                                 ),
@@ -328,6 +340,7 @@ coprocessor_top#(
     .start_cc_pointer       (start_cc_pointer_register              ),
     .end_cc_pointer         (end_cc_pointer_register                ),
     .max_fifo_data          (max_fifo_data                          ),
+    .fifo_full_events       (fifo_full_events                       ),
     .cache_hits             (cache_hits                             ),
     .cache_miss             (cache_miss                             ),
     .fetch_ccs              (fetch_ccs),

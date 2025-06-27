@@ -322,7 +322,8 @@ module AXI_top_tb_from_compiled();
     endtask
 
     task get_fifo_sizing_report(input logic[REG_WIDTH-1: 0] fifoSelector, 
-                                output logic[REG_WIDTH-1: 0] fifoSize);
+                                output logic[REG_WIDTH-1: 0] fifoSize,
+                                output logic[REG_WIDTH-1: 0] fifoFulls);
     begin
         data_in_register          <= fifoSelector;
         @(posedge clk);
@@ -330,6 +331,11 @@ module AXI_top_tb_from_compiled();
         @(posedge clk);
         fifoSize                  = data_o_register;
         @(posedge clk);
+        cmd_register              <= CMD_READ_FIFO_FULLS;
+        @(posedge clk);
+        fifoFulls                  = data_o_register;
+        @(posedge clk);
+
         cmd_register              <= CMD_NOP;
     end
     endtask
@@ -398,6 +404,14 @@ module AXI_top_tb_from_compiled();
     end
     endtask
 
+    task reset_perf_cntrs();
+    begin
+        cmd_register              <= CMD_RESET_PERF_CNTRS;
+        @(posedge clk);
+        cmd_register              <= CMD_NOP;
+    end
+    endtask
+
     initial
     begin
         int fp_code , fp_string;
@@ -406,6 +420,7 @@ module AXI_top_tb_from_compiled();
         reg [REG_WIDTH-1:0] start_string,   end_string;
         reg [REG_WIDTH-1:0] cc_taken;
         reg [REG_WIDTH-1:0] fifoSize;
+        reg [REG_WIDTH-1:0] fifoFulls;
 
         reg [REG_WIDTH-1:0] cache_miss;
         reg [REG_WIDTH-1:0] cache_hits;
@@ -432,6 +447,7 @@ module AXI_top_tb_from_compiled();
         repeat(30)
             @(posedge clk);
         
+        reset_perf_cntrs();
         //1.write code
         fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
         if (fp_code==0)
@@ -485,7 +501,7 @@ module AXI_top_tb_from_compiled();
         get_cc_elapsed(cc_taken);
         $display("cc taken: %d", cc_taken);
         for(int i = 0; i < 2**CC_ID_BITS; i++) begin
-            get_fifo_sizing_report(i, fifoSize);
+            get_fifo_sizing_report(i, fifoSize, fifoFulls);
             get_hit_miss_report(i, cache_hits, cache_miss);
             get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
             get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
@@ -494,6 +510,7 @@ module AXI_top_tb_from_compiled();
             $display("core         %d:", i);
             $display("fifo statistics:");
             $display("max size:     %d", fifoSize);
+            $display("full events:  %d", fifoFulls);
             $display("cache statistics:");
             $display("hits:         %d", cache_hits);
             $display("miss:         %d", cache_miss);
@@ -506,6 +523,37 @@ module AXI_top_tb_from_compiled();
             $display("exe2  stalls: %d", exe2_stalls);
         end
         $display("---------------------------------------------");
+
+        reset_perf_cntrs();
+        //Performance counters have been reset, the following results should all be 0s
+        
+        get_cc_elapsed(cc_taken);
+        $display("cc taken: %d", cc_taken);
+        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+            get_fifo_sizing_report(i, fifoSize, fifoFulls);
+            get_hit_miss_report(i, cache_hits, cache_miss);
+            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
+
+            $display("---------------------------------------------");
+            $display("core         %d:", i);
+            $display("fifo statistics:");
+            $display("max size:     %d", fifoSize);
+            $display("full events:  %d", fifoFulls);
+            $display("cache statistics:");
+            $display("hits:         %d", cache_hits);
+            $display("miss:         %d", cache_miss);
+            $display("clock cycles per stage:");
+            $display("fetch cycles: %d", fetch_ccs);
+            $display("fetch stalls: %d", fetch_stalls);
+            $display("exe1  cycles: %d", exe1_ccs);
+            $display("exe1  stalls: %d", exe1_stalls);
+            $display("exe2  cycles: %d", exe2_ccs);
+            $display("exe2  stalls: %d", exe2_stalls);
+        end
+        $display("---------------------------------------------");
+
+
 
         reset();
         if( res == 1)

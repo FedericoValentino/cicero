@@ -2,10 +2,11 @@
 
 | Obiettivi | Stato  | Note |
 |---|---|---|
-| Aggiungere P.C. per tenere traccia delle dimensioni delle FIFO                        | Fatto  | Magari conviene agggiungere anche dei counter che segnano gli eventi di riempimento completo e simili |
-| Aggiungere P.C. per tenere traccia dei clock cycles per stadio della pipeline         | Fatto  | Da controllare se effettivamente è fatto bene |
+| Togliere AXI_LITE per AXI_MASTER                                                      | TODO   | Guardare repo di pulp e esempi riguardanti |
+| Aggiungere P.C. per tenere traccia delle dimensioni delle FIFO                        | Fatto  | |
+| Aggiungere P.C. per tenere traccia dei clock cycles per stadio della pipeline         | Fatto  | |
 | Aggiungere P.C. per tenere traccia del rate di cache hit e cache miss                 | Fatto  | |
-| Capire la storia del reset e come gestirlo                                            | TODO   | |
-| Determinare se conviene riscrivere il simulatore                                      | TODO   | Significherebbe però scrivere un emulatore e sarebbe complesso |
-| Capire come collegare il progetto al corso                                            | TODO   | L'idea sarebbe Hardware Security "Tenere traccia di quello che l'architettura combina"|
-| Comunicare lo stato del progetto a Cassano                                            | TODO   | Da fare ASAP |
+| Aggiunto reset solo per performance counters                                          | Fatto  | |
+| Capire come collegare il progetto al corso                                            | TODO   | L'idea sarebbe Hardware Security "Tenere traccia di quello che l'architettura combina" + Come migliorare la frequenza di scambio dati fra architettura e software |
+| Comunicare lo stato del progetto a Cassano                                            | Fatto  | |
+| Determinare se conviene riscrivere il simulatore                                      | TODO   | Da fare in futuro |

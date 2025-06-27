@@ -16,6 +16,7 @@ module vectorial_engine #(
 ) (
     input  wire                                          clk,
     input  wire                                          rst,
+    input  wire                                          rst_cntrs,
     output logic                                         accepts,              // ok
     output logic                                         running,              // ok
     output logic                                         full,                 // ok
@@ -47,6 +48,7 @@ module vectorial_engine #(
 
     //Fede 24/04/25: Performance Counter Region
     output logic [FIFO_COUNT_WIDTH-1:0] max_fifo_data[(2 ** CC_ID_BITS) -1:0],
+    output logic [FIFO_COUNT_WIDTH-1:0] fifo_full_events[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0] cache_hits[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0] cache_miss[(2 ** CC_ID_BITS) -1:0],
     output logic [31: 0] fetch_ccs[(2 ** CC_ID_BITS) -1:0],
@@ -77,7 +79,7 @@ module vectorial_engine #(
   assign fifos_out_ready_to_recv = ~fifos_out_is_full;
   logic [FIFO_COUNT_WIDTH-1:0] fifos_out_data_count[FIFO_COUNT-1:0]; // How many items are in the FIFO
   logic [FIFO_COUNT_WIDTH-1:0] fifos_out_max_data_count[FIFO_COUNT-1:0] = '{default: '0}; //Fede 24/04/25: max amount of items registered in FIFO
-
+  logic [FIFO_COUNT_WIDTH-1:0] fifos_fill_events_count[FIFO_COUNT-1:0] = '{default: '0}; //Fede 27/06/25: FIFO counter for full events
   // The input of each regex_cpu
   logic [PC_WIDTH-1:0] cpu_in_pc[FIFO_COUNT-1:0];
   logic [CC_ID_BITS-1:0] cpu_in_cc_id[FIFO_COUNT-1:0];
@@ -181,6 +183,7 @@ module vectorial_engine #(
     ) cpu_cache (
         .clk          (clk),
         .rst          (rst),
+        .rst_cntrs         (rst_cntrs),
         // Wiring the CPU to the cache
         .addr_in_valid(cpu_out_memory_valid[i]),
         .addr_in      (cpu_out_memory_addr[i]),
@@ -320,6 +323,7 @@ module vectorial_engine #(
   genvar i;
   for (i = 0; i < FIFO_COUNT; i++) begin
     assign max_fifo_data[i] = fifos_out_max_data_count[i];
+    assign fifo_full_events[i] = fifos_fill_events_count[i];
     assign cache_hits[i] =  cache_hits_reg[i];
     assign cache_miss[i] = cache_miss_reg[i];
     assign fetch_ccs[i] = fetch_cycles_reg[i];
@@ -388,6 +392,7 @@ module vectorial_engine #(
     ) fifo_cc_id (
         .clk       (clk),
         .rst       (rst),
+        .rst_cntrs         (rst_cntrs),
         .full      (fifos_out_is_full[i]),      // ok
         .din       (fifos_in_data[i]),          // ok
         .wr_en     (fifos_in_write_enable[i]),  // ok
@@ -395,7 +400,8 @@ module vectorial_engine #(
         .dout      (fifos_out_data[i]),         // ok
         .empty     (fifos_out_is_empty[i]),     // ok
         .data_count(fifos_out_data_count[i]),
-        .max_data_count(fifos_out_max_data_count[i])
+        .max_data_count(fifos_out_max_data_count[i]),
+        .fill_events(fifos_fill_events_count[i])
     );
 
     // Regex CPU
@@ -409,6 +415,7 @@ module vectorial_engine #(
     ) a_regex_cpu (
         .clk               (clk),
         .rst               (rst),
+        .rst_cntrs         (rst_cntrs),
         .current_characters(cur_window),          // ok
         .end_of_string     (cur_window_end_of_s), // ok
 

@@ -12,7 +12,8 @@ module engine_interfaced #(
     parameter  CC_ID_BITS               = 1
 ) (
     input  wire                                         clk                             ,
-    input  wire                                         rst                             , 
+    input  wire                                         rst                             ,
+    input  wire                                         rst_cntrs, 
     output wire                                         accepts                         ,
     output wire                                         running                         ,
     output wire                                         full                            ,
@@ -23,6 +24,7 @@ module engine_interfaced #(
     input  wire                                         new_char                        ,
     //Fede 24/04/25: Performance Counter
     output logic [FIFO_COUNT_WIDTH-1:0]                 max_fifo_data[(2**CC_ID_BITS)-1:0],
+    output logic [FIFO_COUNT_WIDTH-1:0]                 fifo_full_events[(2**CC_ID_BITS)-1:0],
     output logic [31:0]                                 cache_hits[(2**CC_ID_BITS)-1:0],
     output logic [31:0]                                 cache_miss[(2**CC_ID_BITS)-1:0],
     output logic [31: 0]                                fetch_ccs[(2 ** CC_ID_BITS) -1:0],
@@ -51,6 +53,7 @@ module engine_interfaced #(
     ) anEngine (
         .clk                        (clk                        ),
         .rst                        (rst                        ),
+        .rst_cntrs                  (rst_cntrs                  ),
         .accepts                    (accepts                    ),
         .running                    (running                    ),
         .full                       (full                       ),
@@ -74,6 +77,7 @@ module engine_interfaced #(
         .output_pc_ready            (out.ready                  ),
         //.output_pc_latency        (out.latency                ),
         .max_fifo_data              (max_fifo_data              ),
+        .fifo_full_events           (fifo_full_events           ),
         .cache_hits                 (cache_hits),
         .cache_miss                 (cache_miss),
         .fetch_ccs                  (fetch_ccs),
