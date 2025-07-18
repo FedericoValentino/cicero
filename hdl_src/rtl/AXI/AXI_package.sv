@@ -27,4 +27,11 @@ parameter  STATUS_RUNNING           = 'h0000_0001 ;
 parameter  STATUS_ACCEPTED          = 'h0000_0002 ;
 parameter  STATUS_REJECTED          = 'h0000_0003 ;
 parameter  STATUS_ERROR             = 'h0000_0004 ;
+
+
+parameter  DATA_IN_CHANNEL          = 'h0000_0000 ;
+parameter  ADDR_CHANNEL             = 'h0000_0001 ;
+parameter  START_CC_CHANNEL         = 'h0000_0002 ;
+parameter  END_CC_CHANNEL           = 'h0000_0003 ;
+parameter  CMD_CHANNEL              = 'h0000_0004 ;
 endpackage : AXI_package
