@@ -151,7 +151,7 @@ private:
         uint32_t addr = start_addr;
         bool first = true;
 
-        for (size_t i = 0; i < bytes.size(); i += word_size_in_bytes) 
+        for (std::size_t i = 0; i < bytes.size(); i += word_size_in_bytes) 
         {
             uint32_t word = 0;
             for (int j = 0; j < word_size_in_bytes && (i + j) < bytes.size(); ++j) 
