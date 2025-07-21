@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/feder34/git/cicero/software/build",
+  "command": "/usr/bin/c++  -I/opt/xilinx/xrt/include -I/opt/xilinx/xrt/include/experimental -std=gnu++17 -o CMakeFiles/re2_driver_xrt.dir/main.cpp.o -c /home/feder34/git/cicero/software/main.cpp",
+  "file": "/home/feder34/git/cicero/software/main.cpp",
+  "output": "CMakeFiles/re2_driver_xrt.dir/main.cpp.o"
+}
+]

@@ -1,0 +1,3 @@
+/home/feder34/git/cicero/software/build/CMakeFiles/re2_driver_xrt.dir
+/home/feder34/git/cicero/software/build/CMakeFiles/edit_cache.dir
+/home/feder34/git/cicero/software/build/CMakeFiles/rebuild_cache.dir
