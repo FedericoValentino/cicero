@@ -1,6 +1,4 @@
-#include "experimental/xrt_device.h"
-#include "experimental/xrt_ip.h"
-
+#include <vector>
 
 class re2_driver {
 public:
