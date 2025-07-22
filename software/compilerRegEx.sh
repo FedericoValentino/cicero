@@ -1,0 +1,1 @@
+python3 ../cicero_compiler_cpp/re2compiler.py -data "(a|b|c|d)(e|f|g|i)" -o regexProgram.out

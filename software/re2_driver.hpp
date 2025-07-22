@@ -135,7 +135,30 @@ public:
     }
 
     /*----------STATUS CHANGING OPERATIONS----------*/
+    void start(uint32_t start_string_address, uint32_t end_string_address)
+    {
+        write_start_cc(start_string_address);
+        write_end_cc(end_string_address);
+        write_cmd(CMD_START);
+        write_cmd(CMD_NOP);
+    }
 
+    uint32_t wait_complete()
+    {
+        auto status = read_status();
+        uint64_t count  = 0;
+        while(status == STATUS_RUNNING)
+        {
+            status = read_status();
+            count += 1;
+            if (status == STATUS_ERROR)
+            {
+                return status;
+            }
+        }
+
+        return status == STATUS_ACCEPTED;
+    }
 
 private:
     uint32_t read(uint32_t REG) {

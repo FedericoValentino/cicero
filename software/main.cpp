@@ -8,32 +8,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
+#include <cstring>
 
 #define CICERO_BASE_ADDR 0xA0000000  // Replace with actual physical base address
 #define MAP_SIZE 0x1000
-
-
-
-static void ensure_bitstream_loaded(uint32_t ip_count)
-{
-    char argv1[] = "/usr/local/share/pynq-venv/bin/python3";
-    char argv2[] = "-c";
-    char argv3[] = "from pynq import Overlay, Clocks; Overlay('../../bitstreams/NEW 8x1.bit'); Clocks.fclk0_mhz = 300;";
-    char *argv[] = {argv1, argv2, argv3, NULL};
-    close(0);
-    close(1);
-    execvp(argv[0], argv);
-}
-
-void load_bitstream(uint32_t ip_count)
-{
-    pid_t pid = fork();
-    if (!pid) {
-        ensure_bitstream_loaded(ip_count);
-        return;
-    }
-    waitpid(pid, NULL, 0);
-}
 
 void* open_device() {
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
@@ -52,29 +30,74 @@ void* open_device() {
     return base_ptr;
 }
 
+void* open_device_mock() {
+    void* mock_base = malloc(MAP_SIZE);
+    if (!mock_base) {
+        perror("Failed to allocate mock device memory");
+        exit(1);
+    }
+    memset(mock_base, 0, MAP_SIZE); // optional: initialize
+    return mock_base;
+}
 
 
-int main()
+uint32_t read_program(FILE *program, re2_driver& driver)
 {
-    //load_bitstream(1);
+    std::vector<uint16_t> code;
+    
+    while(!feof(program))
+    {
+        uint16_t currentInstr = 0;
+        fscanf(program, "%6hx\n", &currentInstr);
+        code.push_back(currentInstr);
+    }
+
+    return driver.load_code(code);
+}
+
+uint32_t read_string(char string[], uint32_t addr, re2_driver& driver)
+{
+    std::vector<uint8_t> string_chars;
+
+    for(int i = 0; ; i++)
+    {
+        char c = string[i];
+        if(c == '\0')
+        {
+            break;
+        }
+
+        string_chars.push_back(c);
+    }
+
+    driver.load_string(string_chars, addr);
+}
+
+
+int main(int argc, char* argv[])
+{
+
+    if(argc != 3)
+    {
+        std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
+    }
 
     void* base_ptr = open_device();
 
     re2_driver cicero(base_ptr);
 
-    std::cout<<"Current Command: "<<cicero.read_cmd()<<std::endl;
+    FILE *program = fopen(argv[1], "r");
 
-    cicero.write_cmd(re2_driver::CMD_NOP);
+    uint32_t code_end_addr = read_program(program, cicero);
 
-    std::cout<<"Current Command: "<<cicero.read_cmd()<<std::endl;
+    uint32_t string_end_addr = read_string(argv[2], code_end_addr+4, cicero);
 
-    cicero.write_cmd(re2_driver::CMD_WRITE);
 
-    std::cout<<"Current Command: "<<cicero.read_cmd()<<std::endl;
+    cicero.start(code_end_addr+4, string_end_addr);
 
-    cicero.write_cmd(re2_driver::CMD_NOP);
+    uint32_t status = cicero.wait_complete();
 
-    std::cout<<"Current Command: "<<cicero.read_cmd()<<std::endl;
+    std::cout<<"String accepted? "<<status<<std::endl;
 
     return 0;
 }
