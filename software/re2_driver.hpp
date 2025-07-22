@@ -215,6 +215,7 @@ public:
         std::cout<<"String ends at: "<<std::hex<<end_string_address<<std::endl;
         write_start_cc(start_string_address);
         write_end_cc(end_string_address);
+        std::cout<<"Status before starting is: "<<std::hex<<read_status()<<std::endl;
         write_cmd(CMD_START);
         std::cout<<"Current command is: "<<std::hex<<read_cmd()<<std::endl;
         write_cmd(CMD_NOP);
