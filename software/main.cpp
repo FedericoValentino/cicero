@@ -70,7 +70,7 @@ uint32_t read_string(char string[], uint32_t addr, re2_driver& driver)
         string_chars.push_back(c);
     }
 
-    driver.load_string(string_chars, addr);
+    return driver.load_string(string_chars, addr);
 }
 
 
