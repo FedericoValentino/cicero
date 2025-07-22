@@ -92,7 +92,8 @@ int main(int argc, char* argv[])
 
     uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
 
-
+    cicero.verify_code();
+    
     cicero.start(code_end_addr, string_end_addr);
 
     uint32_t status = cicero.wait_complete();

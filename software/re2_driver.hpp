@@ -49,6 +49,8 @@ public:
 
     void* base_addr;
 
+    std::vector<uint32_t> current_code;
+
     re2_driver(void* base_addr)
     {
         this->base_addr = base_addr;
@@ -122,6 +124,7 @@ public:
     {
         std::vector<uint8_t> bytes;
         for (uint16_t word : code) {
+            current_code.push_back(word);
             bytes.push_back(word & 0xFF);
             bytes.push_back((word >> 8) & 0xFF);
         }
@@ -133,6 +136,24 @@ public:
     {
         uint32_t aligned = ((start_addr + window_size_in_chars - 1) / window_size_in_chars) * window_size_in_chars;
         return write_bytes(str, aligned);
+    }
+
+
+    void verify_code()
+    {
+        uint32_t current_address = 0;
+
+        for(uint16_t word : current_code)
+        {
+            write_address(current_address);
+            write_cmd(CMD_READ);
+
+            if(word != read_data_o())
+            {
+                std::cout<<"MISMATCH IN CODE! EXPECTED " << std::hex<< word<< std::dec<< " INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+            }
+        }
+        
     }
 
     /*----------STATUS CHANGING OPERATIONS----------*/
