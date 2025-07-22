@@ -187,6 +187,8 @@ private:
                 write_cmd(CMD_WRITE);
                 first = false;
             }
+            std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
+            std::cout<<"At Address:"<<std::hex<<addr<<std::endl;
             addr += word_size_in_bytes;
         }
 
