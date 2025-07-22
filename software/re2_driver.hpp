@@ -68,7 +68,7 @@ public:
 
     void write_address(uint32_t VAL)
     {
-        write(ADDRESS, VAL);
+        write(ADDRESS, VAL / word_size_in_bytes);
     }
 
     uint32_t read_address()
