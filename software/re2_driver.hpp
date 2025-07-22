@@ -240,6 +240,11 @@ public:
             {
                 return status;
             }
+            if(count > 10)
+            {
+                std::cout<<"Error while waiting"<<std::endl;
+                break;
+            }
         }
 
         return status == STATUS_ACCEPTED;
