@@ -143,6 +143,7 @@ public:
         write_start_cc(start_string_address);
         write_end_cc(end_string_address);
         write_cmd(CMD_START);
+        wait_for(STATUS_RUNNING);
         write_cmd(CMD_NOP);
     }
 
@@ -162,6 +163,11 @@ public:
         }
 
         return status == STATUS_ACCEPTED;
+    }
+
+    void wait_for(uint32_t STATUS)
+    {
+        while(read_status() != STATUS);
     }
 
 private:
