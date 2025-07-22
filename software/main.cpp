@@ -90,10 +90,10 @@ int main(int argc, char* argv[])
 
     uint32_t code_end_addr = read_program(program, cicero);
 
-    uint32_t string_end_addr = read_string(argv[2], code_end_addr+4, cicero);
+    uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
 
 
-    cicero.start(code_end_addr+4, string_end_addr);
+    cicero.start(code_end_addr, string_end_addr);
 
     uint32_t status = cicero.wait_complete();
 
