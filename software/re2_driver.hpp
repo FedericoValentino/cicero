@@ -148,10 +148,10 @@ public:
             write_address(current_address);
             write_cmd(CMD_READ);
 
-            if(word != read_data_o())
-            {
-                std::cout<<"MISMATCH IN CODE! EXPECTED " << std::hex<< word<< std::dec<< " INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
-            }
+            std::cout<<"MISMATCH IN CODE! EXPECTED " << std::hex<< word<< std::dec<< " INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+
+            write_cmd(CMD_NOP);
+            current_address += word_size_in_bytes;
         }
         
     }
