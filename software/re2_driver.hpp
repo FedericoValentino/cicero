@@ -51,6 +51,9 @@ public:
 
     std::vector<uint32_t> current_code;
 
+    std::vector<uint8_t> current_string;
+    uint32_t start_string_addr;
+
     re2_driver(void* base_addr)
     {
         this->base_addr = base_addr;
@@ -134,6 +137,12 @@ public:
 
     uint32_t load_string(const std::vector<uint8_t>& str, uint32_t start_addr) 
     {
+        start_string_addr = start_addr;
+        for (uint8_t byte : str) {
+            current_string.push_back(byte);
+        }
+
+
         uint32_t aligned = ((start_addr + window_size_in_chars - 1) / window_size_in_chars) * window_size_in_chars;
         return write_bytes(str, aligned);
     }
@@ -145,22 +154,58 @@ public:
 
         for(int i = 0;  i< current_code.size(); i+=2)
         {
-            uint32_t bigword = 0x0;
-
             uint32_t word1 = current_code[i];
             uint32_t word2 = current_code[i+1];
 
-            bigword=(0x00000000 | word1) | (word2 << 16);
+            uint32_t bigword = (0x00000000 | word1) | (word2 << 16);
 
             write_address(current_address);
             write_cmd(CMD_READ);
 
-            std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+            uint32_t code_word = read_data_o();
+
+            if(code_word != bigword)
+            {
+                std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+                exit(-1);
+            }
 
             write_cmd(CMD_NOP);
             current_address += word_size_in_bytes;
         }
-        
+
+        std::cout<<"CODE VERIFIED"<<std::endl;
+    }
+
+
+    void verify_string()
+    {
+        uint32_t current_address = start_string_addr;
+
+        for(int i = 0; i < current_string.size(); i+=4)
+        {
+            uint32_t bigword = 0x00000000;
+
+            for(int j = 0 ; j < current_string.size() && j < 4; j++)
+            {
+                bigword = bigword | (current_string[i+j] << 8*j);
+            }
+
+            write_address(current_address);
+            write_cmd(CMD_READ);
+
+            uint32_t code_word = read_data_o();
+
+            if(code_word != bigword)
+            {
+                std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+                exit(-1);
+            }
+
+            write_cmd(CMD_NOP);
+            current_address += word_size_in_bytes;
+        }
+        std::cout<<"STRING VERIFIED"<<std::endl;
     }
 
     /*----------STATUS CHANGING OPERATIONS----------*/

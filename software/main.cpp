@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
         std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
     }
 
-    void* base_ptr = open_device();
+    void* base_ptr = open_device_mock();
 
     re2_driver cicero(base_ptr);
 
@@ -93,6 +93,8 @@ int main(int argc, char* argv[])
     uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
 
     cicero.verify_code();
+
+    cicero.verify_string();
     
     cicero.start(code_end_addr, string_end_addr);
 
