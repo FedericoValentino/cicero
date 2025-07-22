@@ -86,6 +86,8 @@ int main(int argc, char* argv[])
 
     re2_driver cicero(base_ptr);
 
+    cicero.write_cmd(re2_driver::CMD_RESTART);
+
     FILE *program = fopen(argv[1], "r");
 
     uint32_t code_end_addr = read_program(program, cicero);
