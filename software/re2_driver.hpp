@@ -143,7 +143,7 @@ public:
         write_start_cc(start_string_address);
         write_end_cc(end_string_address);
         write_cmd(CMD_START);
-        std::cout<<"Current command is: "<<std::hex<<end_string_address<<std::endl;
+        std::cout<<"Current command is: "<<std::hex<<read_cmd()<<std::endl;
         write_cmd(CMD_NOP);
     }
 
