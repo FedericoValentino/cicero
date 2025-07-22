@@ -10,7 +10,7 @@
 #include <cstdint>
 
 #define CICERO_BASE_ADDR 0xA0000000  // Replace with actual physical base address
-#define MAP_SIZE 0x100
+#define MAP_SIZE 0x1000
 
 
 
@@ -56,7 +56,7 @@ void* open_device() {
 
 int main()
 {
-    load_bitstream(1);
+    //load_bitstream(1);
 
     void* base_ptr = open_device();
 
