@@ -1,5 +1,6 @@
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 class re2_driver {
 public:
