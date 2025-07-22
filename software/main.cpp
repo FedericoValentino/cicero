@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
         std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
     }
 
-    void* base_ptr = open_device_mock();
+    void* base_ptr = open_device();
 
     re2_driver cicero(base_ptr);
 
