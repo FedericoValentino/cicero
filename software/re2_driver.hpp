@@ -223,11 +223,12 @@ public:
     uint32_t wait_complete()
     {
         auto status = read_status();
+        std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
         uint64_t count  = 0;
         while(status == STATUS_RUNNING)
         {
-            std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
             status = read_status();
+            std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
             count += 1;
             if (status == STATUS_ERROR)
             {
