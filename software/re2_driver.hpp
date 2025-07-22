@@ -211,13 +211,20 @@ public:
     /*----------STATUS CHANGING OPERATIONS----------*/
     void start(uint32_t start_string_address, uint32_t end_string_address)
     {
+        write_cmd(CMD_RESTART);
+        
+        wait_for(STATUS_IDLE);
+
         std::cout<<"String starts at: "<<std::hex<<start_string_address<<std::endl;
         std::cout<<"String ends at: "<<std::hex<<end_string_address<<std::endl;
         write_start_cc(start_string_address);
         write_end_cc(end_string_address);
+
         std::cout<<"Status before starting is: "<<std::hex<<read_status()<<std::endl;
+
         write_cmd(CMD_START);
         std::cout<<"Current command is: "<<std::hex<<read_cmd()<<std::endl;
+        
         write_cmd(CMD_NOP);
     }
 
