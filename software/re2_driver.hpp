@@ -73,7 +73,7 @@ public:
 
     uint32_t read_address()
     {
-        return read(DATA_IN);
+        return read(ADDRESS);
     }
 
     void write_start_cc(uint32_t VAL)
@@ -139,11 +139,11 @@ public:
     void start(uint32_t start_string_address, uint32_t end_string_address)
     {
         std::cout<<"String starts at: "<<std::hex<<start_string_address<<std::endl;
-        std::cout<<"String ends at:"<<std::hex<<end_string_address<<std::endl;
+        std::cout<<"String ends at: "<<std::hex<<end_string_address<<std::endl;
         write_start_cc(start_string_address);
         write_end_cc(end_string_address);
         write_cmd(CMD_START);
-        wait_for(STATUS_RUNNING);
+        std::cout<<"Current command is: "<<std::hex<<end_string_address<<std::endl;
         write_cmd(CMD_NOP);
     }
 
