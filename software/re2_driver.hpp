@@ -143,12 +143,20 @@ public:
     {
         uint32_t current_address = 0;
 
-        for(uint16_t word : current_code)
+        for(int i = 0;  i< current_code.size(); i+=2)
         {
+            uint32_t bigword = 0xFFFFFFFF;
+
+            uint16_t word1 = current_code[i];
+            uint16_t word2 = current_code[i+1];
+
+            bigword = bigword & word1;
+            bigword = bigword & (word2<<16);
+
             write_address(current_address);
             write_cmd(CMD_READ);
 
-            std::cout<<"MISMATCH IN CODE! EXPECTED " << std::hex<< word<< std::dec<< " INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+            std::cout<<"MISMATCH IN CODE! EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
 
             write_cmd(CMD_NOP);
             current_address += word_size_in_bytes;
