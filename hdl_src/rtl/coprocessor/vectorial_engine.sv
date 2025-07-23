@@ -167,8 +167,8 @@ module vectorial_engine #(
   logic [MEMORY_ADDR_WIDTH-1:0] cache_out_addr[FIFO_COUNT-1:0];
   logic cache_in_ready[FIFO_COUNT-1:0];
   //Fede 06/05/2024: cache perf counters
-  logic [31:0] cache_miss_reg[FIFO_COUNT-1:0] = '{default: '0};
-  logic [31:0] cache_hits_reg[FIFO_COUNT-1:0] = '{default: '0};
+  logic [31:0] cache_miss_reg[FIFO_COUNT-1:0];
+  logic [31:0] cache_hits_reg[FIFO_COUNT-1:0];
 
 
   // For each CPU, we have a cache block. We the caches "miss", they need to be arbitrated
