@@ -3,7 +3,7 @@
     and optionally runs the synthesis.
 '''
 
-VIVADO_SOURCE = "/new_xilinx/software/Vivado/2019.2/settings64.sh"
+VIVADO_SOURCE = "/tools/Xilinx/Vivado/2024.1/settings64.sh"
 
 import os
 import shutil
@@ -67,9 +67,9 @@ for i in range(3):
 
 def get_configuration_name(cc_id_bits, bb_n, is_vectorial):
     if is_vectorial:
-        return  f"NEW {2**cc_id_bits}x{bb_n}"
+        return  f"NEW_{2**cc_id_bits}x{bb_n}"
     else:
-        return f"OLD 1x{bb_n}"
+        return f"OLD_1x{bb_n}"
 
 def process_configuration(configuration):
     try:
