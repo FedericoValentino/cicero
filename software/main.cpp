@@ -86,8 +86,10 @@ int main(int argc, char* argv[])
 
     re2_driver cicero(base_ptr);
 
+    //Reset cicero
     cicero.write_cmd(re2_driver::CMD_RESTART);
 
+    //Insert data
     FILE *program = fopen(argv[1], "r");
 
     uint32_t code_end_addr = read_program(program, cicero);
@@ -98,11 +100,15 @@ int main(int argc, char* argv[])
 
     cicero.verify_string();
     
+    //send start signal
     cicero.start(code_end_addr, string_end_addr);
+
 
     uint32_t status = cicero.wait_complete();
 
     std::cout<<"String accepted? "<<status<<std::endl;
+
+    cicero.write_cmd(re2_driver::CMD_RESET);
 
     cicero.read_performance_counters();
 
