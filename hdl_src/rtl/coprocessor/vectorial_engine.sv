@@ -78,8 +78,8 @@ module vectorial_engine #(
   logic [FIFO_COUNT-1:0] fifos_out_ready_to_recv;
   assign fifos_out_ready_to_recv = ~fifos_out_is_full;
   logic [FIFO_COUNT_WIDTH-1:0] fifos_out_data_count[FIFO_COUNT-1:0]; // How many items are in the FIFO
-  logic [FIFO_COUNT_WIDTH-1:0] fifos_out_max_data_count[FIFO_COUNT-1:0] = '{default: '0}; //Fede 24/04/25: max amount of items registered in FIFO
-  logic [FIFO_COUNT_WIDTH-1:0] fifos_fill_events_count[FIFO_COUNT-1:0] = '{default: '0}; //Fede 27/06/25: FIFO counter for full events
+  logic [FIFO_COUNT_WIDTH-1:0] fifos_out_max_data_count[FIFO_COUNT-1:0]; //Fede 24/04/25: max amount of items registered in FIFO
+  logic [FIFO_COUNT_WIDTH-1:0] fifos_fill_events_count[FIFO_COUNT-1:0]; //Fede 27/06/25: FIFO counter for full events
   // The input of each regex_cpu
   logic [PC_WIDTH-1:0] cpu_in_pc[FIFO_COUNT-1:0];
   logic [CC_ID_BITS-1:0] cpu_in_cc_id[FIFO_COUNT-1:0];

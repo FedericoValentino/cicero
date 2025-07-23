@@ -8,7 +8,7 @@ public:
 
     static constexpr int word_size_in_bytes = 4;
     static constexpr int window_size_in_chars = 32;
-    static constexpr int CC_ID_BITS = 2;
+    static constexpr int CC_ID_BITS = 3;
 
     enum REGISTERS{
         DATA_IN     = 0x00,

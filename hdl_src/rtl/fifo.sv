@@ -44,6 +44,8 @@ logic [DWIDTH-1:0] from_memory, from_din, middle, middle_next;
 logic [COUNT_WIDTH-1:0] max_data_count_reg;
 logic [COUNT_WIDTH-1:0] fill_events_reg;
 
+assign max_data_count = max_data_count_reg;
+assign fill_events = fill_events_reg;
 
 always_ff @( posedge clk ) begin 
     if(rst)
@@ -63,6 +65,15 @@ always_ff @( posedge clk ) begin
         tail      <= tail_next;
         state_cur <= state_next;
         middle    <= middle_next;
+
+        if(data_count > max_data_count_reg)
+            begin
+                max_data_count_reg = data_count;
+            end
+        if(full)
+            begin
+                fill_events_reg = fill_events_reg + 1;
+            end
     end
 end
 
@@ -102,6 +113,8 @@ assign from_din = din;
 //                                                   v |                             
 //                                                  W,R&W,_
 
+
+
 always_comb begin //create full empty signals
     data_count            = tail - head; //todo data count can be implemented with +1/-1 depending on read_en/wr_en
     head_incremented      = head + 1 ;
@@ -133,17 +146,7 @@ always_comb begin //create full empty signals
         head_next   = head_incremented;
     end
 
-    if(data_count > max_data_count_reg)
-    begin
-        max_data_count_reg = data_count;
-        max_data_count = data_count;
-    end
 
-    if(full)
-    begin
-        fill_events_reg = fill_events_reg + 1;
-    end
-    
     //little FSM to track validity of 
     //middle register and memory
     //bit states represent: register, memory_output, memory_content 
