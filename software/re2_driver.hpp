@@ -1,12 +1,14 @@
 #include <vector>
 #include <cstdint>
 #include <iostream>
+#include <stdio.h>
 
 class re2_driver {
 public:
 
     static constexpr int word_size_in_bytes = 4;
     static constexpr int window_size_in_chars = 32;
+    static constexpr int CC_ID_BITS = 2;
 
     enum REGISTERS{
         DATA_IN     = 0x00,
@@ -119,6 +121,51 @@ public:
     uint32_t read_data_o()
     {
         return read(DATA_OUT);
+    }
+
+    void read_performance_counters()
+    {
+        uint32_t fifoSize;
+        uint32_t fifoFulls;
+
+        uint32_t cache_hits;
+        uint32_t cache_miss;
+
+        uint32_t fetch_ccs;
+        uint32_t exe1_ccs;
+        uint32_t exe2_ccs;
+
+        uint32_t fetch_stalls;
+        uint32_t exe1_stalls;
+        uint32_t exe2_stalls;
+
+
+
+        for(int i = 0; i < CC_ID_BITS; i++)
+        {
+            get_fifo_sizing_report(i, fifoSize, fifoFulls);
+            get_hit_miss_report(i, cache_hits, cache_miss);
+            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
+
+
+            printf("---------------------------------------------");
+            printf("core         %d:", i);
+            printf("fifo statistics:");
+            printf("max size:     %d", fifoSize);
+            printf("full events:  %d", fifoFulls);
+            printf("cache statistics:");
+            printf("hits:         %d", cache_hits);
+            printf("miss:         %d", cache_miss);
+            printf("clock cycles per stage:");
+            printf("fetch cycles: %d", fetch_ccs);
+            printf("fetch stalls: %d", fetch_stalls);
+            printf("exe1  cycles: %d", exe1_ccs);
+            printf("exe1  stalls: %d", exe1_stalls);
+            printf("exe2  cycles: %d", exe2_ccs);
+            printf("exe2  stalls: %d", exe2_stalls);
+        }
+        printf("---------------------------------------------");
     }
 
     /*----------LOADING CODE AND STRING----------*/
@@ -289,6 +336,54 @@ private:
 
         write_cmd(CMD_NOP);
         return addr;
+    }
+
+    void get_fifo_sizing_report(uint32_t i, uint32_t& fifoSize, uint32_t& fifoFulls)
+    {
+        write_data_in(i);
+        write_cmd(CMD_READ_FIFO_COUNT);
+        fifoSize = read_data_o();
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ_FIFO_FULLS);
+        fifoFulls = read_data_o();
+    }
+
+    void get_hit_miss_report(uint32_t i, uint32_t& cache_hits, uint32_t& cache_miss)
+    {
+        write_data_in(i);
+        write_cmd(CMD_READ_CACHE_HITS);
+        cache_hits = read_data_o();
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ_CACHE_MISS);
+        cache_miss = read_data_o();
+    }
+
+    void get_cycles_report(uint32_t i, uint32_t& fetch_ccs, uint32_t& exe1_ccs, uint32_t& exe2_ccs)
+    {
+        write_data_in(i);
+        write_cmd(CMD_READ_FETCH_CLOCK);
+        fetch_ccs = read_data_o();
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ_EXE1_CLOCK);
+        exe1_ccs = read_data_o();
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ_EXE2_CLOCK);
+        exe2_ccs = read_data_o();
+        write_cmd(CMD_NOP);
+    }
+
+    void get_stalls_report(uint32_t i, uint32_t& fetch_stalls, uint32_t& exe1_stalls, uint32_t& exe2_stalls)
+    {
+        write_data_in(i);
+        write_cmd(CMD_READ_FETCH_STALLS);
+        fetch_stalls = read_data_o();
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ_EXE1_STALLS);
+        exe1_stalls = read_data_o();
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ_EXE2_STALLS);
+        exe2_stalls = read_data_o();
+        write_cmd(CMD_NOP);
     }
 
 };
