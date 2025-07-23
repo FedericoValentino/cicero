@@ -104,5 +104,7 @@ int main(int argc, char* argv[])
 
     std::cout<<"String accepted? "<<status<<std::endl;
 
+    cicero.read_performance_counters();
+
     return 0;
 }
