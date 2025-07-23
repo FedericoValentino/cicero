@@ -346,6 +346,7 @@ private:
         write_cmd(CMD_NOP);
         write_cmd(CMD_READ_FIFO_FULLS);
         fifoFulls = read_data_o();
+        write_cmd(CMD_NOP);
     }
 
     void get_hit_miss_report(uint32_t i, uint32_t& cache_hits, uint32_t& cache_miss)
@@ -356,6 +357,7 @@ private:
         write_cmd(CMD_NOP);
         write_cmd(CMD_READ_CACHE_MISS);
         cache_miss = read_data_o();
+        write_cmd(CMD_NOP);
     }
 
     void get_cycles_report(uint32_t i, uint32_t& fetch_ccs, uint32_t& exe1_ccs, uint32_t& exe2_ccs)
