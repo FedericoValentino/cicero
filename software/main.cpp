@@ -108,9 +108,9 @@ int main(int argc, char* argv[])
 
     std::cout<<"String accepted? "<<status<<std::endl;
 
-    cicero.write_cmd(re2_driver::CMD_RESET);
-
     cicero.read_performance_counters();
+
+    cicero.write_cmd(re2_driver::CMD_RESET);
 
     return 0;
 }
