@@ -149,23 +149,23 @@ public:
             get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
 
 
-            printf("---------------------------------------------");
-            printf("core         %d:", i);
-            printf("fifo statistics:");
-            printf("max size:     %d", fifoSize);
-            printf("full events:  %d", fifoFulls);
-            printf("cache statistics:");
-            printf("hits:         %d", cache_hits);
-            printf("miss:         %d", cache_miss);
-            printf("clock cycles per stage:");
-            printf("fetch cycles: %d", fetch_ccs);
-            printf("fetch stalls: %d", fetch_stalls);
-            printf("exe1  cycles: %d", exe1_ccs);
-            printf("exe1  stalls: %d", exe1_stalls);
-            printf("exe2  cycles: %d", exe2_ccs);
-            printf("exe2  stalls: %d", exe2_stalls);
+            printf("---------------------------------------------\n");
+            printf("core         %d:\n", i);
+            printf("fifo statistics:\n");
+            printf("max size:     %d\n", fifoSize);
+            printf("full events:  %d\n", fifoFulls);
+            printf("cache statistics:\n");
+            printf("hits:         %d\n", cache_hits);
+            printf("miss:         %d\n", cache_miss);
+            printf("clock cycles per stage:\n");
+            printf("fetch cycles: %d\n", fetch_ccs);
+            printf("fetch stalls: %d\n", fetch_stalls);
+            printf("exe1  cycles: %d\n", exe1_ccs);
+            printf("exe1  stalls: %d\n", exe1_stalls);
+            printf("exe2  cycles: %d\n", exe2_ccs);
+            printf("exe2  stalls: %d\n", exe2_stalls);
         }
-        printf("---------------------------------------------");
+        printf("---------------------------------------------\n");
     }
 
     /*----------LOADING CODE AND STRING----------*/
