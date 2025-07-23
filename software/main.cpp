@@ -113,8 +113,6 @@ int main(int argc, char* argv[])
     cicero.write_cmd(re2_driver::CMD_RESET);
 
     cicero.write_cmd(re2_driver::CMD_NOP);
-
-    cicero.read_performance_counters();
-
+    
     return 0;
 }
