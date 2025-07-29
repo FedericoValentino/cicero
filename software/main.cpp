@@ -112,6 +112,9 @@ int main(int argc, char* argv[])
 
     cicero.write_cmd(re2_driver::CMD_RESET);
 
+    //Resetting means the Perf counters will still be available to be read
+    cicero.read_performance_counters();
+
     cicero.write_cmd(re2_driver::CMD_NOP);
     
     return 0;

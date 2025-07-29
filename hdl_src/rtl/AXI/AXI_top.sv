@@ -98,6 +98,9 @@ begin
     if(rst_master == 1'b1)
     begin
         status_register <= STATUS_IDLE;
+    end
+    else if(rst_cntrs == 1'b1)
+    begin
         elapsed_cc      <= {(REG_WIDTH){1'b0}};
     end
     else

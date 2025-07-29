@@ -125,6 +125,7 @@ public:
 
     void read_performance_counters()
     {
+        uint32_t elapsed_ccs;
         uint32_t fifoSize;
         uint32_t fifoFulls;
 
@@ -140,7 +141,8 @@ public:
         uint32_t exe2_stalls;
 
 
-
+        get_elapsed_clock_cycles_report(elapsed_ccs);
+        printf("clock cycles elapsed         %d:\n", elapsed_ccs);
         for(int i = 0; i < CC_ID_BITS; i++)
         {
             get_fifo_sizing_report(i, fifoSize, fifoFulls);
@@ -385,6 +387,13 @@ private:
         write_cmd(CMD_NOP);
         write_cmd(CMD_READ_EXE2_STALLS);
         exe2_stalls = read_data_o();
+        write_cmd(CMD_NOP);
+    }
+
+    void get_elapsed_clock_cycles_report(uint32_t& elapsed_ccs)
+    {
+        write_cmd(CMD_READ_ELAPSED_CLOCK);
+        elapsed_ccs = read_data_o();
         write_cmd(CMD_NOP);
     }
 
