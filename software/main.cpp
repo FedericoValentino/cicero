@@ -30,17 +30,6 @@ void* open_device() {
     return base_ptr;
 }
 
-void* open_device_mock() {
-    void* mock_base = malloc(MAP_SIZE);
-    if (!mock_base) {
-        perror("Failed to allocate mock device memory");
-        exit(1);
-    }
-    memset(mock_base, 0, MAP_SIZE); // optional: initialize
-    return mock_base;
-}
-
-
 uint32_t read_program(FILE *program, re2_driver& driver)
 {
     std::vector<uint16_t> code;
@@ -73,19 +62,8 @@ uint32_t read_string(char string[], uint32_t addr, re2_driver& driver)
     return driver.load_string(string_chars, addr);
 }
 
-
-int main(int argc, char* argv[])
+uint32_t start_cicero(re2_driver& cicero, char* argv[])
 {
-
-    if(argc != 3)
-    {
-        std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
-    }
-
-    void* base_ptr = open_device();
-
-    re2_driver cicero(base_ptr);
-
     //Reset cicero
     cicero.write_cmd(re2_driver::CMD_RESTART);
 
@@ -104,16 +82,29 @@ int main(int argc, char* argv[])
     cicero.start(code_end_addr, string_end_addr);
 
 
-    uint32_t status = cicero.wait_complete();
+    return cicero.wait_complete();
+}
+
+
+int main(int argc, char* argv[])
+{
+
+    if(argc != 3)
+    {
+        std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
+    }
+
+    void* base_ptr = open_device();
+
+    re2_driver cicero(base_ptr);
+
+    uint32_t status = start_cicero(cicero, argv);
 
     std::cout<<"String accepted? "<<status<<std::endl;
 
     cicero.read_performance_counters();
 
     cicero.write_cmd(re2_driver::CMD_RESET);
-
-    //Resetting means the Perf counters will still be available to be read
-    cicero.read_performance_counters();
 
     cicero.write_cmd(re2_driver::CMD_NOP);
     

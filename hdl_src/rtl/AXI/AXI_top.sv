@@ -90,7 +90,7 @@ logic     [31: 0]                       exe2_stalls[(2 ** CC_ID_BITS) -1:0];
 
 
 assign rst_master = rst || (cmd_register==CMD_RESET);
-assign rst_cntrs = cmd_register==CMD_RESET_PERF_CNTRS;
+assign rst_cntrs = rst || (cmd_register==CMD_RESET_PERF_CNTRS);
 
 ///// Sequential logic 
 always_ff @(posedge clk) 
