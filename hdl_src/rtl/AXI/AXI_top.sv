@@ -166,6 +166,76 @@ begin
             begin
                 data_o_register     = elapsed_cc;
             end
+            CMD_READ_FIFO_COUNT:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = max_fifo_data[data_in_register];
+                end
+            end
+            CMD_READ_FIFO_FULLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = fifo_full_events[data_in_register];
+                end
+            end
+            CMD_READ_CACHE_HITS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = cache_hits[data_in_register];
+                end
+            end
+            CMD_READ_CACHE_MISS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = cache_miss[data_in_register];
+                end
+            end
+            CMD_READ_FETCH_CLOCK:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = fetch_ccs[data_in_register];
+                end
+            end
+            CMD_READ_EXE1_CLOCK:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe1_ccs[data_in_register];
+                end
+            end
+            CMD_READ_EXE2_CLOCK:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe2_ccs[data_in_register];
+                end
+            end
+            CMD_READ_FETCH_STALLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = fetch_stalls[data_in_register];
+                end
+            end
+            CMD_READ_EXE1_STALLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe1_stalls[data_in_register];
+                end
+            end
+            CMD_READ_EXE2_STALLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe2_stalls[data_in_register];
+                end
+            end
         endcase
     end
     STATUS_ACCEPTED, STATUS_REJECTED, STATUS_ERROR:

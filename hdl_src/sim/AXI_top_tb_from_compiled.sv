@@ -411,6 +411,14 @@ module AXI_top_tb_from_compiled();
         cmd_register              <= CMD_NOP;
     end
     endtask
+    
+    task reset_cicero();
+    begin
+        cmd_register              <= CMD_RESET;
+        @(posedge clk);
+        cmd_register              <= CMD_NOP;
+    end
+    endtask
 
     initial
     begin
@@ -523,7 +531,35 @@ module AXI_top_tb_from_compiled();
             $display("exe2  stalls: %d", exe2_stalls);
         end
         $display("---------------------------------------------");
+        
+        reset_cicero();
+        //Performance counters have not been reset, the following results should be the same as before
+        get_cc_elapsed(cc_taken);
+        $display("cc taken: %d", cc_taken);
+        for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+            get_fifo_sizing_report(i, fifoSize, fifoFulls);
+            get_hit_miss_report(i, cache_hits, cache_miss);
+            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
 
+            $display("---------------------------------------------");
+            $display("core         %d:", i);
+            $display("fifo statistics:");
+            $display("max size:     %d", fifoSize);
+            $display("full events:  %d", fifoFulls);
+            $display("cache statistics:");
+            $display("hits:         %d", cache_hits);
+            $display("miss:         %d", cache_miss);
+            $display("clock cycles per stage:");
+            $display("fetch cycles: %d", fetch_ccs);
+            $display("fetch stalls: %d", fetch_stalls);
+            $display("exe1  cycles: %d", exe1_ccs);
+            $display("exe1  stalls: %d", exe1_stalls);
+            $display("exe2  cycles: %d", exe2_ccs);
+            $display("exe2  stalls: %d", exe2_stalls);
+        end
+        $display("---------------------------------------------");
+        
         reset_perf_cntrs();
         //Performance counters have been reset, the following results should all be 0s
         
