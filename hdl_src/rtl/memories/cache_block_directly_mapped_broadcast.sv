@@ -87,13 +87,14 @@ always_ff @( posedge clk ) begin
         
 
     end
-    else if(rst_cntrs == 1'b1)
-    begin
-        total_hits = 0;
-        total_miss = 0;
-    end 
     else
     begin
+
+        if(rst_cntrs == 1'b1)
+        begin
+            total_hits = 0;
+            total_miss = 0;
+        end 
 
         cache_line_saved            <= cache_line_saved_next;
         block_sel_saved             <= block_sel_saved_next ;

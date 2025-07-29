@@ -54,17 +54,18 @@ always_ff @( posedge clk ) begin
         head                <= {(COUNT_WIDTH) {1'b0} };
         tail                <= {(COUNT_WIDTH) {1'b0} };
     end
-    else if(rst_cntrs)
-    begin
-        max_data_count_reg  <= {(COUNT_WIDTH) {1'b0}};
-        fill_events_reg     <= {(COUNT_WIDTH) {1'b0}};
-    end
     else
     begin
         head      <= head_next;
         tail      <= tail_next;
         state_cur <= state_next;
         middle    <= middle_next;
+
+        if(rst_cntrs)
+        begin
+            max_data_count_reg  <= {(COUNT_WIDTH) {1'b0}};
+            fill_events_reg     <= {(COUNT_WIDTH) {1'b0}};
+        end
 
         if(data_count > max_data_count_reg)
             begin

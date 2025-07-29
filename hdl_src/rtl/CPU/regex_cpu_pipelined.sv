@@ -357,27 +357,39 @@ module regex_cpu_pipelined #(
 
     //Counter block for clock cycles per pipeline stage
     always_ff @(posedge clk) begin
-        if(rst_cntrs) begin
-            fetch_cc = 0;
-            exe1_cc = 0;
-            exe2_cc = 0;
-        end else begin
-            if (FETCH_REC_Instr_valid && FETCH_REC_not_stall) fetch_cc <= fetch_cc + 1;
-            if (EXE1_Instr_valid      && EXE1_not_stall)      exe1_cc  <= exe1_cc + 1;
-            if (EXE2_Instr_valid      && EXE2_not_stall)      exe2_cc  <= exe2_cc + 1;
+        if(rst)
+        begin
+            
+        end
+        else begin
+            if(rst_cntrs) begin
+                fetch_cc = 0;
+                exe1_cc = 0;
+                exe2_cc = 0;
+            end else begin
+                if (FETCH_REC_Instr_valid && FETCH_REC_not_stall) fetch_cc <= fetch_cc + 1;
+                if (EXE1_Instr_valid      && EXE1_not_stall)      exe1_cc  <= exe1_cc + 1;
+                if (EXE2_Instr_valid      && EXE2_not_stall)      exe2_cc  <= exe2_cc + 1;
+            end
         end
     end
 
     //Counter block for stall cycles per pipeline stage
     always_ff @(posedge clk) begin
-        if (rst_cntrs) begin
-            fetch_stalls <= 0;
-            exe1_stalls  <= 0;
-            exe2_stalls  <= 0;
-        end else begin
-            if (FETCH_REC_Instr_valid && !FETCH_REC_not_stall) fetch_stalls <= fetch_stalls + 1;
-            if (EXE1_Instr_valid      && !EXE1_not_stall)      exe1_stalls  <= exe1_stalls + 1;
-            if (EXE2_Instr_valid      && !EXE2_not_stall)      exe2_stalls  <= exe2_stalls + 1;
+        if(rst)
+        begin
+            
+        end
+        else begin
+            if (rst_cntrs) begin
+                fetch_stalls <= 0;
+                exe1_stalls  <= 0;
+                exe2_stalls  <= 0;
+            end else begin
+                if (FETCH_REC_Instr_valid && !FETCH_REC_not_stall) fetch_stalls <= fetch_stalls + 1;
+                if (EXE1_Instr_valid      && !EXE1_not_stall)      exe1_stalls  <= exe1_stalls + 1;
+                if (EXE2_Instr_valid      && !EXE2_not_stall)      exe2_stalls  <= exe2_stalls + 1;
+            end
         end
     end
 
