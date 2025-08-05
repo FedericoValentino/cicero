@@ -98,6 +98,8 @@ int main(int argc, char* argv[])
 
     re2_driver cicero(base_ptr);
 
+    cicero.test_write_capabilities();
+
     uint32_t status = start_cicero(cicero, argv);
 
     std::cout<<"String accepted? "<<status<<std::endl;

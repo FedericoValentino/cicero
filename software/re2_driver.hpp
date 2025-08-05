@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <iostream>
 #include <stdio.h>
+#include <assert.h>
 
 class re2_driver {
 public:
@@ -302,6 +303,20 @@ public:
     void wait_for(uint32_t STATUS)
     {
         while(read_status() != STATUS);
+    }
+
+    void test_write_capabilities()
+    {
+        write_cmd(CMD_RESTART);
+        write_cmd(CMD_NOP);
+        //IF this works then the FPGA is working correctly
+        write_address(0x0);
+        write_cmd(CMD_WRITE);
+        write_data_in(0xDEADBEEF);
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_READ);
+
+        assert(read_data_o() == 0xDEADBEEF);
     }
 
 private:
