@@ -42,9 +42,11 @@ if __name__ == "__main__":
         EXTENSIONS = ['.bit', '.hwh']
         for extension in EXTENSIONS:
             matches = glob.glob(os.path.join(directory, f'**/*{extension}'), recursive=True)
-            if len(matches) != 1:
-                print(f'Found {len(matches)} {extension} files in {directory}, only expected one. Skipping {directory}.')
-                continue
+            for match in matches:
+                print(match)
+            #if len(matches) != 1:
+            #    print(f'Found {len(matches)} {extension} files in {directory}, only expected one. Skipping {directory}.')
+            #    continue
             copy_operations_temp.append((matches[0], os.path.basename(directory) + extension))
         # This is to check that all files were found
         if len(copy_operations_temp) == len(EXTENSIONS):

@@ -34,13 +34,13 @@ CONFIGURATIONS = [
 ]
 
 # Add vectorial (NEW) configurations
-for cc_id_bits in [3, 4, 5]:
-    for bb_n in [1, 4, 9, 16]:
+for cc_id_bits in [3]:#, 4, 5]:
+    for bb_n in [1]:#, 4, 9, 16]:
         CONFIGURATIONS.append((cc_id_bits, bb_n, True))
 
 # Add base (OLD) configurations with cc_id_bits = 3
-for bb_n in [1, 4, 9, 16, 32]:
-    CONFIGURATIONS.append((3, bb_n, False))
+#for bb_n in [1, 4, 9, 16, 32]:
+#    CONFIGURATIONS.append((3, bb_n, False))
 
 if len(sys.argv) != 3:
     print(f"Usage: {sys.argv[0]} <CREATING> <SYNTHESIS>")
@@ -146,9 +146,9 @@ def main():
     print(f'MAX_WORKERS: {MAX_WORKERS}; CREATING: {CREATING}; SYNTHESIS: {SYNTHESIS}')
 
     if SYNTHESIS:
-        print('Starting in 10 seconds...')
+        print('Starting in 2 seconds...')
         try:
-            time.sleep(10)
+            time.sleep(2)
         except KeyboardInterrupt:
             print('Cancelled by user, quitting...')
             return
