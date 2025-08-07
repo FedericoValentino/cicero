@@ -19,7 +19,20 @@ module AXI_top #(
     input  logic [REG_WIDTH-1:0] end_cc_pointer_register,
     input  logic [REG_WIDTH-1:0] cmd_register,
     output logic [REG_WIDTH-1:0] status_register,
-    output logic [REG_WIDTH-1:0] data_o_register
+    output logic [REG_WIDTH-1:0] data_o_register,
+
+    // AXI4-Full Read Channel
+    output logic [31:0] araddr,
+    output logic [7:0]  arlen,
+    output logic [2:0]  arsize,
+    output logic [1:0]  arburst,
+    output logic        arvalid,
+    input  logic        arready,
+    input  logic [31:0] rdata,
+    input  logic        rvalid,
+    output logic        rready,
+    input  logic        rlast,
+    output  logic       axi_top_init_axi_txn
 );
 
 localparam CHARACTER_WIDTH           = 8;
@@ -92,6 +105,42 @@ logic     [31: 0]                       exe2_stalls[(2 ** CC_ID_BITS) -1:0];
 assign rst_master = rst || (cmd_register==CMD_RESET);
 assign rst_cntrs = rst || (cmd_register==CMD_RESET_PERF_CNTRS);
 
+
+
+//AXI4 FULL
+
+logic     [31: 0]                       axi_register_read;
+logic     [7 : 0]                       axi_read_len;
+
+logic     [31: 0]                       araddr_reg = 0;
+logic     [7 : 0]                       arlen_reg = 0;
+logic                                   arvalid_reg = 0;
+logic                                   rready_reg = 0;   
+
+logic     [31: 0]                       bram_axi_addr = 0;
+
+logic cmd_prev;
+logic axi_top_init_axi_txn;
+
+always_ff @(posedge clk or posedge rst) begin
+    if (rst)
+        cmd_prev <= 1'b0;
+    else
+        cmd_prev <= (cmd_register == CMD_START_FETCH);
+end
+
+logic busy = 0;
+
+assign axi_top_init_axi_txn = (cmd_register == CMD_START_FETCH) && !cmd_prev && !busy;
+assign araddr = araddr_reg;
+assign arlen = arlen_reg;
+assign arsize = 3'b010; // 4 bytes
+assign arburst = 2'b01; // INCR
+assign arvalid = arvalid_reg;
+assign rready = rready_reg;
+
+
+
 ///// Sequential logic 
 always_ff @(posedge clk) 
 begin 
@@ -161,6 +210,22 @@ begin
                 begin
                     status_register_next = STATUS_RUNNING;
                 end
+            end
+            CMD_SET_ADDRESS:
+            begin
+                axi_register_read = data_in_register;
+            end
+            CMD_SET_LEN:
+            begin
+                axi_read_len = data_in_register;
+            end
+            CMD_START_FETCH: 
+            begin
+                araddr_reg = axi_register_read;
+                arlen_reg  = axi_read_len;
+                arvalid_reg = 1'b1;
+                busy = 1'b1;
+                status_register_next = STATUS_FETCHING;
             end
             CMD_READ_ELAPSED_CLOCK:
             begin
@@ -237,6 +302,26 @@ begin
                 end
             end
         endcase
+    end
+    STATUS_FETCHING:
+    begin
+        if (rvalid) 
+        begin
+            rready_reg = 1'b1;
+            bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+            bram_w_valid = 1'b1;
+            bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
+            bram_axi_addr = bram_axi_addr + 1;
+
+            if (rlast) begin
+                status_register_next = STATUS_IDLE;
+            end
+        end 
+        else 
+        begin
+            rready_reg = 1'b0;
+            busy = 0;
+        end
     end
     STATUS_ACCEPTED, STATUS_REJECTED, STATUS_ERROR:
     begin   

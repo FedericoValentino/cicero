@@ -56,6 +56,7 @@
 		input wire  s00_axi_rready,
 
 		// Ports of Axi Master Bus Interface M00_AXI
+		//WRITE -> WONT TOUCH
 		input wire  m00_axi_init_axi_txn,
 		output wire  m00_axi_txn_done,
 		output wire  m00_axi_error,
@@ -84,6 +85,7 @@
 		input wire [C_M00_AXI_BUSER_WIDTH-1 : 0] m00_axi_buser,
 		input wire  m00_axi_bvalid,
 		output wire  m00_axi_bready,
+		//READ
 		output wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_arid,
 		output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_araddr,
 		output wire [7 : 0] m00_axi_arlen,
@@ -104,10 +106,15 @@
 		input wire  m00_axi_rvalid,
 		output wire  m00_axi_rready
 	);
-//slave registers for axilite
+	//slave registers for axilite
 	wire [C_S00_AXI_DATA_WIDTH-1 : 0] slv_reg [6:0];
+	wire axi_top_init_axi_txn;
 
-// Instantiation of Axi Bus Interface S00_AXI
+	wire init_txn = 0;
+
+	assign init_txn = m00_axi_init_axi_txn || axi_top_init_axi_txn;
+
+	// Instantiation of Axi Bus Interface S00_AXI
 	re2_copro_v2_slave_lite_v2_S00_AXI # ( 
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
@@ -145,7 +152,7 @@
 	);
 
 // Instantiation of Axi Bus Interface M00_AXI
-	re2_copro_v2_master_full_v2_M00_AXI # ( 
+	/*re2_copro_v2_master_full_v2_M00_AXI # ( 
 		.C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
 		.C_M_AXI_BURST_LEN(C_M00_AXI_BURST_LEN),
 		.C_M_AXI_ID_WIDTH(C_M00_AXI_ID_WIDTH),
@@ -157,7 +164,7 @@
 		.C_M_AXI_RUSER_WIDTH(C_M00_AXI_RUSER_WIDTH),
 		.C_M_AXI_BUSER_WIDTH(C_M00_AXI_BUSER_WIDTH)
 	) re2_copro_v2_master_full_v2_M00_AXI_inst (
-		.INIT_AXI_TXN(m00_axi_init_axi_txn),
+		.INIT_AXI_TXN(init_txn),
 		.TXN_DONE(m00_axi_txn_done),
 		.ERROR(m00_axi_error),
 		.M_AXI_ACLK(m00_axi_aclk),
@@ -204,21 +211,34 @@
 		.M_AXI_RUSER(m00_axi_ruser),
 		.M_AXI_RVALID(m00_axi_rvalid),
 		.M_AXI_RREADY(m00_axi_rready)
-	);
+	);*/
 
 	// Add user logic here
     wire reset ;
 	assign reset = ~ s00_axi_aresetn;
     AXI_top UIP (
-    .               clk			(s00_axi_aclk),
-    .             	rst			(reset),
-    .  data_in_register			(slv_reg[0]),
-    .  address_register			(slv_reg[1]),
-    . start_cc_pointer_register	(slv_reg[2]),
-	.   end_cc_pointer_register (slv_reg[3]),
-    .      cmd_register			(slv_reg[4]),
-    .   status_register			(slv_reg[5]),
-    .   data_o_register			(slv_reg[6])
+		.clk(s00_axi_aclk),
+		.rst(reset),
+		.data_in_register(slv_reg[0]),
+		.address_register(slv_reg[1]),
+		.start_cc_pointer_register(slv_reg[2]),
+		.end_cc_pointer_register(slv_reg[3]),
+		.cmd_register(slv_reg[4]),
+		.status_register(slv_reg[5]),
+		.data_o_register(slv_reg[6]),
+
+		// AXI4-Full Read Channel
+		.araddr(m00_axi_araddr),
+		.arlen(m00_axi_arlen),
+		.arsize(m00_axi_arsize),
+		.arburst(m00_axi_arburst),
+		.arvalid(m00_axi_arvalid),
+		.arready(m00_axi_arready),
+		.rdata(m00_axi_rdata),
+		.rvalid(m00_axi_rvalid),
+		.rready(m00_axi_rready),
+		.rlast(m00_axi_rlast),
+		.axi_top_init_axi_txn(axi_top_init_axi_txn)
 	);
     
 	// User logic ends

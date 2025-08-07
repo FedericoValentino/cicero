@@ -20,6 +20,9 @@ parameter  CMD_READ_EXE1_STALLS     = 'h0000_000E ;
 parameter  CMD_READ_EXE2_STALLS     = 'h0000_000F ;
 parameter  CMD_READ_FIFO_FULLS      = 'h0000_0010 ;
 parameter  CMD_RESET_PERF_CNTRS     = 'h0000_0011 ;
+parameter  CMD_SET_ADDRESS          = 'h0000_0012 ;
+parameter  CMD_SET_LEN              = 'h0000_0013 ;
+parameter  CMD_START_FETCH          = 'h0000_0014 ;
 
 
 parameter  STATUS_IDLE              = 'h0000_0000 ;
@@ -27,6 +30,7 @@ parameter  STATUS_RUNNING           = 'h0000_0001 ;
 parameter  STATUS_ACCEPTED          = 'h0000_0002 ;
 parameter  STATUS_REJECTED          = 'h0000_0003 ;
 parameter  STATUS_ERROR             = 'h0000_0004 ;
+parameter  STATUS_FETCHING          = 'h0000_0005 ;
 
 
 parameter  DATA_IN_CHANNEL          = 'h0000_0000 ;

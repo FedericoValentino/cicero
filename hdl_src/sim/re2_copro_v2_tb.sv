@@ -228,6 +228,30 @@ module re2_copro_v2_tb;
     s00_axi_wdata = 32'b0;
   end
   endtask
+  
+task mem_read_emulator();
+integer i;
+begin
+    wait (m00_axi_arvalid); // Wait for master to start read
+    m00_axi_arready <= 1;
+    @(posedge clk);
+    m00_axi_arready <= 0;
+    
+    // Respond with 10 dummy values
+    for (i = 0; i < 10; i = i + 1) begin
+        @(posedge clk);
+        m00_axi_rvalid <= 1;
+        m00_axi_rdata  <= 32'hDEADBEEF; // Fixed value
+        m00_axi_rlast  <= (i == 9);     // Last beat on final iteration
+    
+        wait (m00_axi_rready);
+        @(posedge clk);
+        m00_axi_rvalid <= 0;
+        m00_axi_rlast  <= 0;
+    end 
+
+end
+endtask
 
   // Reset sequence
   initial begin
@@ -253,7 +277,26 @@ module re2_copro_v2_tb;
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
     
+    //WILL READ 10 WORDS FROM ADDRESS 0
+    write(32'b0, 32'h0*4); //WRITE RADDR
+    @(posedge clk);
+    write(CMD_SET_ADDRESS, 32'h4*4); //SET RADDR
+    @(posedge clk);
+    write(CMD_NOP, 32'h4*4); //CMD_NOP
+    @(posedge clk);
+    write(32'hA, 32'h0*4); //WRITE RLEN
+    @(posedge clk);
+    write(CMD_SET_LEN, 32'h4*4); //SET RLEN
+    @(posedge clk);
+    write(CMD_NOP, 32'h4*4); //CMD_NOP
+    @(posedge clk);
+    write(CMD_START_FETCH, 32'h4*4); //START FETCH PROCESS
+    @(posedge clk);
+    write(CMD_NOP, 32'h4*4); //CMD_NOP
+    @(posedge clk);
     
+    mem_read_emulator();
+    @(posedge clk);
 
     
     $finish;
