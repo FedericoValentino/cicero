@@ -43,6 +43,9 @@ localparam INSTRUCTION_SIZE          = 16;
 logic rst_master;
 ///// AXI
 logic [REG_WIDTH-1:0]   status_register_next;
+///// AXI4 FULL
+logic [REG_WIDTH-1:0]   status_register_fetching;
+logic [REG_WIDTH-1:0]   status_register_fetching_next;
 
 ///// BRAM
 parameter BRAM_WRITE_WIDTH           = 32;
@@ -136,6 +139,7 @@ begin
     if(rst_master == 1'b1)
     begin
         status_register <= STATUS_IDLE;
+        status_register_fetching <= STATUS_WAIT_RVALID;
     end
     else if(rst_cntrs == 1'b1)
     begin
@@ -143,16 +147,27 @@ begin
     end
     else
     begin
+        status_register_fetching <= status_register_fetching_next;
         status_register <= status_register_next;
         elapsed_cc      <= elapsed_cc_next;
     end
 end
+
+always_ff @(posedge clk)
+begin
+    if(status_register_fetching == STATUS_CHECK_LAST)
+    begin
+        bram_axi_addr = bram_axi_addr + 1;
+    end
+end
+
 
 //// Combinational logic
 
 always_comb 
 begin
     status_register_next               = status_register;
+    status_register_fetching_next      = status_register_fetching;
 
     elapsed_cc_next                    = elapsed_cc;
 
@@ -293,6 +308,40 @@ begin
     end
     STATUS_FETCHING:
     begin
+        case(status_register_fetching)
+            STATUS_WAIT_RVALID: begin
+                if(arvalid_reg)
+                begin
+                    arvalid_reg = 0;
+                end
+                rready_reg  = 0;
+
+                if (rvalid) begin
+                    status_register_fetching_next = STATUS_CAPTURE_DATA;
+                end
+            end
+
+            STATUS_CAPTURE_DATA: begin
+                rready_reg   = 1;
+                bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+                bram_w_valid = 1;
+                bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
+
+                status_register_fetching_next = STATUS_CHECK_LAST;
+            end
+
+            STATUS_CHECK_LAST: begin
+                rready_reg = 0;
+
+                if (rlast) begin
+                    status_register_next = STATUS_IDLE;
+                    status_register_fetching_next = STATUS_WAIT_RVALID;
+                end else begin
+                    status_register_fetching_next = STATUS_WAIT_RVALID;
+                end
+            end
+        endcase
+        /*
         if (rvalid) 
         begin
             rready_reg = 1'b1;
@@ -308,7 +357,7 @@ begin
         else 
         begin
             rready_reg = 1'b0;
-        end
+        end*/
     end
     STATUS_ACCEPTED, STATUS_REJECTED, STATUS_ERROR:
     begin   

@@ -32,6 +32,10 @@ parameter  STATUS_REJECTED          = 'h0000_0003 ;
 parameter  STATUS_ERROR             = 'h0000_0004 ;
 parameter  STATUS_FETCHING          = 'h0000_0005 ;
 
+parameter STATUS_WAIT_RVALID        = 'h0000_0000 ;
+parameter STATUS_CAPTURE_DATA       = 'h0000_0001 ;
+parameter STATUS_CHECK_LAST         = 'h0000_0002 ;
+
 
 parameter  DATA_IN_CHANNEL          = 'h0000_0000 ;
 parameter  ADDR_CHANNEL             = 'h0000_0001 ;

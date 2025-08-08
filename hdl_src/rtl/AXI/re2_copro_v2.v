@@ -108,11 +108,13 @@
 	);
 	//slave registers for axilite
 	wire [C_S00_AXI_DATA_WIDTH-1 : 0] slv_reg [0:6];
-	wire axi_top_init_axi_txn;
-
-	wire init_txn = 0;
-
-	assign init_txn = m00_axi_init_axi_txn || axi_top_init_axi_txn;
+	
+	assign m00_axi_arid = 0;
+	assign m00_axi_arcache = 1;
+	assign m00_axi_arprot = 0;
+	assign m00_axi_arqos = 0;
+	assign m00_axi_aruser = 0;
+	assign m00_axi_arlock = 0;
 
 	// Instantiation of Axi Bus Interface S00_AXI
 	re2_copro_v2_slave_lite_v2_S00_AXI # ( 
