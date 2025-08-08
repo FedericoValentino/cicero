@@ -201,10 +201,37 @@ module re2_copro_v2_tb;
     .m00_axi_rready(m00_axi_rready)
   );
   
+  task read(input logic [32-1:0] addr);
+  begin
+  
+    logic [31:0] out;
+    
+    s00_axi_araddr <= addr;
+    s00_axi_arvalid <= 1;
+    s00_axi_rready <= 1;
+    
+    wait(s00_axi_arready);
+    @(posedge clk);
+    
+    s00_axi_arvalid <= 0;
+    
+    wait(s00_axi_rvalid);
+    
+    out <= s00_axi_rdata;
+    @(posedge clk);
+    
+    s00_axi_arvalid <= 0;
+    s00_axi_rready <= 0;
+    
+    
+    $display("reading result: %h", out);
+    
+  end
+  endtask
   
   task write(input logic [32-1:0] data, input logic [32-1:0] addr); 
   begin
-    $display("Writing 0x%08x to address 0x%08x", data, addr);
+    //$display("Writing 0x%08x to address 0x%08x", data, addr);
     
     s00_axi_awaddr <= addr;
     s00_axi_wdata <= data;
@@ -230,27 +257,31 @@ module re2_copro_v2_tb;
   endtask
   
 task mem_read_emulator();
-integer i;
-begin
-    wait (m00_axi_arvalid); // Wait for master to start read
+  integer i;
+  integer burst_len;
+  begin
+    // Wait for master to initiate read
+    wait (m00_axi_arvalid);
     m00_axi_arready <= 1;
     @(posedge clk);
     m00_axi_arready <= 0;
-    
-    // Respond with 10 dummy values
-    for (i = 0; i < 10; i = i + 1) begin
-        @(posedge clk);
-        m00_axi_rvalid <= 1;
-        m00_axi_rdata  <= 32'hDEADBEEF; // Fixed value
-        m00_axi_rlast  <= (i == 9);     // Last beat on final iteration
-    
-        wait (m00_axi_rready);
-        @(posedge clk);
-        m00_axi_rvalid <= 0;
-        m00_axi_rlast  <= 0;
-    end 
 
-end
+    // Capture burst length (ARLEN is zero-based: 0 = 1 beat, 9 = 10 beats)
+    burst_len = m00_axi_arlen + 1;
+
+    // Respond with dummy data for each beat
+    for (i = 0; i < burst_len; i = i + 1) begin
+      @(posedge clk);
+      m00_axi_rvalid <= 1;
+      m00_axi_rdata  <= 32'hDEADBEEF;
+      m00_axi_rlast  <= (i == burst_len - 1); // Assert RLAST on final beat
+
+      wait (m00_axi_rready);
+      @(posedge clk);
+      m00_axi_rvalid <= 0;
+      m00_axi_rlast  <= 0;
+    end
+  end
 endtask
 
   // Reset sequence
@@ -276,6 +307,14 @@ endtask
     @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
+    write(32'h0, 32'h0*4); //CLEAR WRITE REG
+    @(posedge clk);
+    
+    //WILL READ DEADBEEF FROM ADDRESS 0 VIA AXI4-LITE
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
     
     //WILL READ 10 WORDS FROM ADDRESS 0
     write(32'b0, 32'h0*4); //WRITE RADDR
@@ -284,7 +323,7 @@ endtask
     @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
-    write(32'hA, 32'h0*4); //WRITE RLEN
+    write(32'h9, 32'h0*4); //WRITE RLEN
     @(posedge clk);
     write(CMD_SET_LEN, 32'h4*4); //SET RLEN
     @(posedge clk);
@@ -298,6 +337,82 @@ endtask
     mem_read_emulator();
     @(posedge clk);
 
+    write(32'd0, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd1, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd2, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd3, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd4, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd5, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd6, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd7, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd8, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd9, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
+    
+    write(32'd10, 32'h1*4); //WRITE ADDRESS
+    @(posedge clk);
+    write(CMD_READ, 32'h4*4);
+    @(posedge clk);
+    read(32'h6*4);
+    @(posedge clk);
     
     $finish;
   end

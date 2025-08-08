@@ -20,8 +20,8 @@
         output wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg2_out,
         output wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg3_out,
         output wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg4_out,
-        output wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg5_out,
-        output wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg6_out,
+        input wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg5_out,
+        input wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg6_out,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -336,7 +336,13 @@
 	          end                                       
 	        end                                         
 	// Implement memory mapped register select and read logic generation
-	  assign S_AXI_RDATA = (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h0) ? slv_reg0 : (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h1) ? slv_reg1 : (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h2) ? slv_reg2 : (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h3) ? slv_reg3 :0;  
+	  assign S_AXI_RDATA = (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h0) ? slv_reg0 : 
+	  (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h1) ? slv_reg1 : 
+	  (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h2) ? slv_reg2 : 
+	  (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h3) ? slv_reg3 :
+	  (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h4) ? slv_reg4 :
+	  (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h5) ? slv_reg5_out :
+	  (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 3'h6) ? slv_reg6_out : 0;  
 	// Add user logic here
 
       assign slv_reg0_out = slv_reg0;
@@ -344,8 +350,6 @@
       assign slv_reg2_out = slv_reg2;
       assign slv_reg3_out = slv_reg3;
       assign slv_reg4_out = slv_reg4;
-      assign slv_reg5_out = slv_reg5;
-      assign slv_reg6_out = slv_reg6;
       
 	// User logic ends
 

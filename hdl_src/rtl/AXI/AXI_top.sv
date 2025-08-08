@@ -31,8 +31,7 @@ module AXI_top #(
     input  logic [31:0] rdata,
     input  logic        rvalid,
     output logic        rready,
-    input  logic        rlast,
-    output  logic       axi_top_init_axi_txn
+    input  logic        rlast
 );
 
 localparam CHARACTER_WIDTH           = 8;
@@ -120,18 +119,8 @@ logic                                   rready_reg = 0;
 logic     [31: 0]                       bram_axi_addr = 0;
 
 logic cmd_prev;
-logic axi_top_init_axi_txn;
 
-always_ff @(posedge clk or posedge rst) begin
-    if (rst)
-        cmd_prev <= 1'b0;
-    else
-        cmd_prev <= (cmd_register == CMD_START_FETCH);
-end
 
-logic busy = 0;
-
-assign axi_top_init_axi_txn = (cmd_register == CMD_START_FETCH) && !cmd_prev && !busy;
 assign araddr = araddr_reg;
 assign arlen = arlen_reg;
 assign arsize = 3'b010; // 4 bytes
@@ -224,7 +213,6 @@ begin
                 araddr_reg = axi_register_read;
                 arlen_reg  = axi_read_len;
                 arvalid_reg = 1'b1;
-                busy = 1'b1;
                 status_register_next = STATUS_FETCHING;
             end
             CMD_READ_ELAPSED_CLOCK:
@@ -320,7 +308,6 @@ begin
         else 
         begin
             rready_reg = 1'b0;
-            busy = 0;
         end
     end
     STATUS_ACCEPTED, STATUS_REJECTED, STATUS_ERROR:

@@ -107,7 +107,7 @@
 		output wire  m00_axi_rready
 	);
 	//slave registers for axilite
-	wire [C_S00_AXI_DATA_WIDTH-1 : 0] slv_reg [6:0];
+	wire [C_S00_AXI_DATA_WIDTH-1 : 0] slv_reg [0:6];
 	wire axi_top_init_axi_txn;
 
 	wire init_txn = 0;
@@ -237,8 +237,7 @@
 		.rdata(m00_axi_rdata),
 		.rvalid(m00_axi_rvalid),
 		.rready(m00_axi_rready),
-		.rlast(m00_axi_rlast),
-		.axi_top_init_axi_txn(axi_top_init_axi_txn)
+		.rlast(m00_axi_rlast)
 	);
     
 	// User logic ends
