@@ -49,8 +49,14 @@ module bram #(
 
       always_ff @(posedge clk) 
       begin 
-
-          if (w_valid) 
+          integer i;
+          if (rst) 
+          begin
+            for (i = 0; i < maxSIZE; i = i + 1) begin
+                RAM[i] <= '0;
+            end
+          end 
+          else if (w_valid) 
           begin
             RAM[w_addr] <= w_data;
           end

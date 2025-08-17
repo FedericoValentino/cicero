@@ -110,7 +110,7 @@
 	wire [C_S00_AXI_DATA_WIDTH-1 : 0] slv_reg [0:6];
 	
 	assign m00_axi_arid = 0;
-	assign m00_axi_arcache = 1;
+	assign m00_axi_arcache = 4'h3;
 	assign m00_axi_arprot = 0;
 	assign m00_axi_arqos = 0;
 	assign m00_axi_aruser = 0;

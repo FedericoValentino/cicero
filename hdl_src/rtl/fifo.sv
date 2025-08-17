@@ -65,7 +65,6 @@ always_ff @( posedge clk ) begin
         begin
             max_data_count_reg  <= {(COUNT_WIDTH) {1'b0}};
             fill_events_reg     <= {(COUNT_WIDTH) {1'b0}};
-            $display("%d", rst_cntrs);
         end
 
         if(data_count > max_data_count_reg)
