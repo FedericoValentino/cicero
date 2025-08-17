@@ -118,6 +118,7 @@ logic     [31: 0]                       araddr_reg = 0;
 logic     [7 : 0]                       arlen_reg = 0;
 logic                                   arvalid_reg = 0;
 logic                                   rready_reg = 0;   
+logic                                   rlast_prev_reg = 0;
 
 logic     [31: 0]                       bram_axi_addr = 0;
 
@@ -139,7 +140,20 @@ begin
     if(rst_master == 1'b1)
     begin
         status_register <= STATUS_IDLE;
+        //RESET AXI STATE MACHINE
         status_register_fetching <= STATUS_WAIT_RVALID;
+        //RESET AXI INTERNAL REGISTERS
+        /*
+        bram_axi_addr <= 0;
+        araddr_reg <= 0;
+        arlen_reg <= 0;
+        arvalid_reg <= 0;
+        rready_reg <= 0;
+        rlast_prev_reg <= 0;
+        //RESET AXI SETTINGS
+        axi_register_read <= 0;
+        axi_read_len <= 0;
+        */
     end
     else if(rst_cntrs == 1'b1)
     begin
@@ -155,10 +169,16 @@ end
 
 always_ff @(posedge clk)
 begin
-    if(status_register_fetching == STATUS_CHECK_LAST)
+    if(rst_master == 1'b1)
     begin
-        bram_axi_addr = bram_axi_addr + 1;
+        bram_axi_addr <= 0;
+    end else begin
+        if(status_register_fetching == STATUS_CHECK_LAST)
+            begin
+                bram_axi_addr <= bram_axi_addr + 1;
+            end
     end
+    
 end
 
 
@@ -229,6 +249,7 @@ begin
                 arlen_reg  = axi_read_len;
                 arvalid_reg = 1'b1;
                 status_register_next = STATUS_FETCHING;
+                status_register_fetching_next = STATUS_WAIT_RVALID; 
             end
             CMD_READ_ELAPSED_CLOCK:
             begin
@@ -315,6 +336,7 @@ begin
                     arvalid_reg = 0;
                 end
                 rready_reg  = 0;
+                
 
                 if (rvalid) begin
                     status_register_fetching_next = STATUS_CAPTURE_DATA;
@@ -334,12 +356,21 @@ begin
                 rready_reg = 0;
 
                 if (rlast) begin
-                    status_register_next = STATUS_IDLE;
+                    rlast_prev_reg = rlast;
                     status_register_fetching_next = STATUS_WAIT_RVALID;
                 end else begin
-                    status_register_fetching_next = STATUS_WAIT_RVALID;
+                    if (rlast_prev_reg) begin
+                        status_register_fetching_next = STATUS_FETCH_END;
+                    end else begin
+                        status_register_fetching_next = STATUS_WAIT_RVALID;
+                    end
                 end
             end
+            STATUS_FETCH_END: begin
+                rlast_prev_reg = 0;
+                status_register_next = STATUS_IDLE;
+            end
+            
         endcase
         /*
         if (rvalid) 

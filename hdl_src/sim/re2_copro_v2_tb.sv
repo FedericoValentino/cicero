@@ -38,7 +38,7 @@ module re2_copro_v2_tb;
   localparam integer C_M00_AXI_WUSER_WIDTH = 0;
   localparam integer C_M00_AXI_RUSER_WIDTH = 0;
   localparam integer C_M00_AXI_BUSER_WIDTH = 0;
-  parameter CC_ID_BITS =        2  ;
+  parameter CC_ID_BITS =        3  ;
   parameter BB_N = 1;
 
   // Clocks and resets
@@ -115,6 +115,93 @@ module re2_copro_v2_tb;
   reg m00_axi_rvalid = 0;
   wire m00_axi_rready;
 
+  reg [31 : 0] mem [0: 1023];
+
+  task write_file( int fp,
+                     input  reg [REG_WIDTH-1:0] start_address ,
+                     output reg [REG_WIDTH-1:0] address);
+    begin
+        int c;
+        reg [INSTRUCTION_WIDTH-1:0] instr_0, instr_1;
+        reg [REG_WIDTH-1:0] data;
+        reg [REG_WIDTH-1:0] address_register;
+        reg                 flag;
+        
+        flag    = 1'b1;  
+        address = start_address;
+        
+        while (! $feof(fp)) 
+        begin
+            //SCAN FILE 
+            c = $fscanf(fp,"%x\n", instr_0);
+            if( ! $feof(fp) )
+            begin
+                c = $fscanf(fp,"%x\n", instr_1);
+            end
+            else
+            begin
+                instr_1         = {INSTRUCTION_WIDTH{1'b0}};
+            end
+            //$display("%h,%h", instr_1, instr_0);
+
+            //BUILD INSTRUCTION
+            data              = {instr_1, instr_0};
+            //SET ADDRESS
+            address_register  = address/4;
+            //WRITE DATA TO SIMPLE MEMORY
+            mem[address_register] = data;
+
+            address += 4;
+        end
+    end
+  endtask
+
+  task write_string_file( int fp,
+                     input  reg [REG_WIDTH-1:0] start_address ,
+                     output reg [REG_WIDTH-1:0] address_cur );
+    begin
+        int bytes_read;
+        reg [7:0]           c [3:0];
+        reg [REG_WIDTH-1:0]   data;
+        reg [REG_WIDTH-1:0] address_register;
+        reg                   flag;
+        reg [REG_WIDTH-1:0] tmp_address;
+        flag    = 1'b1;  
+        tmp_address  = start_address;
+        address_cur  = start_address;
+        
+        while (! $feof(fp)) 
+        begin
+            for(int i = 0; i < 4 ; i++)
+            begin
+                if( ! $feof(fp))
+                begin
+                    bytes_read = $fscanf(fp,"%d\n", c[i]);
+                    tmp_address = tmp_address + 1;
+                    if(bytes_read == -1)begin
+                        c[i] = {8{1'b0}};
+                        
+                    end
+                end
+                else
+                begin
+                    c[i]       = {8{1'b0}};
+                end
+            end
+                
+            $display("%d,%d,%d,%d",c[3], c[2], c[1], c[0]);
+            //PACKING 4 chars at a time
+            data                = {c[3], c[2], c[1], c[0]};
+            //SET ADDRESS
+            address_register  = address_cur / 4;
+            //WRITE DATA TO SIMPLE MEMORY
+            mem[address_register] = data;
+
+            address_cur        = tmp_address;
+        end
+        
+    end
+  endtask
   // DUT instance
   re2_copro_v2 #(
     .C_S00_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
@@ -201,10 +288,8 @@ module re2_copro_v2_tb;
     .m00_axi_rready(m00_axi_rready)
   );
   
-  task read(input logic [32-1:0] addr);
+  task read(input logic [32-1:0] addr, output logic [31 : 0] out_reg);
   begin
-  
-    logic [31:0] out;
     
     s00_axi_araddr <= addr;
     s00_axi_arvalid <= 1;
@@ -217,21 +302,17 @@ module re2_copro_v2_tb;
     
     wait(s00_axi_rvalid);
     
-    out <= s00_axi_rdata;
+    out_reg <= s00_axi_rdata;
     @(posedge clk);
     
     s00_axi_arvalid <= 0;
     s00_axi_rready <= 0;
-    
-    
-    $display("reading result: %h", out);
     
   end
   endtask
   
   task write(input logic [32-1:0] data, input logic [32-1:0] addr); 
   begin
-    //$display("Writing 0x%08x to address 0x%08x", data, addr);
     
     s00_axi_awaddr <= addr;
     s00_axi_wdata <= data;
@@ -256,36 +337,248 @@ module re2_copro_v2_tb;
   end
   endtask
   
-task mem_read_emulator();
-  integer i;
-  integer burst_len;
-  begin
-    // Wait for master to initiate read
-    wait (m00_axi_arvalid);
-    m00_axi_arready <= 1;
-    @(posedge clk);
-    m00_axi_arready <= 0;
-
-    // Capture burst length (ARLEN is zero-based: 0 = 1 beat, 9 = 10 beats)
-    burst_len = m00_axi_arlen + 1;
-
-    // Respond with dummy data for each beat
-    for (i = 0; i < burst_len; i = i + 1) begin
-      @(posedge clk);
+  task automatic mem_read_agent();
+    integer i, burst_len;
+    forever begin
+    
+      m00_axi_arready <= 1;
+      wait (m00_axi_arvalid);
+      //CASE RADDR
+      m00_axi_arready <= 0;
       m00_axi_rvalid <= 1;
-      m00_axi_rdata  <= 32'hDEADBEEF;
-      m00_axi_rlast  <= (i == burst_len - 1); // Assert RLAST on final beat
-
-      wait (m00_axi_rready);
+      burst_len = m00_axi_arlen + 1;
       @(posedge clk);
-      m00_axi_rvalid <= 0;
-      m00_axi_rlast  <= 0;
+      //CASE RDATA
+      for (i = 0; i < burst_len; i = i+1) begin
+        m00_axi_rlast  <= (i == burst_len-1);
+        m00_axi_rdata <= mem[i];
+        m00_axi_rvalid <= 1;
+        wait(m00_axi_rready);
+        wait(m00_axi_rready == 0);
+      end
+      m00_axi_rlast <= 0;
     end
-  end
-endtask
+  endtask
 
+  initial begin
+    fork
+      mem_read_agent();   // background forever
+    join_none
+  end
+      
+  task read_status(output logic [32-1:0] status);
+    begin
+      s00_axi_araddr <= 32'h5*4;
+      s00_axi_arvalid <= 1;
+      s00_axi_rready <= 1;
+      
+      wait(s00_axi_arready);
+      @(posedge clk);
+      
+      s00_axi_arvalid <= 0;
+      
+      wait(s00_axi_rvalid);
+      
+      status <= s00_axi_rdata;
+      @(posedge clk);
+      
+      s00_axi_arvalid <= 0;
+      s00_axi_rready <= 0;
+    end
+  endtask
+
+  task get_cc_elapsed(output logic[REG_WIDTH-1:0] cc);
+    begin
+        write(CMD_READ_ELAPSED_CLOCK, 32'h4*4); // CMD_READ_ELAPSED_CLOCK;
+        @(posedge clk);
+        read(32'h6*4, cc);
+        @(posedge clk);
+        write(CMD_NOP, 32'h4*4); //CMD_NOP
+    end
+  endtask
+
+  task get_fifo_sizing_report(input logic[REG_WIDTH-1: 0] fifoSelector, 
+                              output logic[REG_WIDTH-1: 0] fifoSize,
+                              output logic[REG_WIDTH-1: 0] fifoFulls);
+  begin
+      write(fifoSelector, 32'h0*4);
+      @(posedge clk);
+      write(CMD_READ_FIFO_COUNT, 32'h4*4);
+      @(posedge clk);
+      read(32'h6*4, fifoSize);
+      @(posedge clk);
+      write(CMD_READ_FIFO_FULLS, 32'h4*4);
+      @(posedge clk);
+      read(32'h6*4, fifoFulls);
+      @(posedge clk);
+
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task get_hit_miss_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                            output logic[REG_WIDTH-1: 0] cacheHits,
+                            output logic[REG_WIDTH-1: 0] cacheMiss);
+  begin
+      write(coreSelector, 32'h0*4);
+      @(posedge clk)
+      write(CMD_READ_CACHE_HITS, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, cacheHits);
+      @(posedge clk)
+      write(CMD_READ_CACHE_MISS, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, cacheMiss);
+      @(posedge clk)
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task get_cycles_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                          output logic[REG_WIDTH-1: 0] fetch_ccs,
+                          output logic[REG_WIDTH-1: 0] exe1_ccs,
+                          output logic[REG_WIDTH-1: 0] exe2_ccs);
+  begin
+      write(coreSelector, 32'h0*4);
+      @(posedge clk)
+      write(CMD_READ_FETCH_CLOCK, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, fetch_ccs);
+      @(posedge clk)
+      write(CMD_READ_EXE1_CLOCK, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, exe1_ccs);
+      @(posedge clk)
+      write(CMD_READ_EXE2_CLOCK, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, exe2_ccs);
+      @(posedge clk)
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task get_stalls_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                          output logic[REG_WIDTH-1: 0] fetch_stalls,
+                          output logic[REG_WIDTH-1: 0] exe1_stalls,
+                          output logic[REG_WIDTH-1: 0] exe2_stalls);
+  begin
+      write(coreSelector, 32'h0*4);
+      @(posedge clk)
+      write(CMD_READ_FETCH_STALLS, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, fetch_stalls);
+      @(posedge clk)
+      write(CMD_READ_EXE1_STALLS, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, exe1_stalls);
+      @(posedge clk)
+      write(CMD_READ_EXE2_STALLS, 32'h4*4);
+      @(posedge clk)
+      read(32'h6*4, exe2_stalls);
+      @(posedge clk)
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task reset_perf_cntrs();
+  begin
+      write(CMD_RESET_PERF_CNTRS, 32'h4*4);
+      @(posedge clk);
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+  
+  task reset_cicero();
+  begin
+      write(CMD_RESET, 32'h4*4);
+      @(posedge clk);
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task wait_status(input  reg [REG_WIDTH-1:0] status);
+      begin
+          reg [REG_WIDTH-1:0] status_out;
+          read_status(status_out);
+          while( status_out != status )
+          begin
+              read_status(status_out);
+              @(posedge clk);
+          end 
+      end
+  endtask
+
+  task verify_code();
+      integer j;
+      begin
+          reg [31 : 0] instr;
+          for(j = 0; j < 256; j++)
+          begin
+            write(j, 32'h1*4); //WRITE RADDR
+            @(posedge clk);
+            write(CMD_READ, 32'h4*4); // READ MEM
+            @(posedge clk);
+            read(32'h6*4, instr);
+            $display("%h", instr);
+            @(posedge clk);
+          end
+      end
+  endtask
+
+
+  integer i;
   // Reset sequence
   initial begin
+
+    int fp_code , fp_string;
+    reg [REG_WIDTH-1:0] start_code  ,   end_code;
+    reg [REG_WIDTH-1:0] start_string,   end_string;
+    reg [REG_WIDTH-1:0] cc_taken;
+    reg [REG_WIDTH-1:0] fifoSize;
+    reg [REG_WIDTH-1:0] fifoFulls;
+
+    reg [REG_WIDTH-1:0] cache_miss;
+    reg [REG_WIDTH-1:0] cache_hits;
+
+    reg [REG_WIDTH-1:0] fetch_ccs;
+    reg [REG_WIDTH-1:0] exe1_ccs;
+    reg [REG_WIDTH-1:0] exe2_ccs;
+
+    reg [REG_WIDTH-1:0] fetch_stalls;
+    reg [REG_WIDTH-1:0] exe1_stalls;
+    reg [REG_WIDTH-1:0] exe2_stalls;
+
+    //Initialize testbench memory with code and string to analyze
+    fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
+    if (fp_code==0)
+    begin
+        $display("Could not open file '%s' for reading","regex.txt");
+        $stop;     
+    end
+    start_code = 32'h0000_0000;
+    //write string
+    $display("writing code from %h",start_code);
+    write_file(fp_code, start_code , end_code );
+
+    fp_string= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/input.csv","r");
+    if (fp_string==0)
+    begin
+        $display("Could not open file '%s' for reading","input.csv");
+        $stop;     
+    end
+
+    start_string = end_code;
+    while(start_string[0+:CC_ID_BITS]!==0)
+    begin
+        start_string = start_string + 1;
+    end 
+    //write string
+    $display("writing string from %h",start_string);
+    write_string_file(fp_string, start_string, end_string);
+    $display("wrote string and code");
+
+
+    //RESET
     rst = 1;
     @(posedge clk);
     rst = 0;
@@ -293,37 +586,23 @@ endtask
     rst = 1;
     @(posedge clk);
     
-    //WILL WRITE DEADBEEF AT ADDRESS 0 VIA AXI4-LITE
-    
-    write(CMD_RESET, 32'h4*4); //RESET CICERO
+    write(CMD_RESTART, 32'h4*4);
     @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
-    write(32'b0, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_WRITE, 32'h4*4); //CMD_WRITE
-    @(posedge clk);
-    write(32'hDEADBEEF, 32'h0*4); //WRITE_DATA
-    @(posedge clk);
-    write(CMD_NOP, 32'h4*4); //CMD_NOP
-    @(posedge clk);
-    write(32'h0, 32'h0*4); //CLEAR WRITE REG
-    @(posedge clk);
+
+    reset_cicero();
+
+    reset_perf_cntrs();
     
-    //WILL READ DEADBEEF FROM ADDRESS 0 VIA AXI4-LITE
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    //WILL READ 10 WORDS FROM ADDRESS 0
-    write(32'b0, 32'h0*4); //WRITE RADDR
+    //WILL READ CODE FROM ADDRESS 0
+    write(32'h0, 32'h0*4); //WRITE RADDR
     @(posedge clk);
     write(CMD_SET_ADDRESS, 32'h4*4); //SET RADDR
     @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
-    write(32'h9, 32'h0*4); //WRITE RLEN
+    write((end_string-start_code)/4, 32'h0*4); //WRITE RLEN
     @(posedge clk);
     write(CMD_SET_LEN, 32'h4*4); //SET RLEN
     @(posedge clk);
@@ -333,86 +612,51 @@ endtask
     @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
-    
-    mem_read_emulator();
-    @(posedge clk);
 
-    write(32'd0, 32'h1*4); //WRITE ADDRESS
+    wait_status(STATUS_IDLE);
+
+    verify_code();
+
+    $display("%h, %h", start_string, end_string);
+
+    write(start_string, 32'h2*4); //WRITE START CC POINTER
     @(posedge clk);
-    write(CMD_READ, 32'h4*4);
+    write(end_string, 32'h3*4); //WRITE END CC POINTER
     @(posedge clk);
-    read(32'h6*4);
+    write(CMD_START, 32'h4*4);     //CMD_START
     @(posedge clk);
-    
-    write(32'd1, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd2, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
+    write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
     
-    write(32'd3, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
+    wait_status(STATUS_ACCEPTED);
+
+
+    get_cc_elapsed(cc_taken);
+    $display("cc taken: %d", cc_taken);
+    for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+        get_fifo_sizing_report(i, fifoSize, fifoFulls);
+        get_hit_miss_report(i, cache_hits, cache_miss);
+        get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+        get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
+
+        $display("---------------------------------------------");
+        $display("core         %d:", i);
+        $display("fifo statistics:");
+        $display("max size:     %d", fifoSize);
+        $display("full events:  %d", fifoFulls);
+        $display("cache statistics:");
+        $display("hits:         %d", cache_hits);
+        $display("miss:         %d", cache_miss);
+        $display("clock cycles per stage:");
+        $display("fetch cycles: %d", fetch_ccs);
+        $display("fetch stalls: %d", fetch_stalls);
+        $display("exe1  cycles: %d", exe1_ccs);
+        $display("exe1  stalls: %d", exe1_stalls);
+        $display("exe2  cycles: %d", exe2_ccs);
+        $display("exe2  stalls: %d", exe2_stalls);
+    end
+    $display("---------------------------------------------");
     
-    write(32'd4, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd5, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd6, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd7, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd8, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd9, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
-    
-    write(32'd10, 32'h1*4); //WRITE ADDRESS
-    @(posedge clk);
-    write(CMD_READ, 32'h4*4);
-    @(posedge clk);
-    read(32'h6*4);
-    @(posedge clk);
     
     $finish;
   end
