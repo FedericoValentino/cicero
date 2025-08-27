@@ -332,6 +332,7 @@ begin
         case(status_register_fetching)
 
             STATUS_WAIT_ARREADY: begin
+                data_o_register = STATUS_WAIT_ARREADY;
                 if (arvalid_reg && arready) begin
                     arvalid_reg = 1'b0;
                     rready_reg = 1'b1;
@@ -344,11 +345,13 @@ begin
             end
             
             STATUS_SET_READY: begin
+                data_o_register = STATUS_SET_READY;
                 rready_reg = 1'b1;
                 status_register_fetching_next = STATUS_CAPTURE_DATA;
             end
             
             STATUS_CAPTURE_DATA: begin
+                data_o_register = STATUS_CAPTURE_DATA;
                 if(rvalid) begin
                     bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
                     bram_w_valid = 1'b1;
@@ -363,6 +366,7 @@ begin
             end
             
             STATUS_FETCH_END: begin
+                data_o_register = STATUS_FETCH_END;
                 status_register_next = STATUS_IDLE;
             end 
             
