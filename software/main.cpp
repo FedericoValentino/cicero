@@ -10,17 +10,36 @@
 #include <cstdint>
 #include <cstring>
 
-#define CICERO_BASE_ADDR 0xA0000000  // Replace with actual physical base address
-#define MAP_SIZE 0x1000
+#define CICERO_AXI_L_BASE_ADDR 0xA0000000  // Replace with actual physical base address
+#define CICERO_AXI_F_BASE_ADDR 0x40000000
+#define AXI_L_MAP_SIZE 0x1000
+#define AXI_F_MAP_SIZE 0x100000
 
-void* open_device() {
+void* open_device_axi_lite() {
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (fd < 0) {
         perror("Error opening /dev/mem");
         exit(1);
     }
 
-    void* base_ptr = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, CICERO_BASE_ADDR);
+    void* base_ptr = mmap(NULL, AXI_L_MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, CICERO_AXI_L_BASE_ADDR);
+    if (base_ptr == MAP_FAILED) {
+        perror("Error mapping memory");
+        exit(1);
+    }
+
+    close(fd);
+    return base_ptr;
+}
+
+void* open_device_axi_full() {
+    int fd = open("/dev/mem", O_RDWR | O_SYNC);
+    if (fd < 0) {
+        perror("Error opening /dev/mem");
+        exit(1);
+    }
+
+    void* base_ptr = mmap(NULL, AXI_F_MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, CICERO_AXI_F_BASE_ADDR);
     if (base_ptr == MAP_FAILED) {
         perror("Error mapping memory");
         exit(1);
@@ -74,6 +93,10 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
 
     uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
 
+    uint32_t len = string_end_addr;
+
+    cicero.start_AXI_M_transfer(len);
+
     cicero.verify_code();
 
     cicero.verify_string();
@@ -94,11 +117,13 @@ int main(int argc, char* argv[])
         std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
     }
 
-    void* base_ptr = open_device();
+    void* base_ptr_lite = open_device_axi_lite();
 
-    re2_driver cicero(base_ptr);
+    void* base_ptr_full = open_device_axi_full();
 
-    cicero.test_write_capabilities();
+    re2_driver cicero(base_ptr_lite, base_ptr_full);
+
+    cicero.test_write_capabilities();  
 
     uint32_t status = start_cicero(cicero, argv);
 

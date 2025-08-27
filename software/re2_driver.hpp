@@ -40,6 +40,9 @@ public:
         CMD_READ_EXE2_STALLS     = 0x0F,
         CMD_READ_FIFO_FULLS      = 0x10,
         CMD_RESET_PERF_CNTRS     = 0x11,
+        CMD_SET_ADDRESS          = 0x12,
+        CMD_SET_LEN              = 0x13,
+        CMD_START_FETCH          = 0x14,
     };
 
     enum STATUS{
@@ -48,18 +51,21 @@ public:
         STATUS_ACCEPTED          = 2,
         STATUS_REJECTED          = 3,
         STATUS_ERROR             = 4,
+        STATUS_FETCHING          = 5,
     };
 
-    void* base_addr;
+    void* base_addr_lite;
+    void* base_addr_full;
 
     std::vector<uint32_t> current_code;
 
     std::vector<uint8_t> current_string;
     uint32_t start_string_addr;
 
-    re2_driver(void* base_addr)
+    re2_driver(void* base_addr_lite, void* base_addr_full)
     {
-        this->base_addr = base_addr;
+        this->base_addr_lite = base_addr_lite;
+        this->base_addr_full = base_addr_full;
     }
 
 
@@ -173,6 +179,20 @@ public:
 
     /*----------LOADING CODE AND STRING----------*/
 
+    void start_AXI_M_transfer(uint32_t len)
+    {
+        write_data_in(len);
+        write_cmd(CMD_SET_LEN);
+        write_cmd(CMD_NOP);
+        write_data_in(0x40000000);
+        write_cmd(CMD_SET_ADDRESS);
+        write_cmd(CMD_NOP);
+        write_cmd(CMD_START_FETCH);
+        write_cmd(CMD_NOP);
+
+        wait_for(STATUS_IDLE);
+    }
+
     uint32_t load_code(const std::vector<uint16_t>& code) 
     {
         std::vector<uint8_t> bytes;
@@ -181,7 +201,7 @@ public:
             bytes.push_back(word & 0xFF);
             bytes.push_back((word >> 8) & 0xFF);
         }
-        auto addr = write_bytes(bytes, 0);
+        auto addr = write_bytes_ddr(bytes, 0);
         return ((addr + window_size_in_chars - 1) / window_size_in_chars) * window_size_in_chars;
     }
 
@@ -194,7 +214,7 @@ public:
 
 
         uint32_t aligned = ((start_addr + window_size_in_chars - 1) / window_size_in_chars) * window_size_in_chars;
-        return write_bytes(str, aligned);
+        return write_bytes_ddr(str, aligned);
     }
 
 
@@ -321,11 +341,11 @@ public:
 
 private:
     uint32_t read(uint32_t REG) {
-        return *((volatile uint32_t*)((char*)base_addr + REG));
+        return *((volatile uint32_t*)((char*)base_addr_lite + REG));
     }
 
     void write(uint32_t REG, uint32_t value) {
-        *((volatile uint32_t*)((char*)base_addr + REG)) = value;
+        *((volatile uint32_t*)((char*)base_addr_lite + REG)) = value;
     }
 
     uint32_t write_bytes(const std::vector<uint8_t>& bytes, uint32_t start_addr) 
@@ -352,6 +372,26 @@ private:
         }
 
         write_cmd(CMD_NOP);
+        return addr;
+    }
+
+    uint32_t write_bytes_ddr(const std::vector<uint8_t>& bytes, uint32_t start_addr)
+    {
+        uint32_t addr = start_addr;
+        uint32_t* ddr = (uint32_t*) base_addr_full;
+
+        for (std::size_t i = 0; i < bytes.size(); i += word_size_in_bytes) 
+        {
+            uint32_t word = 0;
+            for (int j = 0; j < word_size_in_bytes && (i + j) < bytes.size(); ++j) 
+            {
+                word |= (bytes[i + j] << (8 * j));
+            }
+            ddr[start_addr+i] = word;
+
+            std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
+            addr += word_size_in_bytes;
+        }
         return addr;
     }
 
