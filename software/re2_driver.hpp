@@ -387,7 +387,7 @@ private:
             {
                 word |= (bytes[i + j] << (8 * j));
             }
-            std::size_t word_index = (addr - start_addr) / word_size_in_bytes;
+            std::size_t word_index = addr / word_size_in_bytes;
             printf("writing at index %d of DDR\n", word_index);
             ddr[word_index] = word;
 
