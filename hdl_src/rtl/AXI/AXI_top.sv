@@ -141,7 +141,7 @@ begin
     begin
         status_register <= STATUS_IDLE;
         //RESET AXI STATE MACHINE
-        status_register_fetching <= STATUS_WAIT_RVALID;
+        status_register_fetching <= STATUS_WAIT_ARREADY;
         //RESET AXI INTERNAL REGISTERS
         /*
         bram_axi_addr <= 0;
@@ -173,7 +173,7 @@ begin
     begin
         bram_axi_addr <= 0;
     end else begin
-        if(status_register_fetching == STATUS_CHECK_LAST)
+        if(status_register_fetching == STATUS_CAPTURE_DATA && rvalid)
             begin
                 bram_axi_addr <= bram_axi_addr + 1;
             end
@@ -249,7 +249,7 @@ begin
                 arlen_reg  = axi_read_len;
                 arvalid_reg = 1'b1;
                 status_register_next = STATUS_FETCHING;
-                status_register_fetching_next = STATUS_WAIT_RVALID; 
+                status_register_fetching_next = STATUS_WAIT_ARREADY; 
             end
             CMD_READ_ELAPSED_CLOCK:
             begin
@@ -330,7 +330,44 @@ begin
     STATUS_FETCHING:
     begin
         case(status_register_fetching)
-            STATUS_WAIT_RVALID: begin
+
+            STATUS_WAIT_ARREADY: begin
+                if (arvalid_reg && arready) begin
+                    arvalid_reg = 1'b0;
+                    rready_reg = 1'b1;
+                    status_register_fetching_next = STATUS_SET_READY;
+                end else begin
+                    if (rready_reg) begin
+                        status_register_fetching_next = STATUS_SET_READY;
+                    end
+                end
+            end
+            
+            STATUS_SET_READY: begin
+                rready_reg = 1'b1;
+                status_register_fetching_next = STATUS_CAPTURE_DATA;
+            end
+            
+            STATUS_CAPTURE_DATA: begin
+                if(rvalid) begin
+                    bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+                    bram_w_valid = 1'b1;
+                    bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
+                end
+                
+                if (rlast) begin
+                    status_register_fetching_next = STATUS_FETCH_END;
+                end else begin
+                    status_register_fetching_next = STATUS_CAPTURE_DATA;
+                end
+            end
+            
+            STATUS_FETCH_END: begin
+                status_register_next = STATUS_IDLE;
+            end 
+            
+        endcase
+            /*STATUS_WAIT_RVALID: begin
                 if(arvalid_reg)
                 begin
                     arvalid_reg = 0;
@@ -338,7 +375,7 @@ begin
                 rready_reg  = 0;
                 
 
-                if (rvalid) begin
+                if (rvalid && arready) begin
                     status_register_fetching_next = STATUS_CAPTURE_DATA;
                 end
             end
@@ -372,6 +409,8 @@ begin
             end
             
         endcase
+        */
+
         /*
         if (rvalid) 
         begin

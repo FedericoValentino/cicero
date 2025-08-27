@@ -347,14 +347,12 @@ module re2_copro_v2_tb;
       m00_axi_arready <= 0;
       m00_axi_rvalid <= 1;
       burst_len = m00_axi_arlen + 1;
-      @(posedge clk);
+      wait(m00_axi_rready)
       //CASE RDATA
       for (i = 0; i < burst_len; i = i+1) begin
         m00_axi_rlast  <= (i == burst_len-1);
         m00_axi_rdata <= mem[i];
         m00_axi_rvalid <= 1;
-        wait(m00_axi_rready);
-        wait(m00_axi_rready == 0);
       end
       m00_axi_rlast <= 0;
     end
