@@ -549,7 +549,7 @@ module re2_copro_v2_tb;
     reg [REG_WIDTH-1:0] exe2_stalls;
 
     //Initialize testbench memory with code and string to analyze
-    fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
+    fp_code= $fopen("/home/feder34/git/cicero/scripts/generate_single/regex.txt","r");
     if (fp_code==0)
     begin
         $display("Could not open file '%s' for reading","regex.txt");
@@ -560,7 +560,7 @@ module re2_copro_v2_tb;
     $display("writing code from %h",start_code);
     write_file(fp_code, start_code , end_code );
 
-    fp_string= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/input.csv","r");
+    fp_string= $fopen("/home/feder34/git/cicero/scripts/generate_single/input.csv","r");
     if (fp_string==0)
     begin
         $display("Could not open file '%s' for reading","input.csv");
@@ -625,10 +625,11 @@ module re2_copro_v2_tb;
     @(posedge clk);
     write(CMD_START, 32'h4*4);     //CMD_START
     @(posedge clk);
+    @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
     
-    wait_status(STATUS_ACCEPTED);
+    wait_status(STATUS_REJECTED);
 
 
     get_cc_elapsed(cc_taken);

@@ -332,7 +332,7 @@ initial begin
     wait (aresetn == 1'b1);
     
     //fill memory of slave agent
-    fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
+    fp_code= $fopen("/home/feder34/git/cicero/scripts/generate_single/regex.txt","r");
     if (fp_code==0)
     begin
         $display("Could not open file '%s' for reading","regex.txt");
@@ -343,7 +343,7 @@ initial begin
     $display("writing code from %h",start_code);
     write_file(fp_code, start_code , end_code );
 
-    fp_string= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/input.csv","r");
+    fp_string= $fopen("/home/feder34/git/cicero/scripts/generate_single/input.csv","r");
     if (fp_string==0)
     begin
         $display("Could not open file '%s' for reading","input.csv");
@@ -396,14 +396,14 @@ initial begin
     $fclose(fp_code);
     $fclose(fp_string);
 
-    fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
+    fp_code= $fopen("/home/feder34/git/cicero/scripts/generate_single/regex.txt","r");
     if (fp_code==0)
     begin
         $display("Could not open file '%s' for reading","regex.txt");
         $stop;     
     end
 
-    fp_string= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/input.csv","r");
+    fp_string= $fopen("/home/feder34/git/cicero/scripts/generate_single/input.csv","r");
     if (fp_string==0)
     begin
         $display("Could not open file '%s' for reading","input.csv");

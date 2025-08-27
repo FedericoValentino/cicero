@@ -212,7 +212,7 @@ initial begin
     wait (aresetn == 1'b1);
     
     //fill memory of slave agent
-    fp_code= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/regex.txt","r");
+    fp_code= $fopen("/home/feder34/git/cicero/scripts/generate_single/regex.txt","r");
     if (fp_code==0)
     begin
         $display("Could not open file '%s' for reading","regex.txt");
@@ -222,23 +222,24 @@ initial begin
     //write string
     $display("writing code from %h",start_code);
     write_file(fp_code, start_code , end_code );
+    $display("end code at %h", end_code);
 
-    fp_string= $fopen("/home/feder34/git/cicero_general/cicero/scripts/generate_single/input.csv","r");
+    fp_string= $fopen("/home/feder34/git/cicero/scripts/generate_single/input.csv","r");
     if (fp_string==0)
     begin
         $display("Could not open file '%s' for reading","input.csv");
         $stop;     
     end
 
-    start_string = end_code;
+    start_string = end_code/4;
     while(start_string[0+:CC_ID_BITS]!==0)
     begin
         start_string = start_string + 1;
     end 
     //write string
     $display("writing string from %h",start_string);
-    write_string_file(fp_string, start_string, end_string);
-    $display("wrote string and code");
+    write_string_file(fp_string, start_string*4, end_string);
+    $display("end string at %h", end_string);
     
     check_memory();
 
@@ -264,17 +265,18 @@ initial begin
 
     
     wait_status(STATUS_IDLE);
-    $display("%h, %h", start_string, end_string);
+    $display("%h, %h", start_string, end_string/4);
     write(start_string, 32'h2*4); //WRITE START CC POINTER
     @(posedge aclk);
-    write(end_string, 32'h3*4); //WRITE END CC POINTER
+    write(end_string/4, 32'h3*4); //WRITE END CC POINTER
     @(posedge aclk);
     write(CMD_START, 32'h4*4);     //CMD_START
+    @(posedge aclk);
     @(posedge aclk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge aclk);
     
-    wait_status(STATUS_ACCEPTED);
+    wait_status(STATUS_REJECTED);
     
     #500ns
     $finish;
