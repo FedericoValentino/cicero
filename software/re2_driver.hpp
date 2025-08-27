@@ -322,10 +322,7 @@ public:
 
     void wait_for(uint32_t STATUS)
     {
-        while(read_status() != STATUS)
-        {
-            std::cout<<std::hex<<read_status()<<std::endl;
-        }
+        while(read_status() != STATUS);
     }
 
     void test_write_capabilities()
