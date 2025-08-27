@@ -390,7 +390,7 @@ private:
             ddr[start_addr+i] = word;
 
             std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
-            printf("At Address: %p\n", ddr[start_addr+i]);
+            printf("At Address: %p\n", (void*)&ddr[start_addr+i]);
             addr += word_size_in_bytes;
         }
         return addr;

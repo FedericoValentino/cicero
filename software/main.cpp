@@ -93,7 +93,7 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
 
     uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
 
-    uint32_t len = string_end_addr;
+    uint32_t len = string_end_addr/4;
 
     printf("Length of code+string: 0x%08x\n", len);
 
