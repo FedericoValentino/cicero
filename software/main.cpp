@@ -95,6 +95,8 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
 
     uint32_t len = string_end_addr;
 
+    printf("Length of code+string: %h", len);
+
     cicero.start_AXI_M_transfer(len);
 
     cicero.verify_code();
