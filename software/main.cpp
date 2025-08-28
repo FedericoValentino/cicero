@@ -98,6 +98,8 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
 
     if(cicero.fast_transfer)
     {
+        start = std::chrono::high_resolution_clock::now();
+        
         uint32_t len = string_end_addr/4;
 
         printf("Length of code+string: 0x%08x\n", len);
