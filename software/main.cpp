@@ -1,6 +1,5 @@
 #include "re2_driver.hpp"
 #include <iostream>
-#include <chrono>
 
 #include <fcntl.h>
 #include <sys/mman.h>

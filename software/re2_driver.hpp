@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
+#include <chrono>
 
 class re2_driver {
 public:
