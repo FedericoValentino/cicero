@@ -64,6 +64,8 @@ public:
     
     bool fast_transfer;
 
+    int64_t memory_transfer_time = 0;
+
     re2_driver(void* base_addr_lite, void* base_addr_full, bool fast_transfer)
     {
         this->base_addr_lite = base_addr_lite;
@@ -184,6 +186,8 @@ public:
 
     void start_AXI_M_transfer(uint32_t len)
     {
+        auto start = std::chrono::high_resolution_clock::now();
+
         write_data_in(len);
         write_cmd(CMD_SET_LEN);
         write_cmd(CMD_NOP);
@@ -194,6 +198,12 @@ public:
         write_cmd(CMD_NOP);
 
         wait_for(STATUS_IDLE);
+
+        auto stop = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+        memory_transfer_time = duration.count();
     }
 
     uint32_t load_code(const std::vector<uint16_t>& code) 
@@ -382,12 +392,21 @@ private:
             {
                 word |= (bytes[i + j] << (8 * j));
             }
+
+            auto start = std::chrono::high_resolution_clock::now();
+
             write_address(addr);
             write_data_in(word);
             if (first) {
                 write_cmd(CMD_WRITE);
                 first = false;
             }
+
+            auto stop = std::chrono::high_resolution_clock::now();
+
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+            memory_transfer_time += duration.count();
             //std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
             //std::cout<<"At Address:"<<std::hex<<addr<<std::endl;
             addr += word_size_in_bytes;
