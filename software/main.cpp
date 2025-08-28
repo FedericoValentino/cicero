@@ -104,7 +104,7 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
         cicero.start_AXI_M_transfer(len);
     }
 
-    std::cout << "Memory transfer lasted " <<cicero.memory_transfer_time<<" microseconds with fast transfer set to "<<cicero.fast_transfer<< std::endl;
+    std::cout << "Memory transfer lasted " <<cicero.memory_transfer_time<<" nanoseconds with fast transfer set to "<<cicero.fast_transfer<< std::endl;
 
     cicero.verify_code();
 
