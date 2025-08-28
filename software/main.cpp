@@ -84,6 +84,9 @@ uint32_t read_string(char string[], uint32_t addr, re2_driver& driver)
 uint32_t start_cicero(re2_driver& cicero, char* argv[])
 {
     //Reset cicero
+    cicero.write_cmd(re2_driver::CMD_RESET);
+    cicero.write_cmd(re2_driver::CMD_RESET_PERF_CNTRS);
+
     cicero.write_cmd(re2_driver::CMD_RESTART);
 
     //Insert data
