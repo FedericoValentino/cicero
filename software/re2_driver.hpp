@@ -202,7 +202,7 @@ public:
 
         auto stop = std::chrono::high_resolution_clock::now();
 
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
 
         memory_transfer_time = duration.count();
     }
@@ -405,7 +405,7 @@ private:
 
             auto stop = std::chrono::high_resolution_clock::now();
 
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+            auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
 
             memory_transfer_time += duration.count();
             //std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
