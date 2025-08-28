@@ -1,5 +1,6 @@
 #include "re2_driver.hpp"
 #include <iostream>
+#include <chrono>
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -89,6 +90,8 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
     //Insert data
     FILE *program = fopen(argv[1], "r");
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     uint32_t code_end_addr = read_program(program, cicero);
 
     uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
@@ -102,6 +105,11 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
         cicero.start_AXI_M_transfer(len);
     }
     
+    auto stop = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    std::cout << "Memory transfer lasted " <<duration.count()<<" with fast transfer set to "<<cicero.fast_transfer<< std::endl;
 
     cicero.verify_code();
 
