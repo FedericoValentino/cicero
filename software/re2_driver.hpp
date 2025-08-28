@@ -150,7 +150,7 @@ public:
 
         get_elapsed_clock_cycles_report(elapsed_ccs);
         printf("clock cycles elapsed         %d:\n", elapsed_ccs);
-        for(int i = 0; i < CC_ID_BITS; i++)
+        for(int i = 0; i < 1 << CC_ID_BITS; i++)
         {
             get_fifo_sizing_report(i, fifoSize, fifoFulls);
             get_hit_miss_report(i, cache_hits, cache_miss);

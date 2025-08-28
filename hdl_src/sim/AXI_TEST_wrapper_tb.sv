@@ -170,12 +170,119 @@ begin
 end
 endtask
 
-task read(input logic [32-1:0] addr);
+task read(input logic [32-1:0] addr, output logic [31:0] data_out);
   begin
-  
     master_agent.AXI4LITE_READ_BURST(base_addr + addr,0,data,resp);
-    $display("%h", data);
-    
+    data_out=data;
+  end
+  endtask
+
+task get_cc_elapsed(output logic[REG_WIDTH-1:0] cc);
+    begin
+        write(CMD_READ_ELAPSED_CLOCK, 32'h4*4); // CMD_READ_ELAPSED_CLOCK;
+        @(posedge aclk);
+        read(32'h6*4, cc);
+        @(posedge aclk);
+        write(CMD_NOP, 32'h4*4); //CMD_NOP
+    end
+  endtask
+
+  task get_fifo_sizing_report(input logic[REG_WIDTH-1: 0] fifoSelector, 
+                              output logic[REG_WIDTH-1: 0] fifoSize,
+                              output logic[REG_WIDTH-1: 0] fifoFulls);
+  begin
+      write(fifoSelector, 32'h0*4);
+      @(posedge aclk);
+      write(CMD_READ_FIFO_COUNT, 32'h4*4);
+      @(posedge aclk);
+      read(32'h6*4, fifoSize);
+      @(posedge aclk);
+      write(CMD_READ_FIFO_FULLS, 32'h4*4);
+      @(posedge aclk);
+      read(32'h6*4, fifoFulls);
+      @(posedge aclk);
+
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task get_hit_miss_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                            output logic[REG_WIDTH-1: 0] cacheHits,
+                            output logic[REG_WIDTH-1: 0] cacheMiss);
+  begin
+      write(coreSelector, 32'h0*4);
+      @(posedge aclk)
+      write(CMD_READ_CACHE_HITS, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, cacheHits);
+      @(posedge aclk)
+      write(CMD_READ_CACHE_MISS, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, cacheMiss);
+      @(posedge aclk)
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task get_cycles_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                          output logic[REG_WIDTH-1: 0] fetch_ccs,
+                          output logic[REG_WIDTH-1: 0] exe1_ccs,
+                          output logic[REG_WIDTH-1: 0] exe2_ccs);
+  begin
+      write(coreSelector, 32'h0*4);
+      @(posedge aclk)
+      write(CMD_READ_FETCH_CLOCK, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, fetch_ccs);
+      @(posedge aclk)
+      write(CMD_READ_EXE1_CLOCK, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, exe1_ccs);
+      @(posedge aclk)
+      write(CMD_READ_EXE2_CLOCK, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, exe2_ccs);
+      @(posedge aclk)
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task get_stalls_report(input logic[REG_WIDTH-1: 0] coreSelector,
+                          output logic[REG_WIDTH-1: 0] fetch_stalls,
+                          output logic[REG_WIDTH-1: 0] exe1_stalls,
+                          output logic[REG_WIDTH-1: 0] exe2_stalls);
+  begin
+      write(coreSelector, 32'h0*4);
+      @(posedge aclk)
+      write(CMD_READ_FETCH_STALLS, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, fetch_stalls);
+      @(posedge aclk)
+      write(CMD_READ_EXE1_STALLS, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, exe1_stalls);
+      @(posedge aclk)
+      write(CMD_READ_EXE2_STALLS, 32'h4*4);
+      @(posedge aclk)
+      read(32'h6*4, exe2_stalls);
+      @(posedge aclk)
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+
+  task reset_perf_cntrs();
+  begin
+      write(CMD_RESET_PERF_CNTRS, 32'h4*4);
+      @(posedge aclk);
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
+  end
+  endtask
+  
+  task reset_cicero();
+  begin
+      write(CMD_RESET, 32'h4*4);
+      @(posedge aclk);
+      write(CMD_NOP, 32'h4*4); //CMD_NOP
   end
   endtask
 
@@ -244,6 +351,15 @@ initial begin
     check_memory();
 
     #500ns
+
+    write(CMD_RESTART, 32'h4*4);
+    @(posedge aclk);
+    write(CMD_NOP, 32'h4*4); //CMD_NOP
+    @(posedge aclk);
+
+    reset_cicero();
+
+    reset_perf_cntrs();
     
     //WILL READ CODE FROM ADDRESS 0
     write(32'h4000_0000, 32'h0*4); //WRITE RADDR
@@ -277,6 +393,32 @@ initial begin
     @(posedge aclk);
     
     wait_status(STATUS_REJECTED);
+
+    get_cc_elapsed(cc_taken);
+    $display("cc taken: %d", cc_taken);
+    for(int i = 0; i < 2**CC_ID_BITS; i++) begin
+        get_fifo_sizing_report(i, fifoSize, fifoFulls);
+        get_hit_miss_report(i, cache_hits, cache_miss);
+        get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+        get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
+
+        $display("---------------------------------------------");
+        $display("core         %d:", i);
+        $display("fifo statistics:");
+        $display("max size:     %d", fifoSize);
+        $display("full events:  %d", fifoFulls);
+        $display("cache statistics:");
+        $display("hits:         %d", cache_hits);
+        $display("miss:         %d", cache_miss);
+        $display("clock cycles per stage:");
+        $display("fetch cycles: %d", fetch_ccs);
+        $display("fetch stalls: %d", fetch_stalls);
+        $display("exe1  cycles: %d", exe1_ccs);
+        $display("exe1  stalls: %d", exe1_stalls);
+        $display("exe2  cycles: %d", exe2_ccs);
+        $display("exe2  stalls: %d", exe2_stalls);
+    end
+    $display("---------------------------------------------");
     
     #500ns
     $finish;
