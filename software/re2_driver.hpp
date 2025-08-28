@@ -61,11 +61,14 @@ public:
 
     std::vector<uint8_t> current_string;
     uint32_t start_string_addr;
+    
+    bool fast_transfer;
 
-    re2_driver(void* base_addr_lite, void* base_addr_full)
+    re2_driver(void* base_addr_lite, void* base_addr_full, bool fast_transfer)
     {
         this->base_addr_lite = base_addr_lite;
         this->base_addr_full = base_addr_full;
+        this->fast_transfer = fast_transfer;
     }
 
 
@@ -201,7 +204,15 @@ public:
             bytes.push_back(word & 0xFF);
             bytes.push_back((word >> 8) & 0xFF);
         }
-        auto addr = write_bytes_ddr(bytes, 0);
+        uint32_t addr = 0;
+        if(fast_transfer)
+        {
+            addr = write_bytes_ddr(bytes, 0);
+        }
+        else
+        {
+            addr = write_bytes(bytes, 0);
+        }
         return ((addr + window_size_in_chars - 1) / window_size_in_chars) * window_size_in_chars;
     }
 
@@ -214,7 +225,18 @@ public:
 
 
         uint32_t aligned = ((start_addr + window_size_in_chars - 1) / window_size_in_chars) * window_size_in_chars;
-        return write_bytes_ddr(str, aligned);
+        uint32_t addr = 0;
+        
+        if(fast_transfer)
+        {
+            addr = write_bytes_ddr(str, aligned);
+        }
+        else
+        {
+            addr = write_bytes(str, aligned);
+        }
+
+        return addr;
     }
 
 
@@ -388,11 +410,11 @@ private:
                 word |= (bytes[i + j] << (8 * j));
             }
             std::size_t word_index = addr / word_size_in_bytes;
-            printf("writing at index %d of DDR\n", word_index);
+            //printf("writing at index %d of DDR\n", word_index);
             ddr[word_index] = word;
 
-            std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
-            printf("At Address: %p\n", (void*)&ddr[word_index]);
+            //std::cout<<"Wrote byte: "<<std::hex<<word<<std::endl;
+            //printf("At Address: %p\n", (void*)&ddr[word_index]);
             addr += word_size_in_bytes;
         }
         return addr;

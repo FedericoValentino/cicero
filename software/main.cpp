@@ -93,11 +93,15 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
 
     uint32_t string_end_addr = read_string(argv[2], code_end_addr, cicero);
 
-    uint32_t len = string_end_addr/4;
+    if(cicero.fast_transfer)
+    {
+        uint32_t len = string_end_addr/4;
 
-    printf("Length of code+string: 0x%08x\n", len);
+        printf("Length of code+string: 0x%08x\n", len);
 
-    cicero.start_AXI_M_transfer(len);
+        cicero.start_AXI_M_transfer(len);
+    }
+    
 
     cicero.verify_code();
 
@@ -114,16 +118,18 @@ uint32_t start_cicero(re2_driver& cicero, char* argv[])
 int main(int argc, char* argv[])
 {
 
-    if(argc != 3)
+    if(argc != 4)
     {
-        std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string>"<<std::endl;
+        std::cout<<"Usage: ./re2_driver_xrt <regex_code> <string> <fast_transfer: [1|0]>"<<std::endl;
     }
 
     void* base_ptr_lite = open_device_axi_lite();
 
     void* base_ptr_full = open_device_axi_full();
 
-    re2_driver cicero(base_ptr_lite, base_ptr_full);
+    int fast_transfer = atoi(argv[3]);
+
+    re2_driver cicero(base_ptr_lite, base_ptr_full, fast_transfer);
 
     cicero.test_write_capabilities();  
 
