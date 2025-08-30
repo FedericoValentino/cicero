@@ -117,6 +117,7 @@ def measure(
             print(
                 f"Error while matching regex on test string: {e}\nRegex was: '{regex}'")
 
+        start = time.perf_counter_ns()
         for string_index, string in enumerate(tqdm.tqdm(string_inputs, desc=f"Progress for regex number {regex_index}")):
             # STEP 4.2: Match all the strings
             re2_coprocessor.re2_copro_v2_0.reset()
@@ -137,7 +138,8 @@ def measure(
                     csv_writer.writerow([string_index, 0, -3, str(e)])
                 continue
             cc_number = re2_coprocessor.re2_copro_v2_0.read_elapsed_clock_cycles()
-            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number])
+            stop = time.perf_counter_ns
+            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number, stop - start + " ns"])
 
 
 if __name__ == '__main__':
