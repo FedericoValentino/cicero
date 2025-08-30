@@ -344,7 +344,7 @@ public:
             {
                 return status;
             }
-            if(count > 10)
+            if(count > 1000)
             {
                 //std::cout<<"Error while waiting"<<std::endl;
                 break;
