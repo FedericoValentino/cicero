@@ -109,8 +109,6 @@ def measure(
         except Exception as e:
             print(f"Error while compiling regex: {e}\nRegex was: '{regex}'")
             continue
-        
-        start = time.perf_counter_ns()
 
         re2_coprocessor.re2_copro_v2_0.reset()
         # Step 4.1.2: Match a test string, and check execution
@@ -120,7 +118,9 @@ def measure(
         except Exception as e:
             print(
                 f"Error while matching regex on test string: {e}\nRegex was: '{regex}'")
-
+        
+        # Start measuring time after the test is performed
+        start = time.perf_counter_ns()
         for string_index, string in enumerate(tqdm.tqdm(string_inputs, desc=f"Progress for regex number {regex_index}")):
             # STEP 4.2: Match all the strings
             re2_coprocessor.re2_copro_v2_0.reset()
@@ -140,8 +140,9 @@ def measure(
                 continue
             cc_number = re2_coprocessor.re2_copro_v2_0.read_elapsed_clock_cycles()
             csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number])
-        
+        #Stop measuring time after each string was tested with the regex
         stop = time.perf_counter_ns();
+        #Add to total duration of the test
         duration += stop - start;
     csv_writer.writerow([duration]);
     print(f"Computing each string with each regex took {duration} nanoseconds");

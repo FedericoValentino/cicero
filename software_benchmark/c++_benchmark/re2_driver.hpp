@@ -66,6 +66,7 @@ public:
     bool fast_transfer;
 
     int64_t memory_transfer_time = 0;
+    int64_t execution_time = 0;
 
     re2_driver(void* base_addr_lite, void* base_addr_full, bool fast_transfer)
     {
