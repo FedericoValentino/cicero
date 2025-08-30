@@ -165,9 +165,10 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
             uint32_t ccs;
             cicero.get_elapsed_clock_cycles_report(ccs);
 
-            outputFile << string_index << ", "
-                       << accepted << ", "
-                       << ccs << "\n";
+            outputFile  << string << "," 
+                        << string_index << ","
+                        << accepted << ","
+                        << ccs << "\n";
 
             total_time += cicero.memory_transfer_time + cicero.execution_time;
 
