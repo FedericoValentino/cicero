@@ -112,6 +112,8 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 {
     int64_t total_time = 0;
 
+    std::ofstream outputFile("output.csv");
+
 
     for(std::string regex : regexes)
     {
@@ -123,6 +125,9 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
         system(command.c_str());
 
+        outputFile << regex + "\n";
+
+        uint32_t string_index = 0;
         for(std::string string : strings)
         {
             FILE *program = fopen("current_regex.regex", "r");
@@ -149,7 +154,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
             cicero.start(code_end_addr, string_end_addr);
 
-            cicero.wait_complete();
+            uint32_t accepted = cicero.wait_complete();
 
             auto stop = std::chrono::high_resolution_clock::now();
 
@@ -157,12 +162,20 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
             cicero.execution_time = duration.count();
 
+            uint32_t ccs;
+            cicero.get_elapsed_clock_cycles_report(ccs);
+
+            outputFile << string_index << ", "
+                       << accepted << ", "
+                       << ccs << "\n";
+
             total_time += cicero.memory_transfer_time + cicero.execution_time;
 
-            cicero.read_performance_counters();
+            string_index++;
         }
     }
-
+    outputFile << total_time;
+    outputFile.close();
     printf("Computing each string with each regex took %d nanoseconds", total_time);
 }
 
@@ -178,6 +191,7 @@ void read_lines(std::vector<std::string>& vec, char* file)
         vec.push_back(s);
     }
 
+    filep.close();
 }
 
 

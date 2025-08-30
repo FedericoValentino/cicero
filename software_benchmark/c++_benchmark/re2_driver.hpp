@@ -491,6 +491,7 @@ private:
         write_cmd(CMD_NOP);
     }
 
+public:
     void get_elapsed_clock_cycles_report(uint32_t& elapsed_ccs)
     {
         write_cmd(CMD_READ_ELAPSED_CLOCK);
