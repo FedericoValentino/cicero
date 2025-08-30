@@ -136,7 +136,7 @@ def measure(
                         f"Error while matching regex on string: {e}\nRegex was: '{regex}'\nString was: '{string}'")
                     csv_writer.writerow([string_index, 0, -3, str(e)])
                 continue
-            cc_number = re2_coprocessor.re2_copro_v2.read_elapsed_clock_cycles()
+            cc_number = re2_coprocessor.re2_copro_v2_0.read_elapsed_clock_cycles()
             csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number])
 
 
