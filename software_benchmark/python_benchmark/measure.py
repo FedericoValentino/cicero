@@ -139,7 +139,7 @@ def measure(
                 continue
             cc_number = re2_coprocessor.re2_copro_v2_0.read_elapsed_clock_cycles()
             stop = time.perf_counter_ns
-            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number, str(stop - start) + " ns"])
+            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number, stop - start])
 
 
 if __name__ == '__main__':
