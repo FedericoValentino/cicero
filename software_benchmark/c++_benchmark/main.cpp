@@ -178,7 +178,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
     }
     outputFile << total_time;
     outputFile.close();
-    printf("Computing each string with each regex took %d nanoseconds\n", total_time);
+    printf("Computing each string with each regex took %ld nanoseconds\n", total_time);
 }
 
 void read_lines(std::vector<std::string>& vec, char* file)
