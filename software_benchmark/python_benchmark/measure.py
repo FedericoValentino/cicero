@@ -93,10 +93,11 @@ def measure(
 
     # STEP 3.2 Load strings
     with open(strings_file_path, 'rb') as file:
-        content = file.read()
-        string_inputs = content.split(b'\n')[:-1]
+        content = file.read().rstrip(b'\n')
+        string_inputs = content.split(b'\n')
         if inputs_count != -1:
             string_inputs = string_inputs[:inputs_count]
+
 
     duration = 0;
     for regex_index, regex in enumerate(tqdm.tqdm(regexes, desc=progress_message)):
@@ -139,7 +140,7 @@ def measure(
                     csv_writer.writerow([string_index, 0, -3, str(e)])
                 continue
             cc_number = re2_coprocessor.re2_copro_v2_0.read_elapsed_clock_cycles()
-            csv_writer.writerow([string, string_index, 1 if accept_result else 0, cc_number])
+            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number])
         #Stop measuring time after each string was tested with the regex
         stop = time.perf_counter_ns();
         #Add to total duration of the test
