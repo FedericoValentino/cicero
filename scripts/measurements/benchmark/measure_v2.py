@@ -108,10 +108,10 @@ def measure(
         except Exception as e:
             print(f"Error while compiling regex: {e}\nRegex was: '{regex}'")
             continue
-        re2_coprocessor.re2_copro_v2.reset()
+        re2_coprocessor.re2_copro_v2_0.reset()
         # Step 4.1.2: Match a test string, and check execution
         try:
-            accept_result = re2_coprocessor.re2_copro_v2.load_and_run(
+            accept_result = re2_coprocessor.re2_copro_v2_0.load_and_run(
                 compiled_regex.split('\n'), "test input")
         except Exception as e:
             print(
@@ -119,9 +119,9 @@ def measure(
 
         for string_index, string in enumerate(tqdm.tqdm(string_inputs, desc=f"Progress for regex number {regex_index}")):
             # STEP 4.2: Match all the strings
-            re2_coprocessor.re2_copro_v2.reset()
+            re2_coprocessor.re2_copro_v2_0.reset()
             try:
-                accept_result = re2_coprocessor.re2_copro_v2.load_only_string_and_run(
+                accept_result = re2_coprocessor.re2_copro_v2_0.load_only_string_and_run(
                     compiled_regex,
                     string,
                     double_check=False
