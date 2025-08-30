@@ -144,7 +144,7 @@ def measure(
             csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number])
         
         stop = time.perf_counter_ns();
-        duration += start - stop;
+        duration += stop - start;
     csv_writer.writerow([duration]);
     print(f"Computing each string with each regex took {duration} nanoseconds");
 
