@@ -200,9 +200,10 @@ void read_lines(std::vector<std::string>& vec, char* file)
 int main(int argc, char* argv[])
 {
 
-    if(argc != 5)
+    if(argc != 6)
     {
         std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <output_file> <fast_transfer: [1|0]>"<<std::endl;
+        return -1;
     }
 
     //Step 1: read strings and regexes
