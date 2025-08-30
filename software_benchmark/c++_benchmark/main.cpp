@@ -108,7 +108,7 @@ uint32_t read_string(const char string[], uint32_t addr, re2_driver& driver)
     return driver.load_string(string_chars, addr);
 }
 
-void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes)
+void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path)
 {
     int64_t total_time = 0;
 
@@ -119,7 +119,9 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
         //Call to python to generate the file
         //python3 ../../../cicero_compiler/re2compiler.py -data="(this|that)" -o current_regex.re
-        system("python3 ../../../cicero_compiler/re2compiler.py -data=\"(this|that)\" -o current_regex.regex");
+        std::string command = "python3 " + re2compiler_path + " -data=\"" + regex + "\" -o current_regex.regex";
+
+        system(command.c_str());
 
         for(std::string string : strings)
         {
@@ -191,22 +193,23 @@ int main(int argc, char* argv[])
     std::vector<std::string> strings;
     std::vector<std::string> regexes;
 
-    read_lines(strings, argv[2]);
     read_lines(regexes, argv[1]);
+    read_lines(strings, argv[2]);
+
 
     //Step 2: setup cicero
-    void* base_ptr_lite = open_device_axi_lite();
+    void* base_ptr_lite = open_device_axi_lite_mock();
 
-    void* base_ptr_full = open_device_axi_full();
+    void* base_ptr_full = open_device_axi_full_mock();
 
     int fast_transfer = atoi(argv[4]);
 
     re2_driver cicero(base_ptr_lite, base_ptr_full, fast_transfer);
 
-    cicero.test_write_capabilities();
+    //cicero.test_write_capabilities();
 
     //Step 3: Start tests on cicero
-    start_cicero(cicero, strings, regexes);
+    start_cicero(cicero, strings, regexes, argv[3]);
     
     return 0;
 }
