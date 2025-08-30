@@ -317,15 +317,15 @@ public:
     {        
         wait_for(STATUS_IDLE);
 
-        std::cout<<"String starts at: "<<std::hex<<start_string_address<<std::endl;
-        std::cout<<"String ends at: "<<std::hex<<end_string_address<<std::endl;
+        //std::cout<<"String starts at: "<<std::hex<<start_string_address<<std::endl;
+        //std::cout<<"String ends at: "<<std::hex<<end_string_address<<std::endl;
         write_start_cc(start_string_address);
         write_end_cc(end_string_address);
 
-        std::cout<<"Status before starting is: "<<std::hex<<read_status()<<std::endl;
+        //std::cout<<"Status before starting is: "<<std::hex<<read_status()<<std::endl;
 
         write_cmd(CMD_START);
-        std::cout<<"Current command is: "<<std::hex<<read_cmd()<<std::endl;
+        //std::cout<<"Current command is: "<<std::hex<<read_cmd()<<std::endl;
 
         write_cmd(CMD_NOP);
     }
@@ -333,12 +333,12 @@ public:
     uint32_t wait_complete()
     {
         auto status = read_status();
-        std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
+        //std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
         uint64_t count  = 0;
         while(status == STATUS_RUNNING)
         {
             status = read_status();
-            std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
+            //std::cout<<"Current status is:"<<std::hex<<status<<std::endl;
             count += 1;
             if (status == STATUS_ERROR)
             {
@@ -346,7 +346,7 @@ public:
             }
             if(count > 10)
             {
-                std::cout<<"Error while waiting"<<std::endl;
+                //std::cout<<"Error while waiting"<<std::endl;
                 break;
             }
         }
