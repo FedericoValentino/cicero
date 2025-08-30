@@ -113,8 +113,8 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
     int64_t total_time = 0;
 
     std::ofstream outputFile(output_file);
-
-
+    
+    uint32_t regex_index = 0;
     for(std::string regex : regexes)
     {
         //Step 1: compile the regex
@@ -126,6 +126,8 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
         system(command.c_str());
 
         outputFile << regex + "\n";
+        
+        printf("%d\n", regex_index);
 
         uint32_t string_index = 0;
         for(std::string string : strings)
@@ -178,6 +180,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
             string_index++;
         }
         printf("\n");
+        regex_index++;
     }
     outputFile << total_time;
     outputFile.close();

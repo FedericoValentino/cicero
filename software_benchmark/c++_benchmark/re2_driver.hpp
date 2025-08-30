@@ -1,6 +1,7 @@
 #include <vector>
 #include <cstdint>
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <assert.h>
 #include <chrono>
@@ -188,28 +189,42 @@ public:
 
     void start_AXI_M_transfer(uint32_t len)
     {
-        auto start = std::chrono::high_resolution_clock::now();
+        printf("Starting transfer of length = %d\n", len);
 
-        write_data_in(len);
-        write_cmd(CMD_SET_LEN);
-        write_cmd(CMD_NOP);
-        write_data_in(0x40000000);
-        write_cmd(CMD_SET_ADDRESS);
-        write_cmd(CMD_NOP);
-        write_cmd(CMD_START_FETCH);
-        write_cmd(CMD_NOP);
+        uint32_t actual_len = len;
 
-        wait_for(STATUS_IDLE);
+        if(len >= 256)
+        {
+            actual_len = len/2;
+        }
 
-        auto stop = std::chrono::high_resolution_clock::now();
+        for(int i = 0; i < len/actual_len; i++)
+        {
+            auto start = std::chrono::high_resolution_clock::now();
 
-        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
+            write_data_in(actual_len);
+            write_cmd(CMD_SET_LEN);
+            write_cmd(CMD_NOP);
+            write_data_in(0x40000000 + i*(actual_len+1)*4);
+            write_cmd(CMD_SET_ADDRESS);
+            write_cmd(CMD_NOP);
+            write_cmd(CMD_START_FETCH);
+            write_cmd(CMD_NOP);
 
-        memory_transfer_time = duration.count();
+            wait_for(STATUS_IDLE);
+
+            auto stop = std::chrono::high_resolution_clock::now();
+
+            auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
+
+            memory_transfer_time += duration.count();
+        }
+        
     }
 
     uint32_t load_code(const std::vector<uint16_t>& code) 
     {
+        current_code.clear();
         std::vector<uint8_t> bytes;
         for (uint16_t word : code) {
             current_code.push_back(word);
@@ -230,6 +245,7 @@ public:
 
     uint32_t load_string(const std::vector<uint8_t>& str, uint32_t start_addr) 
     {
+        current_string.clear();
         start_string_addr = start_addr;
         for (uint8_t byte : str) {
             current_string.push_back(byte);
@@ -259,8 +275,12 @@ public:
         for(int i = 0;  i< current_code.size(); i+=2)
         {
             uint32_t word1 = current_code[i];
-            uint32_t word2 = current_code[i+1];
-
+            uint32_t word2 = 0;
+            if(i + 1 < current_code.size())
+            {
+                word2 = current_code[i+1];
+            }
+            
             uint32_t bigword = (0x00000000 | word1) | (word2 << 16);
 
             write_address(current_address);
@@ -271,6 +291,41 @@ public:
             if(code_word != bigword)
             {
                 std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+                //dump memory and exit
+                current_address = 0;
+                std::ofstream outputFile("memorydump.csv");
+                for(int j = 0; j < current_code.size(); j+=2)
+                {
+                    if(j < current_code.size())
+                    {
+                        word1 = current_code[j];
+                        word2 = 0;
+                        if(j + 1 < current_code.size())
+                        {
+                            word2 = current_code[j+1];
+                        }
+
+                        bigword = (0x00000000 | word1) | (word2 << 16);
+                    }
+                    else 
+                    {
+                        bigword = 0;
+                    }
+
+                    write_address(current_address);
+                    write_cmd(CMD_READ);
+
+                    uint32_t code_word = read_data_o();
+
+                    outputFile << std::hex << current_address;
+                    outputFile << " , ";
+                    outputFile << std::hex << code_word;
+                    outputFile << " , ";
+                    outputFile << std::hex << bigword << "\n";
+
+                    current_address += word_size_in_bytes;
+                }
+                outputFile.close();
                 exit(-1);
             }
 
@@ -290,7 +345,7 @@ public:
         {
             uint32_t bigword = 0x00000000;
 
-            for(int j = 0 ; j < current_string.size() && j < 4; j++)
+            for(int j = 0 ; j < current_string.size() && j < 4 && i+j < current_string.size(); j++)
             {
                 bigword = bigword | (current_string[i+j] << 8*j);
             }
@@ -303,6 +358,34 @@ public:
             if(code_word != bigword)
             {
                 std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+
+                current_address = start_string_addr;
+
+                std::ofstream outputFile("memorydump.csv");
+
+                for(int j = 0; j < current_string.size(); j+=4)
+                {
+                    bigword = 0x00000000;
+                    
+                    for(int k = 0 ; k < current_string.size() && k < 4 && j+k < current_string.size(); k++)
+                    {
+                        bigword = bigword | (current_string[j+k] << 8*k);
+                    }
+                        
+                    write_address(current_address);
+                    write_cmd(CMD_READ);
+
+                    uint32_t code_word = read_data_o();
+
+                    outputFile << std::hex << current_address;
+                    outputFile << " , ";
+                    outputFile << std::hex << code_word;
+                    outputFile << " , ";
+                    outputFile << std::hex << bigword << "\n";
+
+                    current_address += word_size_in_bytes;
+                }
+                outputFile.close();
                 exit(-1);
             }
 
@@ -426,8 +509,10 @@ private:
         for (std::size_t i = 0; i < bytes.size(); i += word_size_in_bytes) 
         {
             uint32_t word = 0;
+            //printf("%d\n", i);
             for (int j = 0; j < word_size_in_bytes && (i + j) < bytes.size(); ++j) 
             {
+                //printf("%x, %d, %d\n", bytes[i+j], i+j, bytes.size());
                 word |= (bytes[i + j] << (8 * j));
             }
             std::size_t word_index = addr / word_size_in_bytes;
