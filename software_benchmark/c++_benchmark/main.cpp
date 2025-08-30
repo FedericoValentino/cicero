@@ -112,7 +112,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 {
     int64_t total_time = 0;
 
-    std::ofstream outputFile("output.csv");
+    std::ofstream outputFile("output_c.csv");
 
 
     for(std::string regex : regexes)
