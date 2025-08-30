@@ -198,15 +198,15 @@ int main(int argc, char* argv[])
 
 
     //Step 2: setup cicero
-    void* base_ptr_lite = open_device_axi_lite_mock();
+    void* base_ptr_lite = open_device_axi_lite();
 
-    void* base_ptr_full = open_device_axi_full_mock();
+    void* base_ptr_full = open_device_axi_full();
 
     int fast_transfer = atoi(argv[4]);
 
     re2_driver cicero(base_ptr_lite, base_ptr_full, fast_transfer);
 
-    //cicero.test_write_capabilities();
+    cicero.test_write_capabilities();
 
     //Step 3: Start tests on cicero
     start_cicero(cicero, strings, regexes, argv[3]);
