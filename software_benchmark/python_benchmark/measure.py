@@ -123,13 +123,11 @@ def measure(
 
         for string_index, string in enumerate(tqdm.tqdm(string_inputs, desc=f"Progress for regex number {regex_index}")):
             # STEP 4.2: Match all the strings
-            #re2_coprocessor.re2_copro_v2_0.reset()
+            re2_coprocessor.re2_copro_v2_0.reset()
             try:
-                accept_result = re2_coprocessor.re2_copro_v2_0.load_only_string_and_run(
-                    compiled_regex,
-                    string,
-                    double_check=False
-                )
+                #This new version requires to reload the regex too after a reset
+                accept_result = re2_coprocessor.re2_copro_v2_0.load_and_run(
+                    compiled_regex.split('\n'), string)
             except Exception as e:
                 if len(e.args) == 1 and e.args[0] == 'probably fifo full':
                     csv_writer.writerow([string_index, 0, -1, str(e)])
