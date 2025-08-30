@@ -123,7 +123,7 @@ def measure(
 
         for string_index, string in enumerate(tqdm.tqdm(string_inputs, desc=f"Progress for regex number {regex_index}")):
             # STEP 4.2: Match all the strings
-            re2_coprocessor.re2_copro_v2_0.reset()
+            #re2_coprocessor.re2_copro_v2_0.reset()
             try:
                 accept_result = re2_coprocessor.re2_copro_v2_0.load_only_string_and_run(
                     compiled_regex,
