@@ -108,11 +108,11 @@ uint32_t read_string(const char string[], uint32_t addr, re2_driver& driver)
     return driver.load_string(string_chars, addr);
 }
 
-void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path)
+void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path, std::string output_file)
 {
     int64_t total_time = 0;
 
-    std::ofstream outputFile("output_c.csv");
+    std::ofstream outputFile(output_file);
 
 
     for(std::string regex : regexes)
@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
 
     if(argc != 5)
     {
-        std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <fast_transfer: [1|0]>"<<std::endl;
+        std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <output_file> <fast_transfer: [1|0]>"<<std::endl;
     }
 
     //Step 1: read strings and regexes
@@ -218,14 +218,14 @@ int main(int argc, char* argv[])
 
     void* base_ptr_full = open_device_axi_full();
 
-    int fast_transfer = atoi(argv[4]);
+    int fast_transfer = atoi(argv[5]);
 
     re2_driver cicero(base_ptr_lite, base_ptr_full, fast_transfer);
 
     cicero.test_write_capabilities();
 
     //Step 3: Start tests on cicero
-    start_cicero(cicero, strings, regexes, argv[3]);
+    start_cicero(cicero, strings, regexes, argv[3], argv[4]);
     
     return 0;
 }
