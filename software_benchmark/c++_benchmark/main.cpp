@@ -151,6 +151,9 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
             }
             //At this point CICERO driver's internal counter has the total time for memory transfers
 
+            cicero.verify_code();
+            cicero.verify_string();
+
             auto start = std::chrono::high_resolution_clock::now();
 
             cicero.start(code_end_addr, string_end_addr);
