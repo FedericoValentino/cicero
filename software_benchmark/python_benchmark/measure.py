@@ -98,6 +98,7 @@ def measure(
         if inputs_count != -1:
             string_inputs = string_inputs[:inputs_count]
 
+    duration = 0;
     for regex_index, regex in enumerate(tqdm.tqdm(regexes, desc=progress_message)):
         # Step 4.0: Write in the CSV a line for the regex
         csv_writer.writerow([regex])
@@ -108,6 +109,9 @@ def measure(
         except Exception as e:
             print(f"Error while compiling regex: {e}\nRegex was: '{regex}'")
             continue
+        
+        start = time.perf_counter_ns()
+
         re2_coprocessor.re2_copro_v2_0.reset()
         # Step 4.1.2: Match a test string, and check execution
         try:
@@ -117,7 +121,6 @@ def measure(
             print(
                 f"Error while matching regex on test string: {e}\nRegex was: '{regex}'")
 
-        start = time.perf_counter_ns()
         for string_index, string in enumerate(tqdm.tqdm(string_inputs, desc=f"Progress for regex number {regex_index}")):
             # STEP 4.2: Match all the strings
             re2_coprocessor.re2_copro_v2_0.reset()
@@ -138,8 +141,12 @@ def measure(
                     csv_writer.writerow([string_index, 0, -3, str(e)])
                 continue
             cc_number = re2_coprocessor.re2_copro_v2_0.read_elapsed_clock_cycles()
-            stop = time.perf_counter_ns()
-            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number, stop - start])
+            csv_writer.writerow([string_index, 1 if accept_result else 0, cc_number])
+        
+        stop = time.perf_counter_ns();
+        duration += start - stop;
+    csv_writer.writerow([duration]);
+    print(f"Computing each string with each regex took {duration} nanoseconds");
 
 
 if __name__ == '__main__':
