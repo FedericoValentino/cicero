@@ -145,7 +145,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
             {
                 uint32_t len = string_end_addr/4;
 
-                printf("Length of code+string: 0x%08x\n", len);
+                //printf("Length of code+string: 0x%08x\n", len);
 
                 cicero.start_AXI_M_transfer(len);
             }
