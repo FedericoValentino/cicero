@@ -21,7 +21,7 @@ sudo -E python -c "from pynq import Overlay; o = Overlay('./bitstreams/[bitstrea
 Run the native API as root
 
 ~~~
-sudo ./re2_driver_xrt
+sudo ./re2_driver_xrt <regex_code> <string> <fast_transfer: [1|0]>
 ~~~
 
 # N.B.
