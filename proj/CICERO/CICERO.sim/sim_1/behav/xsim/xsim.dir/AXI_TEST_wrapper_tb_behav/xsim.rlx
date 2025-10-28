@@ -1,0 +1,12 @@
+
+{ 
+    crc :  2462429493658140583  , 
+    ccp_crc :  0  , 
+    cmdline : " --incr --debug typical --relax --mt 8 -cc_db cicero_coverage -cc_dir ./run1 -cc_type sbtc -L xil_defaultlib -L axi_infrastructure_v1_1_0 -L axi_vip_v1_1_17 -L zynq_ultra_ps_e_vip_v1_0_17 -L generic_baseblocks_v2_1_2 -L axi_register_slice_v2_1_31 -L fifo_generator_v13_2_10 -L axi_data_fifo_v2_1_30 -L axi_crossbar_v2_1_32 -L axi_protocol_converter_v2_1_31 -L axi_clock_converter_v2_1_30 -L blk_mem_gen_v8_4_8 -L axi_dwidth_converter_v2_1_31 -L lib_cdc_v1_0_3 -L proc_sys_reset_v5_0_15 -L xlconstant_v1_1_9 -L smartconnect_v1_0 -L uvm -L xilinx_vip -L unisims_ver -L unimacro_ver -L secureip -L xpm --snapshot AXI_TEST_wrapper_tb_behav xil_defaultlib.AXI_TEST_wrapper_tb xil_defaultlib.glbl" , 
+    buildDate : "May 22 2024" , 
+    buildTime : "18:54:44" , 
+    linkCmd : "/usr/bin/gcc -Wa,-W  -O -fPIC  -m64  -Wl,--no-as-needed  -Wl,--unresolved-symbols=ignore-all  -o \"xsim.dir/AXI_TEST_wrapper_tb_behav/xsimk\"   \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_0.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_1.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_2.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_3.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_4.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_5.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_6.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_7.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_8.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_9.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_10.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_11.lnx64.o\" \"xsim.dir/AXI_TEST_wrapper_tb_behav/obj/xsim_12.lnx64.o\" -L\"/tools/Xilinx/Vivado/2024.1/lib/lnx64.o\" -lrdi_simulator_kernel    -L/tools/Xilinx/Vivado/2024.1/lib/lnx64.o/../../tps/lnx64/gcc-9.3.0/bin/../lib64 -Wl,--disable-new-dtags -Wl,-rpath=/tools/Xilinx/Vivado/2024.1/lib/lnx64.o/../../tps/lnx64/gcc-9.3.0/bin/../lib64 -lrdi_simbridge_kernel" , 
+    aggregate_nets : 
+    [ 
+    ] 
+} 

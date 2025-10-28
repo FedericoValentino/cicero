@@ -1,0 +1,90 @@
+transcript off
+onbreak {quit -force}
+onerror {quit -force}
+transcript on
+
+vlib work
+vlib riviera/xilinx_vip
+vlib riviera/xpm
+vlib riviera/axi_infrastructure_v1_1_0
+vlib riviera/xil_defaultlib
+vlib riviera/axi_vip_v1_1_17
+
+vmap xilinx_vip riviera/xilinx_vip
+vmap xpm riviera/xpm
+vmap axi_infrastructure_v1_1_0 riviera/axi_infrastructure_v1_1_0
+vmap xil_defaultlib riviera/xil_defaultlib
+vmap axi_vip_v1_1_17 riviera/axi_vip_v1_1_17
+
+vlog -work xilinx_vip  -incr -l smartconnect_v1_0 -l zynq_ultra_ps_e_vip_v1_0_17 "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/axi4stream_vip_axi4streampc.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/axi_vip_axi4pc.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/xil_common_vip_pkg.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/axi4stream_vip_pkg.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/axi_vip_pkg.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/axi4stream_vip_if.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/axi_vip_if.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/clk_vip_if.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/hdl/rst_vip_if.sv" \
+
+vlog -work xpm  -incr -l smartconnect_v1_0 -l zynq_ultra_ps_e_vip_v1_0_17 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"/tools/Xilinx/Vivado/2024.1/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/ip/xpm/xpm_fifo/hdl/xpm_fifo.sv" \
+"/tools/Xilinx/Vivado/2024.1/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv" \
+
+vcom -work xpm -93  -incr \
+"/tools/Xilinx/Vivado/2024.1/data/ip/xpm/xpm_VCOMP.vhd" \
+
+vlog -work axi_infrastructure_v1_1_0  -incr -v2k5 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl/axi_infrastructure_v1_1_vl_rfs.v" \
+
+vlog -work xil_defaultlib  -incr -l smartconnect_v1_0 -l zynq_ultra_ps_e_vip_v1_0_17 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../bd/AXI_TEST/ip/AXI_TEST_axi_vip_0_0_1/sim/AXI_TEST_axi_vip_0_0_pkg.sv" \
+
+vlog -work axi_vip_v1_1_17  -incr -l smartconnect_v1_0 -l zynq_ultra_ps_e_vip_v1_0_17 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/4d04/hdl/axi_vip_v1_1_vl_rfs.sv" \
+
+vlog -work xil_defaultlib  -incr -l smartconnect_v1_0 -l zynq_ultra_ps_e_vip_v1_0_17 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../bd/AXI_TEST/ip/AXI_TEST_axi_vip_0_0_1/sim/AXI_TEST_axi_vip_0_0.sv" \
+
+vlog -work xil_defaultlib  -incr -v2k5 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../bd/AXI_TEST/ipshared/af28/src/re2_copro_v2_slave_lite_v2_S00_AXI.v" \
+"../../../bd/AXI_TEST/ipshared/af28/src/re2_copro_v2.v" \
+
+vlog -work xil_defaultlib  -incr -l smartconnect_v1_0 -l zynq_ultra_ps_e_vip_v1_0_17 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../bd/AXI_TEST/ipshared/af28/src/AXI_package.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/AXI_top.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/arbiter_2_fixed.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/arbiter_2_rr.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/arbiter_fixed.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/arbiter_rr_n.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/arbitration_logic_fixed.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/arbitration_logic_rr.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/bram.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/cache_block_directly_mapped_broadcast.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/channel_iface.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/channel_multi_cc.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/coprocessor_package.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/coprocessor_top.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/engine_and_station.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/engine_and_station_xy.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/engine_interfaced.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/fifo.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/instruction_package.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/memory_read_iface.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/regex_cpu_pipelined.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/switch.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/topology_mesh.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/topology_single.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/topology_token_ring.sv" \
+"../../../bd/AXI_TEST/ipshared/af28/src/vectorial_engine.sv" \
+"../../../bd/AXI_TEST/ip/AXI_TEST_re2_copro_0_0/sim/AXI_TEST_re2_copro_0_0.sv" \
+"../../../bd/AXI_TEST/ip/AXI_TEST_axi_vip_1_0_1/sim/AXI_TEST_axi_vip_1_0_pkg.sv" \
+"../../../bd/AXI_TEST/ip/AXI_TEST_axi_vip_1_0_1/sim/AXI_TEST_axi_vip_1_0.sv" \
+
+vlog -work xil_defaultlib  -incr -v2k5 "+incdir+../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" "+incdir+/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" -l xilinx_vip -l xpm -l axi_infrastructure_v1_1_0 -l xil_defaultlib -l axi_vip_v1_1_17 \
+"../../../bd/AXI_TEST/sim/AXI_TEST.v" \
+
+vlog -work xil_defaultlib \
+"glbl.v"
+

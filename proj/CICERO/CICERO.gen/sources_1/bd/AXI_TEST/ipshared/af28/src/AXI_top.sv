@@ -1,0 +1,622 @@
+//include "AXI_package.sv"
+import AXI_package::*;
+
+//component intended to decouple the regex_coprocessor and the AXI interface.
+//It contains the memory of the regex_coprocessor so that is possible to show outside the content of the memory
+//It implements some commands that are intended to drive the regex_coprocessor and other component from software. 
+
+module AXI_top #(
+    parameter BB_N                      = 1,
+    parameter CC_ID_BITS                = 3
+)
+(
+    input  logic                 clk,
+    input  logic                 rst,
+    input  logic [REG_WIDTH-1:0] data_in_register,
+    input  logic [REG_WIDTH-1:0] address_register,
+//  input  logic [REG_WIDTH-1:0] start_pc_register,
+    input  logic [REG_WIDTH-1:0] start_cc_pointer_register,
+    input  logic [REG_WIDTH-1:0] end_cc_pointer_register,
+    input  logic [REG_WIDTH-1:0] cmd_register,
+    output logic [REG_WIDTH-1:0] status_register,
+    output logic [REG_WIDTH-1:0] data_o_register,
+
+    // AXI4-Full Read Channel
+    output logic [31:0] araddr,
+    output logic [7:0]  arlen,
+    output logic [2:0]  arsize,
+    output logic [1:0]  arburst,
+    output logic        arvalid,
+    input  logic        arready,
+    input  logic [31:0] rdata,
+    input  logic        rvalid,
+    output logic        rready,
+    input  logic        rlast
+);
+
+localparam CHARACTER_WIDTH           = 8;
+// This constant is also used in the engine, but is not properly propagated!
+localparam INSTRUCTION_SIZE          = 16;
+
+`define max(a,b) ((a) > (b) ? (a) : (b))
+
+logic rst_master;
+///// AXI
+logic [REG_WIDTH-1:0]   status_register_next;
+///// AXI4 FULL
+logic [REG_WIDTH-1:0]   status_register_fetching;
+logic [REG_WIDTH-1:0]   status_register_fetching_next;
+
+///// BRAM
+parameter BRAM_WRITE_WIDTH           = 32;
+parameter BRAM_WRITE_ADDR_WIDTH      = 10;
+parameter BRAM_READ_WIDTH = `max(64, CHARACTER_WIDTH * (2 ** CC_ID_BITS));
+// Solve for x (=BRAM_READ_ADDR_WIDTH) in the equation:
+// 2^x * BRAM_READ_WIDTH = 2^BRAM_WRITE_ADDR_WIDTH * BRAM_WRITE_WIDTH
+// => x = log2(2^BRAM_WRITE_ADDR_WIDTH * BRAM_WRITE_WIDTH / BRAM_READ_WIDTH)
+parameter BRAM_READ_ADDR_WIDTH       = $clog2((2 ** BRAM_WRITE_ADDR_WIDTH) * BRAM_WRITE_WIDTH / BRAM_READ_WIDTH);
+
+if ( (2**BRAM_READ_ADDR_WIDTH) * BRAM_READ_WIDTH != (2**BRAM_WRITE_ADDR_WIDTH) * BRAM_WRITE_WIDTH )
+    $fatal("Addressable write space is different from addressable read space");
+
+
+localparam BYTE_ADDR_OFFSET_IN_REG   =  $clog2(BRAM_READ_WIDTH/REG_WIDTH);
+
+logic     [ BRAM_READ_WIDTH       -1:0 ] bram_r;
+logic     [ BRAM_READ_ADDR_WIDTH  -1:0 ] bram_r_addr;
+logic                                    bram_r_valid;
+logic     [ BRAM_WRITE_ADDR_WIDTH -1:0 ] bram_w_addr;
+logic     [ BRAM_WRITE_WIDTH      -1:0 ] bram_w;
+logic                                    bram_w_valid;
+
+///// Coprocessor
+localparam BB_N_X                    = 0;
+localparam BB_N_Y                    = 0;
+localparam FIFO_COUNT_WIDTH          = 5;
+localparam CHANNEL_COUNT_WIDTH       = 4;
+localparam LATENCY_COUNT_WIDTH       = FIFO_COUNT_WIDTH + CC_ID_BITS;
+localparam CACHE_WIDTH_BITS          = 4;
+localparam CACHE_BLOCK_WIDTH_BITS    = `max(2, $clog2(BRAM_READ_WIDTH / INSTRUCTION_SIZE));
+localparam BASIC_BLOCK_PIPELINED     = 1;
+localparam PC_WIDTH                  = 9;
+
+
+logic                                   memory_addr_from_coprocessor_ready;
+logic     [ BRAM_READ_ADDR_WIDTH-1:0]   memory_addr_from_coprocessor;
+logic                                   memory_addr_from_coprocessor_valid;
+logic                                   start_valid,start_ready, done, accept, error;
+//logic             [PC_WIDTH-1:0] start_pc; 
+
+
+/////Rest for performance counters
+logic                                   rst_cntrs;
+/////performance counters
+logic     [REG_WIDTH-1:0]               elapsed_cc, elapsed_cc_next;
+logic     [FIFO_COUNT_WIDTH-1:0]        max_fifo_data[(2**CC_ID_BITS)-1:0];
+logic     [FIFO_COUNT_WIDTH-1:0]        fifo_full_events[(2**CC_ID_BITS)-1:0];
+logic     [31:0]                        cache_hits[(2**CC_ID_BITS)-1:0];   
+logic     [31:0]                        cache_miss[(2**CC_ID_BITS)-1:0];   
+logic     [31: 0]                       fetch_ccs[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe1_ccs[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe2_ccs[(2 ** CC_ID_BITS) -1:0]; 
+logic     [31: 0]                       fetch_stalls[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe1_stalls[(2 ** CC_ID_BITS) -1:0];
+logic     [31: 0]                       exe2_stalls[(2 ** CC_ID_BITS) -1:0]; 
+
+
+assign rst_master = rst || (cmd_register==CMD_RESET);
+assign rst_cntrs = rst || (cmd_register==CMD_RESET_PERF_CNTRS);
+
+
+
+//AXI4 FULL
+
+logic     [31: 0]                       axi_register_read;
+logic     [7 : 0]                       axi_read_len;
+
+logic     [31: 0]                       araddr_reg = 0;
+logic     [7 : 0]                       arlen_reg = 0;
+logic                                   arvalid_reg = 0;
+logic                                   rready_reg = 0;   
+logic                                   rlast_prev_reg = 0;
+
+logic     [31: 0]                       bram_axi_addr = 0;
+
+logic cmd_prev;
+
+
+assign araddr = araddr_reg;
+assign arlen = arlen_reg;
+assign arsize = 3'b010; // 4 bytes
+assign arburst = 2'b01; // INCR
+assign arvalid = arvalid_reg;
+assign rready = rready_reg;
+
+
+
+///// Sequential logic 
+always_ff @(posedge clk) 
+begin 
+    if(rst_master == 1'b1)
+    begin
+        status_register <= STATUS_IDLE;
+        //RESET AXI STATE MACHINE
+        status_register_fetching <= STATUS_WAIT_ARREADY;
+        //RESET AXI INTERNAL REGISTERS
+        /*
+        bram_axi_addr <= 0;
+        araddr_reg <= 0;
+        arlen_reg <= 0;
+        arvalid_reg <= 0;
+        rready_reg <= 0;
+        rlast_prev_reg <= 0;
+        //RESET AXI SETTINGS
+        axi_register_read <= 0;
+        axi_read_len <= 0;
+        */
+    end
+    else if(rst_cntrs == 1'b1)
+    begin
+        elapsed_cc      <= {(REG_WIDTH){1'b0}};
+    end
+    else
+    begin
+        status_register_fetching <= status_register_fetching_next;
+        status_register <= status_register_next;
+        elapsed_cc      <= elapsed_cc_next;
+    end
+end
+
+always_ff @(posedge clk)
+begin
+    if(rst_master == 1'b1)
+    begin
+        bram_axi_addr <= 0;
+    end else begin
+        if(status_register_fetching == STATUS_CAPTURE_DATA && rvalid)
+            begin
+                bram_axi_addr <= bram_axi_addr + 1;
+            end
+    end
+    
+end
+
+
+//// Combinational logic
+
+always_comb 
+begin
+    status_register_next               = status_register;
+    status_register_fetching_next      = status_register_fetching;
+
+    elapsed_cc_next                    = elapsed_cc;
+
+    data_o_register                    = {(REG_WIDTH        ){1'b0} };
+
+    bram_r_addr                        = { (BRAM_READ_ADDR_WIDTH)  {1'b0} };
+    bram_r_valid                       = 1'b0;
+    bram_w_addr                        = { (BRAM_WRITE_ADDR_WIDTH) {1'b0} };
+    bram_w                             = { (BRAM_WRITE_WIDTH){1'b0} };
+    bram_w_valid                       = 1'b0;
+
+    memory_addr_from_coprocessor_ready = 1'b0;
+    
+    start_valid                        = 1'b0;
+
+    case(status_register)
+    STATUS_IDLE:
+    begin   
+        case(cmd_register) 
+            CMD_WRITE: // to write the content of memory write in sequence addr_0, cmd_write, data_0, 
+            begin      // addr_1, data_1, ..., cmd_nop.
+                
+                bram_w_addr         = address_register[0+:BRAM_WRITE_ADDR_WIDTH]; //use low
+                bram_w_valid        = 1'b1;
+                bram_w              = data_in_register[0+:BRAM_WRITE_WIDTH];
+            end
+            CMD_READ:
+            begin      
+                bram_r_addr         = address_register[BYTE_ADDR_OFFSET_IN_REG+:BRAM_READ_ADDR_WIDTH]; //use low
+                bram_r_valid        = 1'b1;
+                memory_addr_from_coprocessor_ready = 1'b0;
+                data_o_register     = bram_r[address_register[0+:BYTE_ADDR_OFFSET_IN_REG]*REG_WIDTH+:REG_WIDTH];
+            end
+            CMD_START:
+            begin
+                //start_pc            = start_pc_register[0+:PC_WIDTH];
+                start_valid         = 1'b1;
+                bram_r_addr         = memory_addr_from_coprocessor;
+                bram_r_valid        = memory_addr_from_coprocessor_valid;
+                memory_addr_from_coprocessor_ready = 1'b1;
+                elapsed_cc_next     = {(REG_WIDTH){1'b0}};
+
+                if( start_ready )
+                begin
+                    status_register_next = STATUS_RUNNING;
+                end
+            end
+            CMD_SET_ADDRESS:
+            begin
+                axi_register_read = data_in_register;
+            end
+            CMD_SET_LEN:
+            begin
+                axi_read_len = data_in_register;
+            end
+            CMD_START_FETCH: 
+            begin
+                araddr_reg = axi_register_read;
+                arlen_reg  = axi_read_len;
+                arvalid_reg = 1'b1;
+                status_register_next = STATUS_FETCHING;
+                status_register_fetching_next = STATUS_WAIT_ARREADY; 
+            end
+            CMD_READ_ELAPSED_CLOCK:
+            begin
+                data_o_register     = elapsed_cc;
+            end
+            CMD_READ_FIFO_COUNT:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = max_fifo_data[data_in_register];
+                end
+            end
+            CMD_READ_FIFO_FULLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = fifo_full_events[data_in_register];
+                end
+            end
+            CMD_READ_CACHE_HITS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = cache_hits[data_in_register];
+                end
+            end
+            CMD_READ_CACHE_MISS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = cache_miss[data_in_register];
+                end
+            end
+            CMD_READ_FETCH_CLOCK:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = fetch_ccs[data_in_register];
+                end
+            end
+            CMD_READ_EXE1_CLOCK:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe1_ccs[data_in_register];
+                end
+            end
+            CMD_READ_EXE2_CLOCK:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe2_ccs[data_in_register];
+                end
+            end
+            CMD_READ_FETCH_STALLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = fetch_stalls[data_in_register];
+                end
+            end
+            CMD_READ_EXE1_STALLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe1_stalls[data_in_register];
+                end
+            end
+            CMD_READ_EXE2_STALLS:
+            begin
+                if(data_in_register < 2**CC_ID_BITS)
+                begin
+                    data_o_register     = exe2_stalls[data_in_register];
+                end
+            end
+        endcase
+    end
+    STATUS_FETCHING:
+    begin
+        case(status_register_fetching)
+
+            STATUS_WAIT_ARREADY: begin
+                data_o_register = STATUS_WAIT_ARREADY;
+                if (arvalid_reg && arready) begin
+                    arvalid_reg = 1'b0;
+                    rready_reg = 1'b1;
+                    status_register_fetching_next = STATUS_SET_READY;
+                end else begin
+                    if (rready_reg) begin
+                        status_register_fetching_next = STATUS_SET_READY;
+                    end
+                end
+            end
+            
+            STATUS_SET_READY: begin
+                data_o_register = STATUS_SET_READY;
+                rready_reg = 1'b1;
+                status_register_fetching_next = STATUS_CAPTURE_DATA;
+            end
+            
+            STATUS_CAPTURE_DATA: begin
+                data_o_register = STATUS_CAPTURE_DATA;
+                if(rvalid) begin
+                    bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+                    bram_w_valid = 1'b1;
+                    bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
+                end
+                
+                if (rlast) begin
+                    status_register_fetching_next = STATUS_FETCH_END;
+                end else begin
+                    status_register_fetching_next = STATUS_CAPTURE_DATA;
+                end
+            end
+            
+            STATUS_FETCH_END: begin
+                data_o_register = STATUS_FETCH_END;
+                status_register_next = STATUS_IDLE;
+            end 
+            
+        endcase
+            /*STATUS_WAIT_RVALID: begin
+                if(arvalid_reg)
+                begin
+                    arvalid_reg = 0;
+                end
+                rready_reg  = 0;
+                
+
+                if (rvalid && arready) begin
+                    status_register_fetching_next = STATUS_CAPTURE_DATA;
+                end
+            end
+
+            STATUS_CAPTURE_DATA: begin
+                rready_reg   = 1;
+                bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+                bram_w_valid = 1;
+                bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
+
+                status_register_fetching_next = STATUS_CHECK_LAST;
+            end
+
+            STATUS_CHECK_LAST: begin
+                rready_reg = 0;
+
+                if (rlast) begin
+                    rlast_prev_reg = rlast;
+                    status_register_fetching_next = STATUS_WAIT_RVALID;
+                end else begin
+                    if (rlast_prev_reg) begin
+                        status_register_fetching_next = STATUS_FETCH_END;
+                    end else begin
+                        status_register_fetching_next = STATUS_WAIT_RVALID;
+                    end
+                end
+            end
+            STATUS_FETCH_END: begin
+                rlast_prev_reg = 0;
+                status_register_next = STATUS_IDLE;
+            end
+            
+        endcase
+        */
+
+        /*
+        if (rvalid) 
+        begin
+            rready_reg = 1'b1;
+            bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+            bram_w_valid = 1'b1;
+            bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
+            bram_axi_addr = bram_axi_addr + 1;
+
+            if (rlast) begin
+                status_register_next = STATUS_IDLE;
+            end
+        end 
+        else 
+        begin
+            rready_reg = 1'b0;
+        end*/
+    end
+    STATUS_ACCEPTED, STATUS_REJECTED, STATUS_ERROR:
+    begin   
+        case(cmd_register)
+        CMD_WRITE: // to write the content of memory write in sequence addr_0, cmd_write, data_0, 
+        begin      // addr_1, data_1, ..., cmd_nop.
+            
+            bram_w_addr         = address_register[0+:BRAM_WRITE_ADDR_WIDTH]; //use low
+            bram_w_valid        = 1'b1;
+            bram_w              = data_in_register[0+:BRAM_WRITE_WIDTH];
+        end
+        CMD_READ:
+        begin      
+            bram_r_addr         = address_register[BYTE_ADDR_OFFSET_IN_REG+:BRAM_READ_ADDR_WIDTH]; //use low
+            bram_r_valid        = 1'b1;
+            memory_addr_from_coprocessor_ready = 1'b0;
+            data_o_register     = bram_r[address_register[0+:BYTE_ADDR_OFFSET_IN_REG]*REG_WIDTH+:REG_WIDTH];
+        end
+        CMD_RESTART:
+        begin
+            status_register_next = STATUS_IDLE;
+        end
+        CMD_READ_ELAPSED_CLOCK:
+        begin
+            data_o_register     = elapsed_cc;
+        end
+        CMD_READ_FIFO_COUNT:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = max_fifo_data[data_in_register];
+            end
+        end
+        CMD_READ_FIFO_FULLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = fifo_full_events[data_in_register];
+            end
+        end
+        CMD_READ_CACHE_HITS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = cache_hits[data_in_register];
+            end
+        end
+        CMD_READ_CACHE_MISS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = cache_miss[data_in_register];
+            end
+        end
+        CMD_READ_FETCH_CLOCK:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = fetch_ccs[data_in_register];
+            end
+        end
+        CMD_READ_EXE1_CLOCK:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe1_ccs[data_in_register];
+            end
+        end
+        CMD_READ_EXE2_CLOCK:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe2_ccs[data_in_register];
+            end
+        end
+        CMD_READ_FETCH_STALLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = fetch_stalls[data_in_register];
+            end
+        end
+        CMD_READ_EXE1_STALLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe1_stalls[data_in_register];
+            end
+        end
+        CMD_READ_EXE2_STALLS:
+        begin
+            if(data_in_register < 2**CC_ID_BITS)
+            begin
+                data_o_register     = exe2_stalls[data_in_register];
+            end
+        end
+        endcase
+    end
+    STATUS_RUNNING:
+    begin 
+        // leave memory control to coprocessor
+        bram_r_addr          = memory_addr_from_coprocessor;
+        bram_r_valid         = memory_addr_from_coprocessor_valid;
+        memory_addr_from_coprocessor_ready = 1'b1;
+        if(error)
+        begin
+            status_register_next = STATUS_ERROR;
+        end
+        else if( done )
+        begin
+            if(accept)  status_register_next = STATUS_ACCEPTED;
+            else        status_register_next = STATUS_REJECTED;
+        end
+        
+
+        if (&elapsed_cc == 1'b0)   
+        begin //if counter has not saturated
+            elapsed_cc_next = elapsed_cc + 1;
+        end                             
+    end
+    endcase
+
+end
+
+//////////////////////////
+//   Module instances   //
+//////////////////////////
+
+bram #(
+    .READ_WIDTH      ( BRAM_READ_WIDTH      ),            
+    .READ_ADDR_WIDTH ( BRAM_READ_ADDR_WIDTH ),            
+    .WRITE_WIDTH     ( BRAM_WRITE_WIDTH     ),       
+    .WRITE_ADDR_WIDTH( BRAM_WRITE_ADDR_WIDTH)   
+) abram (
+    .clk             (     clk               ),
+    .rst             (     rst_master      ),
+    .r_addr          (     bram_r_addr       ),
+    .r_data          (     bram_r            ),
+    .r_valid         (     bram_r_valid      ),
+    .w_addr          (     bram_w_addr       ),
+    .w_data          (     bram_w            ),
+    .w_valid         (     bram_w_valid      )
+);
+
+coprocessor_top#(
+    .PC_WIDTH               (PC_WIDTH                               ),
+    .CHARACTER_WIDTH        (CHARACTER_WIDTH                        ),
+    .MEMORY_WIDTH           (BRAM_READ_WIDTH                        ),
+    .MEMORY_ADDR_WIDTH      (BRAM_READ_ADDR_WIDTH                   ), 
+    .LATENCY_COUNT_WIDTH    (LATENCY_COUNT_WIDTH                    ),
+    .FIFO_COUNT_WIDTH       (FIFO_COUNT_WIDTH                       ),
+    .CHANNEL_COUNT_WIDTH    (CHANNEL_COUNT_WIDTH                    ),
+    .BB_N                   (BB_N                                   ),
+    .BB_N_X                 (BB_N_X                                 ),
+    .BB_N_Y                 (BB_N_Y                                 ),
+    .CACHE_BLOCK_WIDTH_BITS (CACHE_BLOCK_WIDTH_BITS                 ),      
+    .CACHE_WIDTH_BITS       (CACHE_WIDTH_BITS                       ),
+    .BASIC_BLOCK_PIPELINED  (BASIC_BLOCK_PIPELINED                  ),
+    .REG_WIDTH              (REG_WIDTH                              ),
+    .CC_ID_BITS             (CC_ID_BITS                             )
+)a_regex_coprocessor (
+    .clk                    (clk                                    ),
+    .rst                    (rst_master                             ),
+    .rst_cntrs              (rst_cntrs                              ),
+    .memory_ready           (memory_addr_from_coprocessor_ready     ),
+    .memory_addr            (memory_addr_from_coprocessor           ),
+    .memory_data            (bram_r                                 ),
+    .memory_valid           (memory_addr_from_coprocessor_valid     ),
+    .ready                  (start_ready                            ),
+    .valid                  (start_valid                            ),
+    .done                   (done                                   ),
+    .accept                 (accept                                 ),
+    .error                  (error                                  ),
+    .start_cc_pointer       (start_cc_pointer_register              ),
+    .end_cc_pointer         (end_cc_pointer_register                ),
+    .max_fifo_data          (max_fifo_data                          ),
+    .fifo_full_events       (fifo_full_events                       ),
+    .cache_hits             (cache_hits                             ),
+    .cache_miss             (cache_miss                             ),
+    .fetch_ccs              (fetch_ccs),
+    .exe1_ccs               (exe1_ccs),
+    .exe2_ccs               (exe2_ccs),
+    .fetch_stalls           (fetch_stalls),
+    .exe1_stalls            (exe1_stalls),
+    .exe2_stalls            (exe2_stalls)
+);
+
+endmodule

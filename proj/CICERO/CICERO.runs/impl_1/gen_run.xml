@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenRun Id="impl_1" LaunchPart="xczu3eg-sbva484-1-i" LaunchTime="1755438655">
+  <File Type="ROUTE-DCP" Name="re2_bd_wrapper_routed.dcp"/>
+  <File Type="ROUTE-STATUS" Name="AXI_TEST_wrapper_route_status.rpt"/>
+  <File Type="ROUTE-PWR-RPX" Name="AXI_TEST_wrapper_power_routed.rpx"/>
+  <File Type="ROUTE-PWR-SUM" Name="AXI_TEST_wrapper_power_summary_routed.pb"/>
+  <File Type="ROUTE-PWR" Name="AXI_TEST_wrapper_power_routed.rpt"/>
+  <File Type="ROUTE-DRC-PB" Name="AXI_TEST_wrapper_drc_routed.pb"/>
+  <File Type="ROUTE-DRC" Name="AXI_TEST_wrapper_drc_routed.rpt"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="re2_bd_wrapper_incremental_reuse_pre_placed.rpt"/>
+  <File Type="PLACE-CTRL" Name="AXI_TEST_wrapper_control_sets_placed.rpt"/>
+  <File Type="PLACE-UTIL-PB" Name="AXI_TEST_wrapper_utilization_placed.pb"/>
+  <File Type="PLACE-UTIL" Name="AXI_TEST_wrapper_utilization_placed.rpt"/>
+  <File Type="PLACE-IO" Name="AXI_TEST_wrapper_io_placed.rpt"/>
+  <File Type="ROUTE-STATUS-PB" Name="AXI_TEST_wrapper_route_status.pb"/>
+  <File Type="BG-BIT" Name="re2_bd_wrapper.bit"/>
+  <File Type="PDI-FILE" Name="re2_bd_wrapper.pdi"/>
+  <File Type="ROUTE-BLACKBOX-DCP" Name="re2_bd_wrapper_routed_bb.dcp"/>
+  <File Type="BG-BGN" Name="re2_bd_wrapper.bgn"/>
+  <File Type="RCFI_FILE" Name="re2_bd_wrapper.rcfi"/>
+  <File Type="ROUTE-ERROR-DCP" Name="re2_bd_wrapper_routed_error.dcp"/>
+  <File Type="BG-DRC" Name="re2_bd_wrapper.drc"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="AXI_TEST_wrapper_timing_summary_routed.rpt"/>
+  <File Type="BG-BIN" Name="re2_bd_wrapper.bin"/>
+  <File Type="CFI_FILE" Name="re2_bd_wrapper.cfi"/>
+  <File Type="OPT-DRC" Name="AXI_TEST_wrapper_drc_opted.rpt"/>
+  <File Type="RDI-RDI" Name="re2_bd_wrapper.vdi"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="AXI_TEST_wrapper_timing_summary_postroute_physopted.pb"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS" Name="re2_bd_wrapper_postroute_physopted.rqs"/>
+  <File Type="ROUTE-TIMING-PB" Name="re2_bd_wrapper_timing_summary_routed.pb"/>
+  <File Type="PA-TCL" Name="re2_bd_wrapper.tcl"/>
+  <File Type="ROUTE-BUS-SKEW-PB" Name="AXI_TEST_wrapper_bus_skew_routed.pb"/>
+  <File Type="BITSTR-MSK" Name="re2_bd_wrapper.msk"/>
+  <File Type="RNPI_FILE" Name="re2_bd_wrapper.rnpi"/>
+  <File Type="OPT-HWDEF" Name="re2_bd_wrapper.hwdef"/>
+  <File Type="ROUTE-TIMING-RPX" Name="AXI_TEST_wrapper_timing_summary_routed.rpx"/>
+  <File Type="REPORTS-TCL" Name="re2_bd_wrapper_reports.tcl"/>
+  <File Type="ROUTE-BUS-SKEW-RPX" Name="AXI_TEST_wrapper_bus_skew_routed.rpx"/>
+  <File Type="BITSTR-RBT" Name="re2_bd_wrapper.rbt"/>
+  <File Type="NPI_FILE" Name="re2_bd_wrapper.npi"/>
+  <File Type="ROUTE-SIMILARITY" Name="AXI_TEST_wrapper_incremental_reuse_routed.rpt"/>
+  <File Type="BITSTR-NKY" Name="re2_bd_wrapper.nky"/>
+  <File Type="RBD_FILE" Name="re2_bd_wrapper.rbd"/>
+  <File Type="ROUTE-CLK" Name="AXI_TEST_wrapper_clock_utilization_routed.rpt"/>
+  <File Type="BITSTR-BMM" Name="re2_bd_wrapper_bd.bmm"/>
+  <File Type="BITSTR-MMI" Name="re2_bd_wrapper.mmi"/>
+  <File Type="BITSTR-SYSDEF" Name="re2_bd_wrapper.sysdef"/>
+  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
+  <File Type="BITSTR-LTX" Name="re2_bd_wrapper.ltx"/>
+  <File Type="ROUTE-BUS-SKEW" Name="AXI_TEST_wrapper_bus_skew_routed.rpt"/>
+  <File Type="OPT-DCP" Name="re2_bd_wrapper_opt.dcp"/>
+  <File Type="PLACE-DCP" Name="re2_bd_wrapper_placed.dcp"/>
+  <File Type="PWROPT-DCP" Name="re2_bd_wrapper_pwropt.dcp"/>
+  <File Type="POSTPLACE-PWROPT-DCP" Name="re2_bd_wrapper_postplace_pwropt.dcp"/>
+  <File Type="PHYSOPT-DCP" Name="re2_bd_wrapper_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="re2_bd_wrapper_postroute_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="re2_bd_wrapper_postroute_physopt_bb.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="AXI_TEST_wrapper_timing_summary_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="AXI_TEST_wrapper_timing_summary_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="AXI_TEST_wrapper_bus_skew_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="AXI_TEST_wrapper_bus_skew_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="AXI_TEST_wrapper_bus_skew_postroute_physopted.rpx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC" Name="AXI_TEST_wrapper_methodology_drc_routed.rpt"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="AXI_TEST_wrapper_methodology_drc_routed.pb"/>
+  <File Type="ROUTE-DRC-RPX" Name="AXI_TEST_wrapper_drc_routed.rpx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="AXI_TEST_wrapper_methodology_drc_routed.rpx"/>
+  <File Type="BOOT-PDI-FILE" Name="re2_bd_wrapper_boot.pdi"/>
+  <File Type="PL-PDI-FILE" Name="re2_bd_wrapper_pld.pdi"/>
+  <File Type="ROUTE-RQS" Name="re2_bd_wrapper_routed.rqs"/>
+  <File Type="ROUTE-RQS-RPT" Name="route_report_qor_suggestions_0.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
+  <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
+    <Filter Type="Srcs"/>
+    <File Path="$PSRCDIR/sources_1/bd/re2_bd/re2_bd.bd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PGENDIR/sources_1/bd/re2_bd/hdl/re2_bd_wrapper.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/re2_copro_v2_slave_lite_v2_S00_AXI.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/AXI_package.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/AXI_top.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_2_fixed.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_2_rr.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_fixed.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_rr_n.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbitration_logic_fixed.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbitration_logic_rr.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/bram.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/cache_block_directly_mapped_broadcast.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/channel_iface.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/channel_multi_cc.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/coprocessor_package.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/coprocessor_top.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/engine_and_station.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/engine_and_station_xy.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/engine_interfaced.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/fifo.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/CPU/instruction_package.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/memory_read_iface.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/CPU/regex_cpu_pipelined.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/switch.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/topology_mesh.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/topology_single.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/topology_token_ring.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/vectorial_engine.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/re2_copro_v2.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/bd/AXI_TEST/AXI_TEST.bd">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PGENDIR/sources_1/bd/AXI_TEST/hdl/AXI_TEST_wrapper.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/re2_copro_v2_master_full_v2_M00_AXI.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/cache_block_directly_mapped.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_rr.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbitration_logic_fixed_shiftable.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_no_lowest.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbitration_logic_no_lowest.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/engine.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/channel.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/cache_directly_mapped.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/re2_copro_v1.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/CPU/cpu_iface.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/ping_pong_buffer.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/memory_pkg.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/arbiters/arbiter_fixed_shiftable.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/CPU/regex_cpu.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/AXI/re2_copro_v1_S00_AXI.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/coprocessor/topology_mesh_1.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../hdl_src/rtl/memories/cache_directly_mapped_latency.sv">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="DesignMode" Val="RTL"/>
+      <Option Name="TopModule" Val="re2_bd_wrapper"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
+    <Filter Type="Constrs"/>
+    <Config>
+      <Option Name="ConstrsType" Val="XDC"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="utils" Type="Utils" RelSrcDir="$PSRCDIR/utils_1" RelGenDir="$PGENDIR/utils_1">
+    <Filter Type="Utils"/>
+    <File Path="$PSRCDIR/utils_1/imports/synth_1/re2_copro_v2.dcp">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedInSteps" Val="synth_1"/>
+        <Attr Name="AutoDcp" Val="1"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <Strategy Version="1" Minor="2">
+    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2024"/>
+    <Step Id="init_design"/>
+    <Step Id="opt_design"/>
+    <Step Id="power_opt_design"/>
+    <Step Id="place_design"/>
+    <Step Id="post_place_power_opt_design"/>
+    <Step Id="phys_opt_design"/>
+    <Step Id="route_design"/>
+    <Step Id="post_route_phys_opt_design"/>
+    <Step Id="write_bitstream"/>
+    <Step Id="write_device_image"/>
+  </Strategy>
+  <BlockFileSet Type="BlockSrcs" Name="re2_bd_rst_ps8_0_100M_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="re2_bd_zynq_ultra_ps_e_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="re2_bd_re2_copro_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="AXI_TEST_axi_vip_1_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="AXI_TEST_axi_vip_0_0"/>
+</GenRun>

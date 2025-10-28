@@ -1,0 +1,7 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_rst_ps8_0_100M_1/sim/re2_bd_rst_ps8_0_100M_1.vhd" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_1/sim/bd_e000_psr_aclk_0.vhd" \
+
+# Do not sort compile order
+nosort

@@ -1,0 +1,13 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x0",
+      "gen_directory": "../../../../re2_copro_v2_v2_project.gen/sources_1/bd/try2",
+      "name": "try2",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2024.1"
+    },
+    "design_tree": {}
+  }
+}

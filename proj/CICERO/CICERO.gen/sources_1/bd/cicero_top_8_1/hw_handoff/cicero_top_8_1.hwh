@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Mon Aug  4 20:28:08 2025" VIVADOVERSION="2024.1">
+
+  <SYSTEMINFO ARCH="zynquplus" BOARD="avnet.com:ultra96v2:part0:1.2" DEVICE="xczu3eg" NAME="cicero_top_8_1" PACKAGE="sbva484" SPEEDGRADE="-1"/>
+
+  <EXTERNALPORTS/>
+
+  <EXTERNALINTERFACES/>
+
+  <MODULES/>
+
+</EDKSYSTEM>

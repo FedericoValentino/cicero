@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"cicero_top_8_1": {
+			"proto_instances": {
+			}
+		}
+	}
+}

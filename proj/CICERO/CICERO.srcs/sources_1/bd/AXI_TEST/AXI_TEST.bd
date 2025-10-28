@@ -1,0 +1,192 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x1D05C83BED8C957F",
+      "device": "xczu3eg-sbva484-1-i",
+      "gen_directory": "../../../../CICERO.gen/sources_1/bd/AXI_TEST",
+      "name": "AXI_TEST",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2024.1"
+    },
+    "design_tree": {
+      "axi_vip_0": "",
+      "re2_copro_0": "",
+      "axi_vip_1": ""
+    },
+    "ports": {
+      "clk": {
+        "type": "clk",
+        "direction": "I"
+      },
+      "reset": {
+        "type": "rst",
+        "direction": "I"
+      }
+    },
+    "components": {
+      "axi_vip_0": {
+        "vlnv": "xilinx.com:ip:axi_vip:1.1",
+        "ip_revision": "17",
+        "xci_name": "AXI_TEST_axi_vip_0_0",
+        "xci_path": "ip/AXI_TEST_axi_vip_0_0_1/AXI_TEST_axi_vip_0_0.xci",
+        "inst_hier_path": "axi_vip_0",
+        "parameters": {
+          "ADDR_WIDTH": {
+            "value": "32"
+          },
+          "DATA_WIDTH": {
+            "value": "32"
+          },
+          "HAS_BRESP": {
+            "value": "1"
+          },
+          "HAS_PROT": {
+            "value": "1"
+          },
+          "HAS_RRESP": {
+            "value": "1"
+          },
+          "HAS_WSTRB": {
+            "value": "1"
+          },
+          "INTERFACE_MODE": {
+            "value": "MASTER"
+          },
+          "PROTOCOL": {
+            "value": "AXI4LITE"
+          },
+          "READ_WRITE_MODE": {
+            "value": "READ_WRITE"
+          }
+        },
+        "interface_ports": {
+          "M_AXI": {
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "mode": "Master",
+            "address_space_ref": "Master_AXI",
+            "base_address": {
+              "minimum": "0x00000000",
+              "maximum": "0xFFFFFFFF",
+              "width": "32"
+            }
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Master_AXI": {
+              "range": "4G",
+              "width": "32"
+            }
+          }
+        }
+      },
+      "re2_copro_0": {
+        "vlnv": "user.org:user:re2_copro:2",
+        "ip_revision": "2",
+        "xci_name": "AXI_TEST_re2_copro_0_0",
+        "xci_path": "ip/AXI_TEST_re2_copro_0_0/AXI_TEST_re2_copro_0_0.xci",
+        "inst_hier_path": "re2_copro_0",
+        "interface_ports": {
+          "M00_AXI": {
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "mode": "Master",
+            "address_space_ref": "M00_AXI",
+            "base_address": {
+              "minimum": "0x00000000",
+              "maximum": "0xFFFFFFFF",
+              "width": "32"
+            }
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "M00_AXI": {
+              "range": "4G",
+              "width": "32"
+            }
+          }
+        }
+      },
+      "axi_vip_1": {
+        "vlnv": "xilinx.com:ip:axi_vip:1.1",
+        "ip_revision": "17",
+        "xci_name": "AXI_TEST_axi_vip_1_0",
+        "xci_path": "ip/AXI_TEST_axi_vip_1_0_1/AXI_TEST_axi_vip_1_0.xci",
+        "inst_hier_path": "axi_vip_1",
+        "parameters": {
+          "INTERFACE_MODE": {
+            "value": "SLAVE"
+          },
+          "READ_WRITE_MODE": {
+            "value": "READ_ONLY"
+          }
+        }
+      }
+    },
+    "interface_nets": {
+      "axi_vip_0_M_AXI": {
+        "interface_ports": [
+          "axi_vip_0/M_AXI",
+          "re2_copro_0/S00_AXI"
+        ]
+      },
+      "re2_copro_0_M00_AXI": {
+        "interface_ports": [
+          "axi_vip_1/S_AXI",
+          "re2_copro_0/M00_AXI"
+        ]
+      }
+    },
+    "nets": {
+      "aclk_0_1": {
+        "ports": [
+          "clk",
+          "axi_vip_0/aclk",
+          "axi_vip_1/aclk",
+          "re2_copro_0/s00_axi_aclk",
+          "re2_copro_0/m00_axi_aclk"
+        ]
+      },
+      "aresetn_0_1": {
+        "ports": [
+          "reset",
+          "axi_vip_0/aresetn",
+          "axi_vip_1/aresetn",
+          "re2_copro_0/s00_axi_aresetn",
+          "re2_copro_0/m00_axi_aresetn"
+        ]
+      }
+    },
+    "addressing": {
+      "/axi_vip_0": {
+        "address_spaces": {
+          "Master_AXI": {
+            "segments": {
+              "SEG_re2_copro_0_S00_AXI_reg": {
+                "address_block": "/re2_copro_0/S00_AXI/S00_AXI_reg",
+                "offset": "0x44A00000",
+                "range": "64K",
+                "offset_base_param": "C_S00_AXI_BASEADDR",
+                "offset_high_param": "C_S00_AXI_HIGHADDR"
+              }
+            }
+          }
+        }
+      },
+      "/re2_copro_0": {
+        "address_spaces": {
+          "M00_AXI": {
+            "segments": {
+              "SEG_axi_vip_1_Reg": {
+                "address_block": "/axi_vip_1/S_AXI/Reg",
+                "offset": "0x40000000",
+                "range": "64K"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

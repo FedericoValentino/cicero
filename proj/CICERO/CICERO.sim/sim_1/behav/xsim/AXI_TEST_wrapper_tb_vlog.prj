@@ -1,0 +1,185 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_zynq_ultra_ps_e_0_1/sim/re2_bd_zynq_ultra_ps_e_0_1_vip_wrapper.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/re2_copro_v2_slave_lite_v2_S00_AXI.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/re2_copro_v2.v" \
+
+sv xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/AXI_package.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/AXI_top.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/arbiter_2_fixed.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/arbiter_2_rr.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/arbiter_fixed.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/arbiter_rr_n.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/arbitration_logic_fixed.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/arbitration_logic_rr.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/bram.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/cache_block_directly_mapped_broadcast.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/channel_iface.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/channel_multi_cc.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/coprocessor_package.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/coprocessor_top.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/engine_and_station.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/engine_and_station_xy.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/engine_interfaced.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/fifo.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/instruction_package.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/memory_read_iface.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/regex_cpu_pipelined.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/switch.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/topology_mesh.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/topology_single.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/topology_token_ring.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ipshared/af28/src/vectorial_engine.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_re2_copro_0_2/sim/re2_bd_re2_copro_0_2.sv" \
+
+verilog xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_xbar_1/sim/re2_bd_xbar_1.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_auto_ds_0/sim/re2_bd_auto_ds_0.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_auto_pc_0/sim/re2_bd_auto_pc_0.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_auto_ds_1/sim/re2_bd_auto_ds_1.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_auto_pc_1/sim/re2_bd_auto_pc_1.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_0/sim/bd_e000_one_0.v" \
+
+sv xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_2/sim/bd_e000_s00mmu_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_3/sim/bd_e000_s00tr_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_4/sim/bd_e000_s00sic_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_5/sim/bd_e000_s00a2s_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_6/sim/bd_e000_sarn_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_7/sim/bd_e000_srn_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_8/sim/bd_e000_sawn_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_9/sim/bd_e000_swn_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_10/sim/bd_e000_sbn_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_11/sim/bd_e000_m00s2a_0.sv" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/ip/ip_12/sim/bd_e000_m00e_0.sv" \
+
+verilog xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/bd_0/sim/bd_e000.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/ip/re2_bd_axi_smc_1/sim/re2_bd_axi_smc_1.v" \
+"../../../../CICERO.ip_user_files/bd/re2_bd/sim/re2_bd.v" \
+"../../../../CICERO.gen/sources_1/bd/re2_bd/hdl/re2_bd_wrapper.v" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/re2_copro_v1.v" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/re2_copro_v1_S00_AXI.v" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/re2_copro_v2.v" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/re2_copro_v2_master_full_v2_M00_AXI.v" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/re2_copro_v2_slave_lite_v2_S00_AXI.v" \
+
+sv xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/AXI_package.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/AXI/AXI_top.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_2_fixed.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_2_rr.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_fixed.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_fixed_shiftable.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_no_lowest.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_rr.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbiter_rr_n.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbitration_logic_fixed.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbitration_logic_fixed_shiftable.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbitration_logic_no_lowest.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/arbiters/arbitration_logic_rr.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/bram.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/cache_block_directly_mapped.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/cache_block_directly_mapped_broadcast.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/cache_directly_mapped.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/cache_directly_mapped_latency.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/channel.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/channel_iface.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/channel_multi_cc.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/coprocessor_package.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/coprocessor_top.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/engine.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/engine_and_station.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/engine_and_station_xy.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/engine_interfaced.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/fifo.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/CPU/instruction_package.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/memory_read_iface.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/ping_pong_buffer.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/CPU/regex_cpu.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/CPU/regex_cpu_pipelined.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/switch.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/topology_mesh.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/topology_mesh_1.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/topology_single.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/topology_token_ring.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/coprocessor/vectorial_engine.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/CPU/cpu_iface.sv" \
+"../../../../../../../../../git/cicero/hdl_src/rtl/memories/memory_pkg.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ip/AXI_TEST_axi_vip_0_0_1/sim/AXI_TEST_axi_vip_0_0_pkg.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ip/AXI_TEST_axi_vip_0_0_1/sim/AXI_TEST_axi_vip_0_0.sv" \
+
+verilog xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/re2_copro_v2_slave_lite_v2_S00_AXI.v" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/re2_copro_v2.v" \
+
+sv xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/AXI_package.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/AXI_top.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/arbiter_2_fixed.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/arbiter_2_rr.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/arbiter_fixed.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/arbiter_rr_n.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/arbitration_logic_fixed.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/arbitration_logic_rr.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/bram.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/cache_block_directly_mapped_broadcast.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/channel_iface.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/channel_multi_cc.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/coprocessor_package.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/coprocessor_top.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/engine_and_station.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/engine_and_station_xy.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/engine_interfaced.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/fifo.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/instruction_package.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/memory_read_iface.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/regex_cpu_pipelined.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/switch.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/topology_mesh.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/topology_single.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/topology_token_ring.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ipshared/af28/src/vectorial_engine.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ip/AXI_TEST_re2_copro_0_0/sim/AXI_TEST_re2_copro_0_0.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ip/AXI_TEST_axi_vip_1_0_1/sim/AXI_TEST_axi_vip_1_0_pkg.sv" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/ip/AXI_TEST_axi_vip_1_0_1/sim/AXI_TEST_axi_vip_1_0.sv" \
+
+verilog xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../CICERO.ip_user_files/bd/AXI_TEST/sim/AXI_TEST.v" \
+"../../../../CICERO.gen/sources_1/bd/AXI_TEST/hdl/AXI_TEST_wrapper.v" \
+
+sv xil_defaultlib  --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/ec67/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/a317/hdl" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/f0b6/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/re2_bd/ipshared/c783/hdl/verilog" --include "../../../../CICERO.gen/sources_1/bd/AXI_TEST/ipshared/ec67/hdl" --include "/tools/Xilinx/Vivado/2024.1/data/xilinx_vip/include" \
+"../../../../../../../../../git/cicero/hdl_src/sim/AXI_TEST_wrapper_tb_clock_cycle_test.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/AXI_TEST_wrapper_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/re2_copro_v2_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/re2_copro_v2_tb_clock_cycle_test.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/AXI_top_tb_from_compiled.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/AXI_top_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/AXI_top_tb_from_file.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/AXI_top_tb_multiple_tests_from_csv.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/arbiter_rr_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/cache_block_direct_mapped_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/cache_direct_mapped_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/fifo_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_accept_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_end_without_accepting_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_jmp_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_match_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_not_match_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_accept_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_end_without_accepting_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_jmp_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_match_pipeline_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_match_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_not_match_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_pipelined_split_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/regex_cpu_split_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/switch_tb.sv" \
+"../../../../../../../../../git/cicero/hdl_src/sim/basic_block_task_package.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

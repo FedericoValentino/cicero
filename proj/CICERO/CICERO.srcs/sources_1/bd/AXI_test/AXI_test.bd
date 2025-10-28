@@ -1,0 +1,45 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x0",
+      "device": "xczu3eg-sbva484-1-i",
+      "gen_directory": "../../../../CICERO.gen/sources_1/bd/AXI_test",
+      "name": "AXI_test",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2024.1"
+    },
+    "design_tree": {
+      "re2_copro_0": ""
+    },
+    "components": {
+      "re2_copro_0": {
+        "vlnv": "user.org:user:re2_copro:2",
+        "ip_revision": "6",
+        "xci_name": "AXI_test_re2_copro_0_0",
+        "xci_path": "ip/AXI_test_re2_copro_0_0/AXI_test_re2_copro_0_0.xci",
+        "inst_hier_path": "re2_copro_0",
+        "interface_ports": {
+          "M00_AXI": {
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "mode": "Master",
+            "address_space_ref": "M00_AXI",
+            "base_address": {
+              "minimum": "0x00000000",
+              "maximum": "0xFFFFFFFF",
+              "width": "32"
+            }
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "M00_AXI": {
+              "range": "4G",
+              "width": "32"
+            }
+          }
+        }
+      }
+    }
+  }
+}
