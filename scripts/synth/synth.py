@@ -3,7 +3,7 @@
     and optionally runs the synthesis.
 '''
 
-VIVADO_SOURCE = "/tools/Xilinx/Vivado/2024.1/settings64.sh"
+VIVADO_SOURCE = "/home/xilinx/2025.1/Vivado/settings64.sh"
 
 import os
 import shutil
@@ -11,6 +11,7 @@ import subprocess
 import sys
 import re
 import time
+import requests
 import concurrent.futures
 from rich.console import Console
 from rich.table import Table
@@ -27,14 +28,14 @@ except ImportError:
 
 
 # Number of configurations to be built in parallel (None to use all available cores)
-MAX_WORKERS = 1
+MAX_WORKERS = 4
 
 CONFIGURATIONS = [
     # (cc_id_bits, bb_n, is_vectorial)
 ]
 
 # Add vectorial (NEW) configurations
-for cc_id_bits in [3, 4, 5]:
+for cc_id_bits in [3]:
     for bb_n in [1, 4, 9, 16]:
         CONFIGURATIONS.append((cc_id_bits, bb_n, True))
 
@@ -146,9 +147,9 @@ def main():
     print(f'MAX_WORKERS: {MAX_WORKERS}; CREATING: {CREATING}; SYNTHESIS: {SYNTHESIS}')
 
     if SYNTHESIS:
-        print('Starting in 10 seconds...')
+        print('Starting in 1 second...')
         try:
-            time.sleep(10)
+            time.sleep(1)
         except KeyboardInterrupt:
             print('Cancelled by user, quitting...')
             return
@@ -162,3 +163,7 @@ if __name__ == "__main__":
     main()
     if SYNTHESIS:
         send_message.send_msg('Finished')
+    requests.post(
+        "https://ntfy.sh/cicero-build",
+        data=f"BUILD FINISHED"
+    )

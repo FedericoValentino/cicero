@@ -17,8 +17,10 @@ puts "$bb_nr"
 puts "$src_dir"
 puts "$prj_name_location"
 
+set_param board.repoPaths [list "/home/federica.valentino/vivado-boards/bdf"]
+
 create_project -force u96_${topology}_${bb_nr} ${prj_name_location} -part xczu3eg-sbva484-1-i
-set_property board_part avnet.com:ultra96v2:part0:1.1 [current_project]
+set_property board_part avnet-tria:ultra96v2:part0:1.3 [current_project]
 
 add_files -norecurse $src_dir
 set_property top re2_copro_v2 [current_fileset]
