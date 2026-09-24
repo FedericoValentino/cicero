@@ -4,34 +4,48 @@
 # Block Designs: bd/re2_bd/re2_bd.bd
 set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd || ORIG_REF_NAME==re2_bd} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_re2_copro_0_0/re2_bd_re2_copro_0_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_re2_copro_0_0 || ORIG_REF_NAME==re2_bd_re2_copro_0_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_zynq_ultra_ps_e_0_1/re2_bd_zynq_ultra_ps_e_0_1.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_zynq_ultra_ps_e_0_1 || ORIG_REF_NAME==re2_bd_zynq_ultra_ps_e_0_1} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_zynq_ultra_ps_e_0_0/re2_bd_zynq_ultra_ps_e_0_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_zynq_ultra_ps_e_0_0 || ORIG_REF_NAME==re2_bd_zynq_ultra_ps_e_0_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_re2_copro_0_2/re2_bd_re2_copro_0_2.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_re2_copro_0_2 || ORIG_REF_NAME==re2_bd_re2_copro_0_2} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_xbar_0/re2_bd_xbar_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_xbar_0 || ORIG_REF_NAME==re2_bd_xbar_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_upgraded_ipi_imp_xbar_0/re2_bd_ps8_0_axi_periph_upgraded_ipi_imp_xbar_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_upgraded_ipi_imp_xbar_0 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_upgraded_ipi_imp_xbar_0} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_0/re2_bd_ps8_0_axi_periph_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_0 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_1/re2_bd_ps8_0_axi_periph_1.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_1 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_1} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_rst_ps8_0_100M_0/re2_bd_rst_ps8_0_100M_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_rst_ps8_0_100M_0 || ORIG_REF_NAME==re2_bd_rst_ps8_0_100M_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_rst_ps8_0_100M_1/re2_bd_rst_ps8_0_100M_1.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_rst_ps8_0_100M_1 || ORIG_REF_NAME==re2_bd_rst_ps8_0_100M_1} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_axi_smc_0/re2_bd_axi_smc_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_axi_smc_0 || ORIG_REF_NAME==re2_bd_axi_smc_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_axi_smc_1/re2_bd_axi_smc_1.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_axi_smc_1 || ORIG_REF_NAME==re2_bd_axi_smc_1} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_auto_ds_0/re2_bd_auto_ds_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_auto_ds_0 || ORIG_REF_NAME==re2_bd_auto_ds_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_imp_auto_ds_0/re2_bd_ps8_0_axi_periph_imp_auto_ds_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_ds_0 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_ds_0} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_auto_pc_0/re2_bd_auto_pc_0.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_auto_pc_0 || ORIG_REF_NAME==re2_bd_auto_pc_0} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_imp_auto_pc_0/re2_bd_ps8_0_axi_periph_imp_auto_pc_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_pc_0 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_pc_0} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_auto_ds_1/re2_bd_auto_ds_1.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_auto_ds_1 || ORIG_REF_NAME==re2_bd_auto_ds_1} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_imp_auto_ds_1/re2_bd_ps8_0_axi_periph_imp_auto_ds_1.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_ds_1 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_ds_1} -quiet] -quiet
 
-# IP: bd/re2_bd/ip/re2_bd_auto_pc_1/re2_bd_auto_pc_1.xci
-set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_auto_pc_1 || ORIG_REF_NAME==re2_bd_auto_pc_1} -quiet] -quiet
+# IP: bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_imp_auto_pc_1/re2_bd_ps8_0_axi_periph_imp_auto_pc_1.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_pc_1 || ORIG_REF_NAME==re2_bd_ps8_0_axi_periph_imp_auto_pc_1} -quiet] -quiet
 
-# XDC: /home/feder34/Desktop/Uni/DHA/CICERO/CICERO.gen/sources_1/bd/re2_bd/re2_bd_ooc.xdc
+# Block Designs: bd/AXI_TEST/AXI_TEST.bd
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==AXI_test || ORIG_REF_NAME==AXI_test} -quiet] -quiet
+
+# IP: bd/AXI_TEST/ip/AXI_TEST_axi_vip_0_0_1/AXI_TEST_axi_vip_0_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==AXI_TEST_axi_vip_0_0 || ORIG_REF_NAME==AXI_TEST_axi_vip_0_0} -quiet] -quiet
+
+# IP: bd/AXI_TEST/ip/AXI_TEST_re2_copro_0_0/AXI_TEST_re2_copro_0_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==AXI_TEST_re2_copro_0_0 || ORIG_REF_NAME==AXI_TEST_re2_copro_0_0} -quiet] -quiet
+
+# IP: bd/AXI_TEST/ip/AXI_TEST_axi_vip_1_0_1/AXI_TEST_axi_vip_1_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==AXI_TEST_axi_vip_1_0 || ORIG_REF_NAME==AXI_TEST_axi_vip_1_0} -quiet] -quiet
+
+# XDC: c:/Users/valef/git/cicero/proj/CICERO/CICERO.gen/sources_1/bd/re2_bd/re2_bd_ooc.xdc
+
+# XDC: c:/Users/valef/git/cicero/proj/CICERO/CICERO.gen/sources_1/bd/AXI_TEST/AXI_TEST_ooc.xdc

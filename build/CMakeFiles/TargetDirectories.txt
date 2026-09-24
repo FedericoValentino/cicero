@@ -1,0 +1,3 @@
+C:/Users/valef/git/cicero/build/CMakeFiles/re2_driver_xrt.dir
+C:/Users/valef/git/cicero/build/CMakeFiles/edit_cache.dir
+C:/Users/valef/git/cicero/build/CMakeFiles/rebuild_cache.dir

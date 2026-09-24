@@ -319,7 +319,7 @@ initial begin
     wait (aresetn == 1'b1);
     
     //fill memory of slave agent
-    fp_code= $fopen("/home/feder34/git/cicero/scripts/generate_single/regex.txt","r");
+    fp_code= $fopen("C:/Users/valef/git/cicero/scripts/generate_single/regex.txt","r");
     if (fp_code==0)
     begin
         $display("Could not open file '%s' for reading","regex.txt");
@@ -331,7 +331,7 @@ initial begin
     write_file(fp_code, start_code , end_code );
     $display("end code at %h", end_code);
 
-    fp_string= $fopen("/home/feder34/git/cicero/scripts/generate_single/input.csv","r");
+    fp_string= $fopen("C:/Users/valef/git/cicero/scripts/generate_single/input.csv","r");
     if (fp_string==0)
     begin
         $display("Could not open file '%s' for reading","input.csv");
@@ -368,7 +368,7 @@ initial begin
     @(posedge aclk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge aclk);
-    write((end_string-start_code)/4, 32'h0*4); //WRITE RLEN
+    write((end_string-start_code)/4 - 1, 32'h0*4); //WRITE RLEN (ARLEN = beats-1)
     @(posedge aclk);
     write(CMD_SET_LEN, 32'h4*4); //SET RLEN
     @(posedge aclk);

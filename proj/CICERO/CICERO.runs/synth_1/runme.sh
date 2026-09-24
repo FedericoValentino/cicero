@@ -4,13 +4,17 @@
 # Vivado(TM)
 # runme.sh: a Vivado-generated Runs Script for UNIX
 # Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
-# Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 # 
 
+echo "This script was generated under a different operating system."
+echo "Please update the PATH and LD_LIBRARY_PATH variables below, before executing this script"
+exit
+
 if [ -z "$PATH" ]; then
-  PATH=/tools/Xilinx/Vitis/2024.1/bin:/tools/Xilinx/Vivado/2024.1/bin
+  PATH=E:/Xilinx/2025.1/Vitis/bin;E:/Xilinx/2025.1/Vivado/ids_lite/ISE/bin/nt64;E:/Xilinx/2025.1/Vivado/ids_lite/ISE/lib/nt64:E:/Xilinx/2025.1/Vivado/bin
 else
-  PATH=/tools/Xilinx/Vitis/2024.1/bin:/tools/Xilinx/Vivado/2024.1/bin:$PATH
+  PATH=E:/Xilinx/2025.1/Vitis/bin;E:/Xilinx/2025.1/Vivado/ids_lite/ISE/bin/nt64;E:/Xilinx/2025.1/Vivado/ids_lite/ISE/lib/nt64:E:/Xilinx/2025.1/Vivado/bin:$PATH
 fi
 export PATH
 
@@ -21,7 +25,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='/home/feder34/Desktop/Uni/DHA/CICERO/CICERO.runs/synth_1'
+HD_PWD='C:/Users/valef/git/cicero/proj/CICERO/CICERO.runs/synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log
@@ -37,4 +41,4 @@ EAStep()
      fi
 }
 
-EAStep vivado -log re2_bd_wrapper.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source re2_bd_wrapper.tcl
+EAStep vivado -log AXI_TEST_wrapper.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source AXI_TEST_wrapper.tcl

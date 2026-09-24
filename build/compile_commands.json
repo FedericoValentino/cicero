@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/valef/git/cicero/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/re2_driver_xrt.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\re2_driver_xrt.dir\\main.cpp.obj -c C:\\Users\\valef\\git\\cicero\\software\\main.cpp",
+  "file": "C:/Users/valef/git/cicero/software/main.cpp",
+  "output": "CMakeFiles/re2_driver_xrt.dir/main.cpp.obj"
+}
+]

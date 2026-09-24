@@ -8,7 +8,7 @@
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "scoped": "true",
       "synth_flow_mode": "None",
-      "tool_version": "2024.1",
+      "tool_version": "2025.1",
       "validated": "true"
     },
     "design_tree": {
@@ -168,6 +168,12 @@
           "minimum": "0x00000000",
           "maximum": "0xFFFFFFFF",
           "width": "32"
+        },
+        "bd_attributes": {
+          "TYPE": {
+            "value": "END_POINT",
+            "value_src": "auto"
+          }
         }
       },
       "M00_AXI": {
@@ -392,17 +398,19 @@
         "components": {
           "one": {
             "vlnv": "xilinx.com:ip:xlconstant:1.1",
-            "ip_revision": "9",
+            "ip_revision": "10",
             "xci_name": "bd_e000_one_0",
-            "xci_path": "ip/ip_0/bd_e000_one_0.xci",
-            "inst_hier_path": "clk_map/one"
+            "xci_path": "ip\\ip_0\\bd_e000_one_0.xci",
+            "inst_hier_path": "clk_map/one",
+            "has_run_ip_tcl": "true"
           },
           "psr_aclk": {
             "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
-            "ip_revision": "15",
+            "ip_revision": "17",
             "xci_name": "bd_e000_psr_aclk_0",
-            "xci_path": "ip/ip_1/bd_e000_psr_aclk_0.xci",
+            "xci_path": "ip\\ip_1\\bd_e000_psr_aclk_0.xci",
             "inst_hier_path": "clk_map/psr_aclk",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "C_AUX_RESET_HIGH": {
                 "value": "0"
@@ -471,10 +479,11 @@
         "components": {
           "s00_mmu": {
             "vlnv": "xilinx.com:ip:sc_mmu:1.0",
-            "ip_revision": "13",
+            "ip_revision": "15",
             "xci_name": "bd_e000_s00mmu_0",
-            "xci_path": "ip/ip_2/bd_e000_s00mmu_0.xci",
+            "xci_path": "ip\\ip_2\\bd_e000_s00mmu_0.xci",
             "inst_hier_path": "s00_entry_pipeline/s00_mmu",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ADDR_WIDTH": {
                 "value": "32"
@@ -575,11 +584,29 @@
             },
             "interface_ports": {
               "S_AXI": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_AXI",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_AXI"
                 ]
+              },
+              "M_AXI": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           },
@@ -587,8 +614,9 @@
             "vlnv": "xilinx.com:ip:sc_transaction_regulator:1.0",
             "ip_revision": "11",
             "xci_name": "bd_e000_s00tr_0",
-            "xci_path": "ip/ip_3/bd_e000_s00tr_0.xci",
+            "xci_path": "ip\\ip_3\\bd_e000_s00tr_0.xci",
             "inst_hier_path": "s00_entry_pipeline/s00_transaction_regulator",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ADDR_WIDTH": {
                 "value": "32"
@@ -638,20 +666,39 @@
             },
             "interface_ports": {
               "S_AXI": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_AXI",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_AXI"
                 ]
+              },
+              "M_AXI": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           },
           "s00_si_converter": {
             "vlnv": "xilinx.com:ip:sc_si_converter:1.0",
-            "ip_revision": "13",
+            "ip_revision": "15",
             "xci_name": "bd_e000_s00sic_0",
-            "xci_path": "ip/ip_4/bd_e000_s00sic_0.xci",
+            "xci_path": "ip\\ip_4\\bd_e000_s00sic_0.xci",
             "inst_hier_path": "s00_entry_pipeline/s00_si_converter",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ADDR_WIDTH": {
                 "value": "32"
@@ -728,6 +775,9 @@
               "SEP001_WDATA_WIDTH": {
                 "value": "128"
               },
+              "SPLIT_WRAP_NARROW": {
+                "value": "0"
+              },
               "SUPPORTS_NARROW": {
                 "value": "0"
               },
@@ -743,11 +793,29 @@
             },
             "interface_ports": {
               "S_AXI": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_AXI",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_AXI"
                 ]
+              },
+              "M_AXI": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           }
@@ -801,8 +869,9 @@
         "vlnv": "xilinx.com:ip:sc_axi2sc:1.0",
         "ip_revision": "10",
         "xci_name": "bd_e000_s00a2s_0",
-        "xci_path": "ip/ip_5/bd_e000_s00a2s_0.xci",
+        "xci_path": "ip\\ip_5\\bd_e000_s00a2s_0.xci",
         "inst_hier_path": "s00_axi2sc",
+        "has_run_ip_tcl": "true",
         "parameters": {
           "AXI_ADDR_WIDTH": {
             "value": "32"
@@ -854,7 +923,57 @@
           }
         },
         "interface_ports": {
+          "S_SC_R": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "S_SC_B": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "M_SC_AR": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "M_SC_AW": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "M_SC_W": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
           "S_AXI": {
+            "bd_attributes": {
+              "BRIDGES": {
+                "value": "M_SC_AR:M_SC_AW",
+                "value_src": "auto"
+              },
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            },
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
             "mode": "Slave",
             "bridges": [
@@ -938,10 +1057,11 @@
         "components": {
           "s00_ar_node": {
             "vlnv": "xilinx.com:ip:sc_node:1.0",
-            "ip_revision": "16",
+            "ip_revision": "18",
             "xci_name": "bd_e000_sarn_0",
-            "xci_path": "ip/ip_6/bd_e000_sarn_0.xci",
+            "xci_path": "ip\\ip_6\\bd_e000_sarn_0.xci",
             "inst_hier_path": "s00_nodes/s00_ar_node",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ACLKEN_CONVERSION": {
                 "value": "0"
@@ -1081,20 +1201,39 @@
             },
             "interface_ports": {
               "S_SC": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_SC",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:sc_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_SC"
                 ]
+              },
+              "M_SC": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           },
           "s00_r_node": {
             "vlnv": "xilinx.com:ip:sc_node:1.0",
-            "ip_revision": "16",
+            "ip_revision": "18",
             "xci_name": "bd_e000_srn_0",
-            "xci_path": "ip/ip_7/bd_e000_srn_0.xci",
+            "xci_path": "ip\\ip_7\\bd_e000_srn_0.xci",
             "inst_hier_path": "s00_nodes/s00_r_node",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ACLKEN_CONVERSION": {
                 "value": "0"
@@ -1234,20 +1373,39 @@
             },
             "interface_ports": {
               "S_SC": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_SC",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:sc_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_SC"
                 ]
+              },
+              "M_SC": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           },
           "s00_aw_node": {
             "vlnv": "xilinx.com:ip:sc_node:1.0",
-            "ip_revision": "16",
+            "ip_revision": "18",
             "xci_name": "bd_e000_sawn_0",
-            "xci_path": "ip/ip_8/bd_e000_sawn_0.xci",
+            "xci_path": "ip\\ip_8\\bd_e000_sawn_0.xci",
             "inst_hier_path": "s00_nodes/s00_aw_node",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ACLKEN_CONVERSION": {
                 "value": "0"
@@ -1387,20 +1545,39 @@
             },
             "interface_ports": {
               "S_SC": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_SC",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:sc_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_SC"
                 ]
+              },
+              "M_SC": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           },
           "s00_w_node": {
             "vlnv": "xilinx.com:ip:sc_node:1.0",
-            "ip_revision": "16",
+            "ip_revision": "18",
             "xci_name": "bd_e000_swn_0",
-            "xci_path": "ip/ip_9/bd_e000_swn_0.xci",
+            "xci_path": "ip\\ip_9\\bd_e000_swn_0.xci",
             "inst_hier_path": "s00_nodes/s00_w_node",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ACLKEN_CONVERSION": {
                 "value": "0"
@@ -1540,20 +1717,39 @@
             },
             "interface_ports": {
               "S_SC": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_SC",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:sc_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_SC"
                 ]
+              },
+              "M_SC": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           },
           "s00_b_node": {
             "vlnv": "xilinx.com:ip:sc_node:1.0",
-            "ip_revision": "16",
+            "ip_revision": "18",
             "xci_name": "bd_e000_sbn_0",
-            "xci_path": "ip/ip_10/bd_e000_sbn_0.xci",
+            "xci_path": "ip\\ip_10\\bd_e000_sbn_0.xci",
             "inst_hier_path": "s00_nodes/s00_b_node",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ACLKEN_CONVERSION": {
                 "value": "0"
@@ -1693,11 +1889,29 @@
             },
             "interface_ports": {
               "S_SC": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_SC",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:sc_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_SC"
                 ]
+              },
+              "M_SC": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           }
@@ -1811,8 +2025,9 @@
         "vlnv": "xilinx.com:ip:sc_sc2axi:1.0",
         "ip_revision": "10",
         "xci_name": "bd_e000_m00s2a_0",
-        "xci_path": "ip/ip_11/bd_e000_m00s2a_0.xci",
+        "xci_path": "ip\\ip_11\\bd_e000_m00s2a_0.xci",
         "inst_hier_path": "m00_sc2axi",
+        "has_run_ip_tcl": "true",
         "parameters": {
           "AXI_ADDR_WIDTH": {
             "value": "32"
@@ -1864,12 +2079,62 @@
           }
         },
         "interface_ports": {
+          "M_SC_R": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "M_SC_B": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
           "S_SC_AR": {
+            "bd_attributes": {
+              "BRIDGES": {
+                "value": "M_AXI",
+                "value_src": "auto"
+              },
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            },
             "vlnv": "xilinx.com:interface:sc_rtl:1.0",
             "mode": "Slave",
             "bridges": [
               "M_AXI"
             ]
+          },
+          "S_SC_AW": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "S_SC_W": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "M_AXI": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
           }
         }
       },
@@ -1899,10 +2164,11 @@
         "components": {
           "m00_exit": {
             "vlnv": "xilinx.com:ip:sc_exit:1.0",
-            "ip_revision": "15",
+            "ip_revision": "17",
             "xci_name": "bd_e000_m00e_0",
-            "xci_path": "ip/ip_12/bd_e000_m00e_0.xci",
+            "xci_path": "ip\\ip_12\\bd_e000_m00e_0.xci",
             "inst_hier_path": "m00_exit_pipeline/m00_exit",
+            "has_run_ip_tcl": "true",
             "parameters": {
               "ADDR_WIDTH": {
                 "value": "49"
@@ -1991,11 +2257,29 @@
             },
             "interface_ports": {
               "S_AXI": {
+                "bd_attributes": {
+                  "BRIDGES": {
+                    "value": "M_AXI",
+                    "value_src": "auto"
+                  },
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                },
                 "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
                 "mode": "Slave",
                 "bridges": [
                   "M_AXI"
                 ]
+              },
+              "M_AXI": {
+                "bd_attributes": {
+                  "TYPE": {
+                    "value": "interior",
+                    "value_src": "default"
+                  }
+                }
               }
             }
           }

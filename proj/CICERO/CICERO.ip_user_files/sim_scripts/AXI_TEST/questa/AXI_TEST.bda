@@ -175,54 +175,17 @@
         ],
         "vertices": {
             "V0": {
-                "VM": "AXI_TEST",
+                "VM": "AXI_test",
                 "VT": "BC"
             },
             "V1": {
                 "VH": "2",
-                "VM": "AXI_TEST",
+                "VM": "AXI_test",
                 "VT": "VR"
             },
             "V2": {
                 "VH": "2",
-                "VT": "PM",
-                "TU": "active"
-            },
-            "V3": {
-                "VT": "AC",
-                "BA": "0x40000000",
-                "HA": "0x4000FFFF",
-                "BP": "C_BASEADDR",
-                "HP": "C_HIGHADDR",
-                "MA": "M00_AXI",
-                "MX": "/re2_copro_0",
-                "MI": "M00_AXI",
-                "MS": "SEG_axi_vip_1_Reg",
-                "MV": "user.org:user:re2_copro:2",
-                "SX": "/axi_vip_1",
-                "SI": "S_AXI",
-                "SS": "Reg",
-                "SV": "xilinx.com:ip:axi_vip:1.1",
-                "TM": "both",
-                "TU": "register"
-            },
-            "V4": {
-                "VT": "AC",
-                "BA": "0x44A00000",
-                "HA": "0x44A0FFFF",
-                "BP": "C_S00_AXI_BASEADDR",
-                "HP": "C_S00_AXI_HIGHADDR",
-                "MA": "Master_AXI",
-                "MX": "/axi_vip_0",
-                "MI": "M_AXI",
-                "MS": "SEG_re2_copro_0_S00_AXI_reg",
-                "MV": "xilinx.com:ip:axi_vip:1.1",
-                "SX": "/re2_copro_0",
-                "SI": "S00_AXI",
-                "SS": "S00_AXI_reg",
-                "SV": "user.org:user:re2_copro:2",
-                "TM": "both",
-                "TU": "register"
+                "VT": "PM"
             }
         },
         "edges": [
@@ -233,16 +196,6 @@
             {
                 "src": "V1",
                 "trg": "V2"
-            },
-            {
-                "src": "V3",
-                "trg": "V2",
-                "EH": "2"
-            },
-            {
-                "src": "V4",
-                "trg": "V2",
-                "EH": "2"
             }
         ]
     }

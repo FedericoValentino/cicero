@@ -7,7 +7,8 @@
       "name": "AXI_TEST",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2024.1"
+      "tool_version": "2025.1",
+      "validated": "true"
     },
     "design_tree": {
       "axi_vip_0": "",
@@ -17,20 +18,57 @@
     "ports": {
       "clk": {
         "type": "clk",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "reset",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "AXI_TEST_clk",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       },
       "reset": {
         "type": "rst",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       }
     },
     "components": {
       "axi_vip_0": {
         "vlnv": "xilinx.com:ip:axi_vip:1.1",
-        "ip_revision": "17",
+        "ip_revision": "21",
         "xci_name": "AXI_TEST_axi_vip_0_0",
-        "xci_path": "ip/AXI_TEST_axi_vip_0_0_1/AXI_TEST_axi_vip_0_0.xci",
+        "xci_path": "ip\\AXI_TEST_axi_vip_0_0_1\\AXI_TEST_axi_vip_0_0.xci",
         "inst_hier_path": "axi_vip_0",
+        "has_run_ip_tcl": "true",
         "parameters": {
           "ADDR_WIDTH": {
             "value": "32"
@@ -62,6 +100,12 @@
         },
         "interface_ports": {
           "M_AXI": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "END_POINT",
+                "value_src": "default"
+              }
+            },
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
             "mode": "Master",
             "address_space_ref": "Master_AXI",
@@ -82,13 +126,20 @@
         }
       },
       "re2_copro_0": {
-        "vlnv": "user.org:user:re2_copro:2",
-        "ip_revision": "2",
+        "vlnv": "user.org:user:re2_copro_v2:2.1",
+        "ip_revision": "1",
         "xci_name": "AXI_TEST_re2_copro_0_0",
-        "xci_path": "ip/AXI_TEST_re2_copro_0_0/AXI_TEST_re2_copro_0_0.xci",
+        "xci_path": "ip\\AXI_TEST_re2_copro_0_0\\AXI_TEST_re2_copro_0_0.xci",
         "inst_hier_path": "re2_copro_0",
+        "has_run_ip_tcl": "true",
         "interface_ports": {
           "M00_AXI": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "END_POINT",
+                "value_src": "auto"
+              }
+            },
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
             "mode": "Master",
             "address_space_ref": "M00_AXI",
@@ -110,16 +161,27 @@
       },
       "axi_vip_1": {
         "vlnv": "xilinx.com:ip:axi_vip:1.1",
-        "ip_revision": "17",
+        "ip_revision": "21",
         "xci_name": "AXI_TEST_axi_vip_1_0",
-        "xci_path": "ip/AXI_TEST_axi_vip_1_0_1/AXI_TEST_axi_vip_1_0.xci",
+        "xci_path": "ip\\AXI_TEST_axi_vip_1_0_1\\AXI_TEST_axi_vip_1_0.xci",
         "inst_hier_path": "axi_vip_1",
+        "has_run_ip_tcl": "true",
         "parameters": {
           "INTERFACE_MODE": {
             "value": "SLAVE"
           },
           "READ_WRITE_MODE": {
             "value": "READ_ONLY"
+          }
+        },
+        "interface_ports": {
+          "S_AXI": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "END_POINT",
+                "value_src": "default"
+              }
+            }
           }
         }
       }
@@ -144,8 +206,8 @@
           "clk",
           "axi_vip_0/aclk",
           "axi_vip_1/aclk",
-          "re2_copro_0/s00_axi_aclk",
-          "re2_copro_0/m00_axi_aclk"
+          "re2_copro_0/m00_axi_aclk",
+          "re2_copro_0/s00_axi_aclk"
         ]
       },
       "aresetn_0_1": {
@@ -153,8 +215,8 @@
           "reset",
           "axi_vip_0/aresetn",
           "axi_vip_1/aresetn",
-          "re2_copro_0/s00_axi_aresetn",
-          "re2_copro_0/m00_axi_aresetn"
+          "re2_copro_0/m00_axi_aresetn",
+          "re2_copro_0/s00_axi_aresetn"
         ]
       }
     },

@@ -4,7 +4,7 @@
     "xci_name": "re2_bd_ps8_0_axi_periph_1",
     "cell_name": "ps8_0_axi_periph",
     "component_reference": "xilinx.com:ip:axi_interconnect:2.1",
-    "ip_revision": "32",
+    "ip_revision": "37",
     "gen_directory": "../../../../../../CICERO.gen/sources_1/bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_1",
     "parameters": {
       "component_parameters": {
@@ -326,7 +326,7 @@
       },
       "project_parameters": {
         "ARCHITECTURE": [ { "value": "zynquplus" } ],
-        "BASE_BOARD_PART": [ { "value": "avnet.com:ultra96v2:part0:1.1" } ],
+        "BASE_BOARD_PART": [ { "value": "" } ],
         "BOARD_CONNECTIONS": [ { "value": "" } ],
         "DEVICE": [ { "value": "xczu3eg" } ],
         "NEXTGEN_VERSAL": [ { "value": "0" } ],
@@ -340,12 +340,12 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator_AppCore" } ],
-        "IPREVISION": [ { "value": "32" } ],
+        "IPREVISION": [ { "value": "37" } ],
         "MANAGED": [ { "value": "TRUE" } ],
         "OUTPUTDIR": [ { "value": "../../../../../../CICERO.gen/sources_1/bd/re2_bd/ip/re2_bd_ps8_0_axi_periph_1" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
-        "SWVERSION": [ { "value": "2024.1" } ],
+        "SWVERSION": [ { "value": "2025.1" } ],
         "SYNTHESISFLOW": [ { "value": "GLOBAL" } ]
       }
     }

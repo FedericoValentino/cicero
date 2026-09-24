@@ -122,6 +122,14 @@ logic                                   rlast_prev_reg = 0;
 
 logic     [31: 0]                       bram_axi_addr = 0;
 
+logic [31:0] fifo_din;
+logic fifo_wr_en;
+logic fifo_rd_en;
+logic [31:0] fifo_dout;
+logic fifo_full;
+logic fifo_empty;
+logic [FIFO_COUNT_WIDTH-1:0] fifo_data_count;
+
 logic cmd_prev;
 
 
@@ -173,12 +181,39 @@ begin
     begin
         bram_axi_addr <= 0;
     end else begin
-        if(status_register_fetching == STATUS_CAPTURE_DATA && rvalid)
+        if(/*status_register_fetching == STATUS_CAPTURE_DATA && rvalid &&*/ ~fifo_empty)
             begin
                 bram_axi_addr <= bram_axi_addr + 1;
             end
     end
     
+end
+
+
+// AXI4 read master: registered
+always_ff @(posedge clk) begin
+    if (rst_master) begin
+        arvalid_reg <= 1'b0;
+        rready_reg  <= 1'b0;
+    end else begin
+        if (status_register == STATUS_IDLE) begin
+            case (cmd_register)
+                CMD_SET_ADDRESS: axi_register_read <= data_in_register;
+                CMD_SET_LEN:     axi_read_len      <= data_in_register;
+                CMD_START_FETCH: begin
+                    araddr_reg  <= axi_register_read;
+                    arlen_reg   <= axi_read_len;
+                    arvalid_reg <= 1'b1;
+                end
+            endcase
+        end
+        if (arvalid_reg && arready) begin      // AR handshake
+            arvalid_reg <= 1'b0;
+            rready_reg  <= 1'b1;
+        end
+        if (rready_reg && rvalid && rlast)     // last beat accepted
+            rready_reg  <= 1'b0;
+    end
 end
 
 
@@ -199,9 +234,20 @@ begin
     bram_w                             = { (BRAM_WRITE_WIDTH){1'b0} };
     bram_w_valid                       = 1'b0;
 
+    fifo_din                           = { (32){1'b0} };
+    fifo_wr_en                         = 1'b0;
+    fifo_rd_en                         = 1'b0;
+
     memory_addr_from_coprocessor_ready = 1'b0;
     
     start_valid                        = 1'b0;
+
+    if(~fifo_empty) begin
+        fifo_rd_en   = 1'b1;
+        bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+        bram_w_valid = 1'b1;
+        bram_w       = fifo_dout[0+:BRAM_WRITE_WIDTH];
+    end
 
     case(status_register)
     STATUS_IDLE:
@@ -235,19 +281,8 @@ begin
                     status_register_next = STATUS_RUNNING;
                 end
             end
-            CMD_SET_ADDRESS:
-            begin
-                axi_register_read = data_in_register;
-            end
-            CMD_SET_LEN:
-            begin
-                axi_read_len = data_in_register;
-            end
             CMD_START_FETCH: 
             begin
-                araddr_reg = axi_register_read;
-                arlen_reg  = axi_read_len;
-                arvalid_reg = 1'b1;
                 status_register_next = STATUS_FETCHING;
                 status_register_fetching_next = STATUS_WAIT_ARREADY; 
             end
@@ -330,6 +365,29 @@ begin
     STATUS_FETCHING:
     begin
         case(status_register_fetching)
+            STATUS_WAIT_ARREADY: begin
+                data_o_register = STATUS_WAIT_ARREADY;
+                if (arvalid_reg && arready)
+                    status_register_fetching_next = STATUS_CAPTURE_DATA;
+            end
+
+            STATUS_CAPTURE_DATA: begin
+                data_o_register = STATUS_CAPTURE_DATA;
+                if (rvalid && rready_reg) begin
+                    fifo_din   = rdata[0+:BRAM_WRITE_WIDTH];
+                    fifo_wr_en = 1'b1;
+                    if (rlast) status_register_fetching_next = STATUS_FETCH_END;
+                end
+            end
+
+            STATUS_FETCH_END: begin
+                data_o_register = STATUS_FETCH_END;
+                if (fifo_empty)
+                    status_register_next = STATUS_IDLE;
+            end
+        endcase
+
+        /*case(status_register_fetching)
 
             STATUS_WAIT_ARREADY: begin
                 data_o_register = STATUS_WAIT_ARREADY;
@@ -353,10 +411,12 @@ begin
             STATUS_CAPTURE_DATA: begin
                 data_o_register = STATUS_CAPTURE_DATA;
                 if(rvalid) begin
-                    bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
+                    fifo_din = rdata[0+:BRAM_WRITE_WIDTH];
+                    fifo_wr_en = 1'b1;
+                    /*bram_w_addr  = bram_axi_addr[0+:BRAM_WRITE_ADDR_WIDTH];
                     bram_w_valid = 1'b1;
-                    bram_w       = rdata[0+:BRAM_WRITE_WIDTH];
-                end
+                    bram_w       = rdata[0+:BRAM_WRITE_WIDTH];*/
+                /*end
                 
                 if (rlast) begin
                     status_register_fetching_next = STATUS_FETCH_END;
@@ -367,10 +427,12 @@ begin
             
             STATUS_FETCH_END: begin
                 data_o_register = STATUS_FETCH_END;
-                status_register_next = STATUS_IDLE;
-            end 
+                if(fifo_empty) begin
+                    status_register_next = STATUS_IDLE;
+                end
+            end
             
-        endcase
+        endcase*/
             /*STATUS_WAIT_RVALID: begin
                 if(arvalid_reg)
                 begin
@@ -559,6 +621,27 @@ end
 //////////////////////////
 //   Module instances   //
 //////////////////////////
+
+
+fifo #(
+    .DWIDTH (32),
+    .COUNT_WIDTH(FIFO_COUNT_WIDTH)
+)
+axi_to_bram_fifo
+(
+    .clk(clk),
+    .rst(rst_master),
+    .rst_cntrs(rst_master),
+    .din(fifo_din),
+    .wr_en(fifo_wr_en),
+    .rd_en(fifo_rd_en),
+    .dout(fifo_dout),
+    .full(fifo_full),
+    .empty(fifo_empty),
+    .data_count(fifo_data_count),
+    .max_data_count(),
+    .fill_events()
+);
 
 bram #(
     .READ_WIDTH      ( BRAM_READ_WIDTH      ),            

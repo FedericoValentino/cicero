@@ -1,0 +1,3 @@
+C:\mingw64\bin\cmake.exe -E rm -f CMakeFiles\re2_driver_xrt.dir/objects.a
+C:\mingw64\bin\ar.exe qc CMakeFiles\re2_driver_xrt.dir/objects.a @CMakeFiles\re2_driver_xrt.dir\objects1.rsp
+C:\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\re2_driver_xrt.dir/objects.a -Wl,--no-whole-archive -o re2_driver_xrt.exe -Wl,--out-implib,libre2_driver_xrt.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\re2_driver_xrt.dir\linkLibs.rsp

@@ -338,25 +338,29 @@ module re2_copro_v2_tb;
   endtask
   
   task automatic mem_read_agent();
-    integer i, burst_len;
-    forever begin
-    
-      m00_axi_arready <= 1;
-      wait (m00_axi_arvalid);
-      //CASE RADDR
-      m00_axi_arready <= 0;
+  integer i, burst_len, base;
+  m00_axi_arready <= 0;
+  m00_axi_rvalid  <= 0;
+  m00_axi_rlast   <= 0;
+  forever begin
+    // ---- AR channel ----
+    m00_axi_arready <= 1;
+    do @(posedge clk); while (!m00_axi_arvalid);   // handshake on clock edge
+    burst_len = m00_axi_arlen + 1;                   // latch at handshake
+    base      = m00_axi_araddr >> 2;                 // 32-bit words in mem[]
+    m00_axi_arready <= 0;
+
+    // ---- R channel ----
+    for (i = 0; i < burst_len; i = i + 1) begin
+      m00_axi_rdata  <= mem[base + i];
+      m00_axi_rlast  <= (i == burst_len - 1);
       m00_axi_rvalid <= 1;
-      burst_len = m00_axi_arlen + 1;
-      wait(m00_axi_rready)
-      //CASE RDATA
-      for (i = 0; i < burst_len; i = i+1) begin
-        m00_axi_rlast  <= (i == burst_len-1);
-        m00_axi_rdata <= mem[i];
-        m00_axi_rvalid <= 1;
-      end
-      m00_axi_rlast <= 0;
+      do @(posedge clk); while (!m00_axi_rready);  // beat accepted
     end
-  endtask
+    m00_axi_rvalid <= 0;
+    m00_axi_rlast  <= 0;
+  end
+endtask
 
   initial begin
     fork
@@ -547,7 +551,7 @@ module re2_copro_v2_tb;
     reg [REG_WIDTH-1:0] exe2_stalls;
 
     //Initialize testbench memory with code and string to analyze
-    fp_code= $fopen("/home/feder34/git/cicero/scripts/generate_single/regex.txt","r");
+    fp_code= $fopen("C:/Users/valef/git/cicero/scripts/generate_single/regex.txt","r");
     if (fp_code==0)
     begin
         $display("Could not open file '%s' for reading","regex.txt");
@@ -558,7 +562,7 @@ module re2_copro_v2_tb;
     $display("writing code from %h",start_code);
     write_file(fp_code, start_code , end_code );
 
-    fp_string= $fopen("/home/feder34/git/cicero/scripts/generate_single/input.csv","r");
+    fp_string= $fopen("C:/Users/valef/git/cicero/scripts/generate_single/input.csv","r");
     if (fp_string==0)
     begin
         $display("Could not open file '%s' for reading","input.csv");
@@ -600,7 +604,7 @@ module re2_copro_v2_tb;
     @(posedge clk);
     write(CMD_NOP, 32'h4*4); //CMD_NOP
     @(posedge clk);
-    write((end_string-start_code)/4, 32'h0*4); //WRITE RLEN
+    write((end_string-start_code)/4 - 1, 32'h0*4); //WRITE RLEN (ARLEN = beats-1)
     @(posedge clk);
     write(CMD_SET_LEN, 32'h4*4); //SET RLEN
     @(posedge clk);
