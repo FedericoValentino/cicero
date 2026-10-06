@@ -1,6 +1,8 @@
 source /usr/local/share/pynq-venv/bin/activate
 source /etc/profile.d/xrt_setup.sh
 
+echo "Running Benchmark for cc_id_bits $1"
+
 echo "C BUILD"
 
 mkdir c++_benchmark/build
@@ -11,11 +13,11 @@ cmake --build c++_benchmark/build/
 
 echo "C Host Benchmark with fast loading "
 
-sudo ./c++_benchmark/build/re2_driver_xrt REs/c++_compare.regex INs/c++_compare.input ../cicero_compiler/re2compiler.py output_c_fl.txt 1
+sudo ./c++_benchmark/build/re2_driver_xrt REs/c++_compare.regex INs/c++_compare.input ../cicero_compiler/re2compiler.py output_c_fl.txt 1 $1
 
 echo "C Host Benchmark without fast loading "
 
-sudo ./c++_benchmark/build/re2_driver_xrt REs/c++_compare.regex INs/c++_compare.input ../cicero_compiler/re2compiler.py output_c_sl.txt 0
+sudo ./c++_benchmark/build/re2_driver_xrt REs/c++_compare.regex INs/c++_compare.input ../cicero_compiler/re2compiler.py output_c_sl.txt 0 $1
 
 echo "Python Host Benchmark"
 

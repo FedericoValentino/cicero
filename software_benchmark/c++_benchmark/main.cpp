@@ -108,7 +108,7 @@ uint32_t read_string(const char string[], uint32_t addr, re2_driver& driver)
     return driver.load_string(string_chars, addr);
 }
 
-void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path, std::string output_file)
+void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path, std::string output_file, int cc_id_bits)
 {
     int64_t total_time = 0;
 
@@ -177,6 +177,8 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
             total_time += cicero.memory_transfer_time + cicero.execution_time;
 
+            cicero.read_performance_counters(cc_id_bits);
+
             string_index++;
         }
         printf("\n");
@@ -206,9 +208,9 @@ void read_lines(std::vector<std::string>& vec, char* file)
 int main(int argc, char* argv[])
 {
 
-    if(argc != 6)
+    if(argc != 7)
     {
-        std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <output_file> <fast_transfer: [1|0]>"<<std::endl;
+        std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <output_file> <fast_transfer: [1|0]> <cc_id_bits>"<<std::endl;
         return -1;
     }
 
@@ -232,7 +234,7 @@ int main(int argc, char* argv[])
     cicero.test_write_capabilities();
 
     //Step 3: Start tests on cicero
-    start_cicero(cicero, strings, regexes, argv[3], argv[4]);
+    start_cicero(cicero, strings, regexes, argv[3], argv[4], argv[6]);
     
     return 0;
 }
