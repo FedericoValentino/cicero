@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
     cicero.test_write_capabilities();
 
     //Step 3: Start tests on cicero
-    start_cicero(cicero, strings, regexes, argv[3], argv[4], argv[6]);
+    start_cicero(cicero, strings, regexes, argv[3], argv[4], atoi(argv[6]));
     
     return 0;
 }
