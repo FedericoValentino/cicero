@@ -45,18 +45,18 @@ module bram #(
       localparam RATIO = maxWIDTH / minWIDTH; 
       localparam log2RATIO = log2(RATIO);
 
-      reg [minWIDTH-1:0] RAM [0:maxSIZE-1]; 
+      // Map to block RAM
+      (* ram_style = "block" *) reg [minWIDTH-1:0] RAM [0:maxSIZE-1];
+
+      // Power-on zero init
+      initial begin : ram_init
+        integer i;
+        for (i = 0; i < maxSIZE; i = i + 1) RAM[i] = '0;
+      end
 
       always_ff @(posedge clk) 
       begin 
-          integer i;
-          if (rst) 
-          begin
-            for (i = 0; i < maxSIZE; i = i + 1) begin
-                RAM[i] <= '0;
-            end
-          end 
-          else if (w_valid) 
+          if (w_valid)
           begin
             RAM[w_addr] <= w_data;
           end
