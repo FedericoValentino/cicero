@@ -1,11 +1,12 @@
 #include <vector>
-#include <format>
 #include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
 #include <assert.h>
 #include <chrono>
+#include <sstream>
+#include <string>
 
 class re2_driver {
 public:
@@ -156,37 +157,30 @@ public:
         uint32_t exe2_stalls;
 
 
-        std::string res_pc = "";
-
+        std::ostringstream res_pc;
         get_elapsed_clock_cycles_report(elapsed_ccs);
-        res_pc.append(std::format("clock cycles elapsed         {}:\n", elapsed_ccs));
-        for(int i = 0; i < 1 << CC_ID_BITS; i++)
+        res_pc << "clock cycles elapsed:         " << elapsed_ccs << "\n";
+        for (int i = 0; i < 1 << CC_ID_BITS; i++)
         {
-            get_fifo_sizing_report(i, fifoSize, fifoFulls);
-            get_hit_miss_report(i, cache_hits, cache_miss);
-            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
-            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
-
-
-            res_pc.append("---------------------------------------------\n");
-            res_pc.append(std::format("core         {}:\n", i));
-            res_pc.append(std::format("fifo statistics:\n"));
-            res_pc.append(std::format("max size:     {}\n", fifoSize));
-            res_pc.append(std::format("full events:  {}\n", fifoFulls));
-            res_pc.append(std::format("cache statistics:\n"));
-            res_pc.append(std::format("hits:         {}\n", cache_hits));
-            res_pc.append(std::format("miss:         {}\n", cache_miss));
-            res_pc.append(std::format("clock cycles per stage:\n"));
-            res_pc.append(std::format("fetch cycles: {}\n", fetch_ccs));
-            res_pc.append(std::format("fetch stalls: {}\n", fetch_stalls));
-            res_pc.append(std::format("exe1  cycles: {}\n", exe1_ccs));
-            res_pc.append(std::format("exe1  stalls: {}\n", exe1_stalls));
-            res_pc.append(std::format("exe2  cycles: {}\n", exe2_ccs));
-            res_pc.append(std::format("exe2  stalls: {}\n", exe2_stalls));
+            ...
+            res_pc << "---------------------------------------------\n"
+                << "core         " << i << ":\n"
+                << "fifo statistics:\n"
+                << "max size:     " << fifoSize << "\n"
+                << "full events:  " << fifoFulls << "\n"
+                << "cache statistics:\n"
+                << "hits:         " << cache_hits << "\n"
+                << "miss:         " << cache_miss << "\n"
+                << "clock cycles per stage:\n"
+                << "fetch cycles: " << fetch_ccs << "\n"
+                << "fetch stalls: " << fetch_stalls << "\n"
+                << "exe1  cycles: " << exe1_ccs << "\n"
+                << "exe1  stalls: " << exe1_stalls << "\n"
+                << "exe2  cycles: " << exe2_ccs << "\n"
+                << "exe2  stalls: " << exe2_stalls << "\n";
         }
-        res_pc.append("---------------------------------------------\n");
-
-        return res_pc;
+        res_pc << "---------------------------------------------\n";
+        return res_pc.str();
     }
 
     /*----------LOADING CODE AND STRING----------*/
