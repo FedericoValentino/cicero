@@ -139,7 +139,7 @@ public:
         return read(DATA_OUT);
     }
 
-    std::stromg read_performance_counters(int CC_ID_BITS)
+    std::string read_performance_counters(int CC_ID_BITS)
     {
         uint32_t elapsed_ccs;
         uint32_t fifoSize;
