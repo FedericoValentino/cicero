@@ -1,4 +1,5 @@
 #include <vector>
+#include <format>
 #include <cstdint>
 #include <iostream>
 #include <fstream>
@@ -137,7 +138,7 @@ public:
         return read(DATA_OUT);
     }
 
-    void read_performance_counters(int CC_ID_BITS)
+    std::stromg read_performance_counters(int CC_ID_BITS)
     {
         uint32_t elapsed_ccs;
         uint32_t fifoSize;
@@ -155,8 +156,10 @@ public:
         uint32_t exe2_stalls;
 
 
+        std::string res_pc = "";
+
         get_elapsed_clock_cycles_report(elapsed_ccs);
-        printf("clock cycles elapsed         %d:\n", elapsed_ccs);
+        res_pc.append(std::format("clock cycles elapsed         {}:\n", elapsed_ccs));
         for(int i = 0; i < 1 << CC_ID_BITS; i++)
         {
             get_fifo_sizing_report(i, fifoSize, fifoFulls);
@@ -165,23 +168,25 @@ public:
             get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
 
 
-            printf("---------------------------------------------\n");
-            printf("core         %d:\n", i);
-            printf("fifo statistics:\n");
-            printf("max size:     %d\n", fifoSize);
-            printf("full events:  %d\n", fifoFulls);
-            printf("cache statistics:\n");
-            printf("hits:         %d\n", cache_hits);
-            printf("miss:         %d\n", cache_miss);
-            printf("clock cycles per stage:\n");
-            printf("fetch cycles: %d\n", fetch_ccs);
-            printf("fetch stalls: %d\n", fetch_stalls);
-            printf("exe1  cycles: %d\n", exe1_ccs);
-            printf("exe1  stalls: %d\n", exe1_stalls);
-            printf("exe2  cycles: %d\n", exe2_ccs);
-            printf("exe2  stalls: %d\n", exe2_stalls);
+            res_pc.append("---------------------------------------------\n");
+            res_pc.append(std::format("core         {}:\n", i));
+            res_pc.append(std::format("fifo statistics:\n"));
+            res_pc.append(std::format("max size:     {}\n", fifoSize));
+            res_pc.append(std::format("full events:  {}\n", fifoFulls));
+            res_pc.append(std::format("cache statistics:\n"));
+            res_pc.append(std::format("hits:         {}\n", cache_hits));
+            res_pc.append(std::format("miss:         {}\n", cache_miss));
+            res_pc.append(std::format("clock cycles per stage:\n"));
+            res_pc.append(std::format("fetch cycles: {}\n", fetch_ccs));
+            res_pc.append(std::format("fetch stalls: {}\n", fetch_stalls));
+            res_pc.append(std::format("exe1  cycles: {}\n", exe1_ccs));
+            res_pc.append(std::format("exe1  stalls: {}\n", exe1_stalls));
+            res_pc.append(std::format("exe2  cycles: {}\n", exe2_ccs));
+            res_pc.append(std::format("exe2  stalls: {}\n", exe2_stalls));
         }
-        printf("---------------------------------------------\n");
+        res_pc.append("---------------------------------------------\n");
+
+        return res_pc;
     }
 
     /*----------LOADING CODE AND STRING----------*/

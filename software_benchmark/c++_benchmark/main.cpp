@@ -113,6 +113,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
     int64_t total_time = 0;
 
     std::ofstream outputFile(output_file);
+    std::ofstream outputFilePC("PC_" + output_file)
     
     uint32_t regex_index = 0;
     for(std::string regex : regexes)
@@ -126,6 +127,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
         system(command.c_str());
 
         outputFile << regex + "\n";
+        outputFilePC << regex + "\n";
         
         printf("%d\n", regex_index);
 
@@ -177,7 +179,9 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
             total_time += cicero.memory_transfer_time + cicero.execution_time;
 
-            cicero.read_performance_counters(cc_id_bits);
+
+            //Write results to file
+            output_file << string << "\n" << cicero.read_performance_counters(cc_id_bits) << "\n";
 
             string_index++;
         }
