@@ -76,10 +76,17 @@ void* open_device_axi_full_mock() {
     return base_ptr;
 }
 
-uint32_t read_program(FILE *program, re2_driver& driver)
+std::vector<uint16_t> read_program(const char* path)
 {
     std::vector<uint16_t> code;
-    
+
+    FILE *program = fopen(path, "r");
+    if(program == NULL)
+    {
+        perror("Error opening compiled regex");
+        exit(1);
+    }
+
     while(!feof(program))
     {
         uint16_t currentInstr = 0;
@@ -87,7 +94,27 @@ uint32_t read_program(FILE *program, re2_driver& driver)
         code.push_back(currentInstr);
     }
 
-    return driver.load_code(code);
+    fclose(program);
+    return code;
+}
+
+// Wrap in single quotes so the shell doesn't expand $, `, \ or " inside the regex
+std::string shell_quote(const std::string& s)
+{
+    std::string quoted = "'";
+    for(char c : s)
+    {
+        if(c == '\'')
+        {
+            quoted += "'\\''";
+        }
+        else
+        {
+            quoted += c;
+        }
+    }
+    quoted += "'";
+    return quoted;
 }
 
 uint32_t read_string(const char string[], uint32_t addr, re2_driver& driver)
@@ -122,9 +149,16 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
         //Call to python to generate the file
         //python3 ../../../cicero_compiler/re2compiler.py -data="(this|that)" -o current_regex.re
-        std::string command = "python3 " + re2compiler_path + " -data=\"" + regex + "\" -o current_regex.regex";
+        std::string command = "python3 " + re2compiler_path + " -data=" + shell_quote(regex) + " -o current_regex.regex";
 
-        system(command.c_str());
+        remove("current_regex.regex");
+        if(system(command.c_str()) != 0)
+        {
+            fprintf(stderr, "Compilation failed for regex %u: %s\n", regex_index, regex.c_str());
+            exit(1);
+        }
+
+        std::vector<uint16_t> code = read_program("current_regex.regex");
 
         outputFile << regex + "\n";
         outputFilePC << regex + "\n";
@@ -135,13 +169,11 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
         for(std::string string : strings)
         {
             printf("%d ", string_index);
-            FILE *program = fopen("current_regex.regex", "r");
-
             cicero.write_cmd(re2_driver::CMD_RESET);
             cicero.write_cmd(re2_driver::CMD_RESET_PERF_CNTRS);
 
             //Step 2: Load regex and string
-            uint32_t code_end_addr = read_program(program, cicero);
+            uint32_t code_end_addr = cicero.load_code(code);
 
             uint32_t string_end_addr = read_string(string.c_str(), code_end_addr, cicero);
 
@@ -190,6 +222,7 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
     }
     outputFile << total_time;
     outputFile.close();
+    outputFilePC.close();
     printf("Computing each string with each regex took %ld nanoseconds\n", total_time);
 }
 
