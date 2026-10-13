@@ -162,7 +162,11 @@ public:
         res_pc << "clock cycles elapsed:         " << elapsed_ccs << "\n";
         for (int i = 0; i < 1 << CC_ID_BITS; i++)
         {
-            ...
+            get_fifo_sizing_report(i, fifoSize, fifoFulls);
+            get_hit_miss_report(i, cache_hits, cache_miss);
+            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
+            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
+
             res_pc << "---------------------------------------------\n"
                 << "core         " << i << ":\n"
                 << "fifo statistics:\n"
