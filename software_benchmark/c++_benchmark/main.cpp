@@ -1,6 +1,8 @@
 #include "re2_driver.hpp"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <climits>
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -135,13 +137,45 @@ uint32_t read_string(const char string[], uint32_t addr, re2_driver& driver)
     return driver.load_string(string_chars, addr);
 }
 
-void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path, std::string output_file, int cc_id_bits)
+// Strip the extension so "output_c_fl.txt" becomes "output_c_fl"
+std::string output_base(const std::string& output_file)
+{
+    size_t dot = output_file.find_last_of('.');
+    size_t slash = output_file.find_last_of('/');
+    if(dot == std::string::npos || (slash != std::string::npos && dot < slash))
+    {
+        return output_file;
+    }
+    return output_file.substr(0, dot);
+}
+
+void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::vector<std::string>& regexes, std::string re2compiler_path, std::string output_file, int cc_id_bits, uint32_t sample_every, bool per_core)
 {
     int64_t total_time = 0;
 
-    std::ofstream outputFile(output_file);
-    std::ofstream outputFilePC("PC_" + output_file);
-    
+    std::string base = output_base(output_file);
+
+    // One row per regex, counters summed over every string and every core
+    std::ofstream summaryFile(base + "_summary.csv");
+    summaryFile << "regex_id,n_strings,n_accepted,cc_sum,cc_min,cc_max,"
+                << "cache_hits,cache_miss,fifo_max,fifo_fulls,"
+                << "fetch_ccs,fetch_stalls,exe1_ccs,exe1_stalls,exe2_ccs,exe2_stalls\n";
+
+    // One row per (regex, string) pair, only for accepted strings and every sample_every-th string
+    std::ofstream detailFile(base + "_detail.csv");
+    detailFile << "regex_id,string_id,accepted,cc,"
+               << "cache_hits,cache_miss,fifo_max,fifo_fulls,"
+               << "fetch_ccs,fetch_stalls,exe1_ccs,exe1_stalls,exe2_ccs,exe2_stalls\n";
+
+    // Optional: one row per core for every detail row
+    std::ofstream perCoreFile;
+    if(per_core)
+    {
+        perCoreFile.open(base + "_percore.csv");
+        perCoreFile << "regex_id,string_id,core,fifoSize,fifoFull,cacheHits,cacheMiss,"
+                    << "fetchCC,fetchStall,exe1CC,exe1Stall,exe2CC,exe2Stall\n";
+    }
+
     uint32_t regex_index = 0;
     for(std::string regex : regexes)
     {
@@ -160,10 +194,17 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
 
         std::vector<uint16_t> code = read_program("current_regex.regex");
 
-        outputFile << regex + "\n";
-        outputFilePC << regex + "\n";
-        
         printf("%d\n", regex_index);
+
+        uint64_t n_accepted = 0;
+        uint64_t cc_sum = 0;
+        uint32_t cc_min = UINT32_MAX;
+        uint32_t cc_max = 0;
+        uint64_t sum_cache_hits = 0, sum_cache_miss = 0, sum_fifo_fulls = 0;
+        uint32_t max_fifo = 0;
+        uint64_t sum_fetch_ccs = 0, sum_fetch_stalls = 0;
+        uint64_t sum_exe1_ccs = 0, sum_exe1_stalls = 0;
+        uint64_t sum_exe2_ccs = 0, sum_exe2_stalls = 0;
 
         uint32_t string_index = 0;
         for(std::string string : strings)
@@ -205,24 +246,118 @@ void start_cicero(re2_driver& cicero, std::vector<std::string>& strings, std::ve
             uint32_t ccs;
             cicero.get_elapsed_clock_cycles_report(ccs);
 
-            outputFile  << string_index << ","
-                        << accepted << ","
-                        << ccs << "\n";
-
             total_time += cicero.memory_transfer_time + cicero.execution_time;
 
+            std::vector<re2_driver::core_counters> cores = cicero.read_performance_counters(cc_id_bits);
 
-            //Write results to file
-            outputFilePC << string << "\n" << cicero.read_performance_counters(cc_id_bits) << "\n";
+            // Sum the counters of all cores for this run
+            uint64_t cache_hits = 0, cache_miss = 0, fifo_fulls = 0;
+            uint32_t fifo_max = 0;
+            uint64_t fetch_ccs = 0, fetch_stalls = 0;
+            uint64_t exe1_ccs = 0, exe1_stalls = 0;
+            uint64_t exe2_ccs = 0, exe2_stalls = 0;
+            for(const re2_driver::core_counters& c : cores)
+            {
+                cache_hits   += c.cache_hits;
+                cache_miss   += c.cache_miss;
+                fifo_fulls   += c.fifoFulls;
+                fifo_max      = std::max(fifo_max, c.fifoSize);
+                fetch_ccs    += c.fetch_ccs;
+                fetch_stalls += c.fetch_stalls;
+                exe1_ccs     += c.exe1_ccs;
+                exe1_stalls  += c.exe1_stalls;
+                exe2_ccs     += c.exe2_ccs;
+                exe2_stalls  += c.exe2_stalls;
+            }
+
+            n_accepted += (accepted == 1);
+            cc_sum += ccs;
+            cc_min = std::min(cc_min, ccs);
+            cc_max = std::max(cc_max, ccs);
+            sum_cache_hits   += cache_hits;
+            sum_cache_miss   += cache_miss;
+            sum_fifo_fulls   += fifo_fulls;
+            max_fifo          = std::max(max_fifo, fifo_max);
+            sum_fetch_ccs    += fetch_ccs;
+            sum_fetch_stalls += fetch_stalls;
+            sum_exe1_ccs     += exe1_ccs;
+            sum_exe1_stalls  += exe1_stalls;
+            sum_exe2_ccs     += exe2_ccs;
+            sum_exe2_stalls  += exe2_stalls;
+
+            bool sampled = sample_every != 0 && string_index % sample_every == 0;
+            if(accepted == 1 || sampled)
+            {
+                detailFile  << regex_index << ","
+                            << string_index << ","
+                            << accepted << ","
+                            << ccs << ","
+                            << cache_hits << ","
+                            << cache_miss << ","
+                            << fifo_max << ","
+                            << fifo_fulls << ","
+                            << fetch_ccs << ","
+                            << fetch_stalls << ","
+                            << exe1_ccs << ","
+                            << exe1_stalls << ","
+                            << exe2_ccs << ","
+                            << exe2_stalls << "\n";
+
+                if(per_core)
+                {
+                    for(size_t i = 0; i < cores.size(); i++)
+                    {
+                        const re2_driver::core_counters& c = cores[i];
+                        perCoreFile << regex_index << ","
+                                    << string_index << ","
+                                    << i << ","
+                                    << c.fifoSize << ","
+                                    << c.fifoFulls << ","
+                                    << c.cache_hits << ","
+                                    << c.cache_miss << ","
+                                    << c.fetch_ccs << ","
+                                    << c.fetch_stalls << ","
+                                    << c.exe1_ccs << ","
+                                    << c.exe1_stalls << ","
+                                    << c.exe2_ccs << ","
+                                    << c.exe2_stalls << "\n";
+                    }
+                }
+            }
 
             string_index++;
         }
+
+        summaryFile << regex_index << ","
+                    << string_index << ","
+                    << n_accepted << ","
+                    << cc_sum << ","
+                    << (string_index ? cc_min : 0) << ","
+                    << cc_max << ","
+                    << sum_cache_hits << ","
+                    << sum_cache_miss << ","
+                    << max_fifo << ","
+                    << sum_fifo_fulls << ","
+                    << sum_fetch_ccs << ","
+                    << sum_fetch_stalls << ","
+                    << sum_exe1_ccs << ","
+                    << sum_exe1_stalls << ","
+                    << sum_exe2_ccs << ","
+                    << sum_exe2_stalls << "\n";
+
         printf("\n");
         regex_index++;
     }
+
+    std::ofstream outputFile(output_file);
     outputFile << total_time;
     outputFile.close();
-    outputFilePC.close();
+    summaryFile.close();
+    detailFile.close();
+    if(per_core)
+    {
+        perCoreFile.close();
+    }
     printf("Computing each string with each regex took %ld nanoseconds\n", total_time);
 }
 
@@ -245,11 +380,14 @@ void read_lines(std::vector<std::string>& vec, char* file)
 int main(int argc, char* argv[])
 {
 
-    if(argc != 7)
+    if(argc < 7 || argc > 9)
     {
-        std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <output_file> <fast_transfer: [1|0]> <cc_id_bits>"<<std::endl;
+        std::cout<<"Usage: ./re2_driver_xrt <regexes_file_path> <strings_file_path> <compiler_path> <output_file> <fast_transfer: [1|0]> <cc_id_bits> [sample_every: 0 = accepted only] [per_core: [1|0]]"<<std::endl;
         return -1;
     }
+
+    uint32_t sample_every = argc > 7 ? atoi(argv[7]) : 0;
+    bool per_core = argc > 8 ? atoi(argv[8]) : false;
 
     //Step 1: read strings and regexes
     std::vector<std::string> strings;
@@ -271,7 +409,7 @@ int main(int argc, char* argv[])
     cicero.test_write_capabilities();
 
     //Step 3: Start tests on cicero
-    start_cicero(cicero, strings, regexes, argv[3], argv[4], atoi(argv[6]));
+    start_cicero(cicero, strings, regexes, argv[3], argv[4], atoi(argv[6]), sample_every, per_core);
     
     return 0;
 }

@@ -139,52 +139,32 @@ public:
         return read(DATA_OUT);
     }
 
-    std::string read_performance_counters(int CC_ID_BITS)
-    {
-        uint32_t elapsed_ccs;
+    struct core_counters {
         uint32_t fifoSize;
         uint32_t fifoFulls;
-
         uint32_t cache_hits;
         uint32_t cache_miss;
-
         uint32_t fetch_ccs;
-        uint32_t exe1_ccs;
-        uint32_t exe2_ccs;
-
         uint32_t fetch_stalls;
+        uint32_t exe1_ccs;
         uint32_t exe1_stalls;
+        uint32_t exe2_ccs;
         uint32_t exe2_stalls;
+    };
 
+    std::vector<core_counters> read_performance_counters(int CC_ID_BITS)
+    {
+        std::vector<core_counters> res_pc(1 << CC_ID_BITS);
 
-        std::ostringstream res_pc;
-        get_elapsed_clock_cycles_report(elapsed_ccs);
-        res_pc << "clock cycles elapsed:         " << elapsed_ccs << "\n";
         for (int i = 0; i < 1 << CC_ID_BITS; i++)
         {
-            get_fifo_sizing_report(i, fifoSize, fifoFulls);
-            get_hit_miss_report(i, cache_hits, cache_miss);
-            get_cycles_report(i, fetch_ccs, exe1_ccs, exe2_ccs);
-            get_stalls_report(i, fetch_stalls, exe1_stalls, exe2_stalls);
-
-            res_pc << "---------------------------------------------\n"
-                << "core         " << i << ":\n"
-                << "fifo statistics:\n"
-                << "max size:     " << fifoSize << "\n"
-                << "full events:  " << fifoFulls << "\n"
-                << "cache statistics:\n"
-                << "hits:         " << cache_hits << "\n"
-                << "miss:         " << cache_miss << "\n"
-                << "clock cycles per stage:\n"
-                << "fetch cycles: " << fetch_ccs << "\n"
-                << "fetch stalls: " << fetch_stalls << "\n"
-                << "exe1  cycles: " << exe1_ccs << "\n"
-                << "exe1  stalls: " << exe1_stalls << "\n"
-                << "exe2  cycles: " << exe2_ccs << "\n"
-                << "exe2  stalls: " << exe2_stalls << "\n";
+            core_counters& c = res_pc[i];
+            get_fifo_sizing_report(i, c.fifoSize, c.fifoFulls);
+            get_hit_miss_report(i, c.cache_hits, c.cache_miss);
+            get_cycles_report(i, c.fetch_ccs, c.exe1_ccs, c.exe2_ccs);
+            get_stalls_report(i, c.fetch_stalls, c.exe1_stalls, c.exe2_stalls);
         }
-        res_pc << "---------------------------------------------\n";
-        return res_pc.str();
+        return res_pc;
     }
 
     /*----------LOADING CODE AND STRING----------*/
