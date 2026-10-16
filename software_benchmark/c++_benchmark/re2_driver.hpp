@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <fstream>
@@ -173,21 +174,26 @@ public:
     {
         printf("Starting transfer of length = %d\n", len);
 
-        uint32_t actual_len = len;
+        // Barrier synchronization, we must wait for the DDR memory to be fully written
+        // before transfering to PS 
+        memory_barrier();
 
-        if(len >= 256)
-        {
-            actual_len = len/2;
-        }
+        const uint32_t ddr_base = 0x40000000;
+        uint32_t total_words = len + 1;
+        uint32_t done = 0;
 
-        for(int i = 0; i < len/actual_len; i++)
+        while(done < total_words)
         {
+            uint32_t addr = ddr_base + done*word_size_in_bytes;
+            uint32_t beats = std::min<uint32_t>(256, total_words - done);
+            beats = std::min<uint32_t>(beats, (0x1000 - (addr & 0xFFF)) / word_size_in_bytes);
+
             auto start = std::chrono::high_resolution_clock::now();
 
-            write_data_in(actual_len);
+            write_data_in(beats - 1);
             write_cmd(CMD_SET_LEN);
             write_cmd(CMD_NOP);
-            write_data_in(0x40000000 + i*(actual_len+1)*4);
+            write_data_in(addr);
             write_cmd(CMD_SET_ADDRESS);
             write_cmd(CMD_NOP);
             write_cmd(CMD_START_FETCH);
@@ -200,6 +206,8 @@ public:
             auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
 
             memory_transfer_time += duration.count();
+
+            done += beats;
         }
         
     }
@@ -272,7 +280,7 @@ public:
 
             if(code_word != bigword)
             {
-                std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+                std::cout<<"AT ADDRESS "<<std::hex<<current_address<<" EXPECTED "<<bigword<<" INSTEAD GOT "<<code_word<<" (re-read: "<<read_data_o()<<")"<<std::dec<<std::endl;
                 //dump memory and exit
                 current_address = 0;
                 std::ofstream outputFile("memorydump.csv");
@@ -339,7 +347,7 @@ public:
 
             if(code_word != bigword)
             {
-                std::cout<<"EXPECTED " <<std::hex<<bigword<<std::dec<<" INSTEAD GOT "<<std::hex<<read_data_o()<<std::endl;
+                std::cout<<"AT ADDRESS "<<std::hex<<current_address<<" EXPECTED "<<bigword<<" INSTEAD GOT "<<code_word<<" (re-read: "<<read_data_o()<<")"<<std::dec<<std::endl;
 
                 current_address = start_string_addr;
 
@@ -439,6 +447,16 @@ public:
     }
 
 private:
+
+    //Claude implementation for memory_barrier
+    static void memory_barrier() {
+#if defined(__aarch64__) || defined(__arm__)
+        asm volatile("dsb sy" ::: "memory");
+#else
+        __sync_synchronize();
+#endif
+    }
+
     uint32_t read(uint32_t REG) {
         return *((volatile uint32_t*)((char*)base_addr_lite + REG));
     }
@@ -486,7 +504,7 @@ private:
     uint32_t write_bytes_ddr(const std::vector<uint8_t>& bytes, uint32_t start_addr)
     {
         uint32_t addr = start_addr;
-        uint32_t* ddr = (uint32_t*) base_addr_full;
+        volatile uint32_t* ddr = (volatile uint32_t*) base_addr_full;
 
         for (std::size_t i = 0; i < bytes.size(); i += word_size_in_bytes) 
         {
