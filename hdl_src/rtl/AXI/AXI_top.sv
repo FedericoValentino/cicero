@@ -109,6 +109,7 @@ assign rst_cntrs = rst || (cmd_register==CMD_RESET_PERF_CNTRS);
 
 //Previously issued command
 logic     [REG_WIDTH-1:0]               cmd_register_prev;
+logic                                   start_fetch_pulse;
 
 
 //AXI4 FULL
