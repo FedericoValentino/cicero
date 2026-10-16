@@ -276,7 +276,8 @@ public:
                 //dump memory and exit
                 current_address = 0;
                 std::ofstream outputFile("memorydump.csv");
-                for(int j = 0; j < current_code.size(); j+=2)
+                //DUMPING ALL MEMORY
+                for(int j = 0; j < 1024; j+=2)
                 {
                     if(j < current_code.size())
                     {
