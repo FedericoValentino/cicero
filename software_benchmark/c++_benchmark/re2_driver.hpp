@@ -199,6 +199,13 @@ public:
             write_cmd(CMD_START_FETCH);
             write_cmd(CMD_NOP);
 
+            // AXI-Lite reads and writes travel on separate channels, so the STATUS
+            // read can overtake the START_FETCH write and see the old IDLE. The next
+            // chunk's SET_LEN/SET_ADDRESS then land while FETCHING (ignored) and its
+            // START_FETCH re-fetches the previous address. Seeing NOP in CMD proves
+            // START_FETCH was applied before we look at STATUS.
+            while(read_cmd() != CMD_NOP);
+
             wait_for(STATUS_IDLE);
 
             auto stop = std::chrono::high_resolution_clock::now();
