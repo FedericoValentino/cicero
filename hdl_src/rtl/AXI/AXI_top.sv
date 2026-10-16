@@ -107,6 +107,8 @@ logic     [31: 0]                       exe2_stalls[(2 ** CC_ID_BITS) -1:0];
 assign rst_master = rst || (cmd_register==CMD_RESET);
 assign rst_cntrs = rst || (cmd_register==CMD_RESET_PERF_CNTRS);
 
+//Previously issued command
+logic     [REG_WIDTH-1:0]               cmd_register_prev;
 
 
 //AXI4 FULL
@@ -177,6 +179,14 @@ end
 
 always_ff @(posedge clk)
 begin
+    if(rst) cmd_register_prev <= CMD_NOP;
+    else    cmd_register_prev <= cmd_register;
+end
+
+assign start_fetch_pulse = (cmd_register == CMD_START_FETCH) && (cmd_register_prev != CMD_START_FETCH);
+
+always_ff @(posedge clk)
+begin
     if(rst_master == 1'b1)
     begin
         bram_axi_addr <= 0;
@@ -200,7 +210,7 @@ always_ff @(posedge clk) begin
             case (cmd_register)
                 CMD_SET_ADDRESS: axi_register_read <= data_in_register;
                 CMD_SET_LEN:     axi_read_len      <= data_in_register;
-                CMD_START_FETCH: begin
+                CMD_START_FETCH: if (start_fetch_pulse) begin
                     araddr_reg  <= axi_register_read;
                     arlen_reg   <= axi_read_len;
                     arvalid_reg <= 1'b1;
@@ -281,10 +291,13 @@ begin
                     status_register_next = STATUS_RUNNING;
                 end
             end
-            CMD_START_FETCH: 
+            CMD_START_FETCH:
             begin
-                status_register_next = STATUS_FETCHING;
-                status_register_fetching_next = STATUS_WAIT_ARREADY; 
+                if(start_fetch_pulse) 
+                begin
+                    status_register_next = STATUS_FETCHING;
+                    status_register_fetching_next = STATUS_WAIT_ARREADY;
+                end
             end
             CMD_READ_ELAPSED_CLOCK:
             begin
